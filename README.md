@@ -27,6 +27,7 @@ This is a blender add-on that contains tools to ease the creation/import process
 - Website: https://www.tinywarriorstudio.com/
 - Twitter: https://twitter.com/viiniiguerrero
 
-#### 3D Model From Tutorial 
-- Special Thanks to @Quaternius - http://quaternius.com/assets.html
+#### Special Thanks To
+- Tutorial 3D Model by @Quaternius - http://quaternius.com/assets.html
+- Youtube Tutorial by @chrisphyffer - https://www.youtube.com/watch?v=6SegCO3cZZE&t=598s
 
