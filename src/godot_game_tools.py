@@ -2,7 +2,7 @@ bl_info = {
     "name": "Godot Game Tools",
     "description": "This Add-On provides features for better export options with Godot Game Engine",
     "author": "Vinicius Guerrero",
-    "version": (1, 0, 0),
+    "version": (1, 0, 1),
     "blender": (2, 80, 0),
     "location": "3D View > Tools",
     "warning": "",
@@ -45,12 +45,13 @@ def console_write(text):
 def populateAnimations(self, context):
     animationsArr = []
     actionNamesList = []
-    for action in bpy.data.actions:
-        actionNamesList.append(action.name)
-    actionNamesList = sorted(actionNamesList)
-    for action in actionNamesList:
-        item = (action, action, action)
-        animationsArr.append(item)
+    if len(bpy.data.actions) > 0:
+        for action in bpy.data.actions:
+            actionNamesList.append(action.name)
+        actionNamesList = sorted(actionNamesList)
+        for action in actionNamesList:
+            item = (action, action, action)
+            animationsArr.append(item)
     return animationsArr
 
 # ------------------------------------------------------------------------
@@ -74,7 +75,6 @@ class WM_OT_RENAME_MIXAMORIG(Operator):
     def execute(self, context):
         scene = context.scene
         tool = scene.godot_game_tools
-        actionName = tool.action_name
         bpy.ops.object.mode_set(mode = 'OBJECT')
         if not bpy.ops.object:
             self.report({'INFO'}, 'Please select the armature')
