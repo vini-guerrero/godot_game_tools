@@ -54,12 +54,64 @@ def populateAnimations(self, context):
             animationsArr.append(item)
     return animationsArr
 
+def mixamoRigFixer(self, context):
+    filter1 = "location (mixamorig:Hips)"
+    filter2 = "Location (Hips)"
+    bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+    bpy.context.area.ui_type = 'FCURVES'
+    bpy.context.space_data.dopesheet.filter_text = filter1
+    bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+    bpy.context.space_data.pivot_point = 'CURSOR'
+    bpy.context.scene.frame_current = 0
+    bpy.context.space_data.cursor_position_y = 0
+    bpy.ops.transform.resize(value=(1, 0.01, 1), orient_type='GLOBAL', orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL', constraint_axis=(False, True, False), mirror=True, use_proportional_edit=False, proportional_edit_falloff='SMOOTH', proportional_size=1, use_proportional_connected=False, use_proportional_projected=False)
+    bpy.context.space_data.dopesheet.filter_text = filter2
+    bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+    bpy.context.space_data.pivot_point = 'CURSOR'
+    bpy.context.scene.frame_current = 0
+    bpy.context.space_data.cursor_position_y = 0
+    bpy.ops.transform.resize(value=(1, 0.01, 1), orient_type='GLOBAL', orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL', constraint_axis=(False, True, False), mirror=True, use_proportional_edit=False, proportional_edit_falloff='SMOOTH', proportional_size=1, use_proportional_connected=False, use_proportional_projected=False)
+    bpy.context.area.ui_type = 'VIEW_3D'
+
+def copyBoneMotion(self, context):
+    action = bpy.context.view_layer.objects.active.animation_data.action
+    bpy.ops.screen.animation_cancel(restore_frame=False)
+    bpy.context.scene.frame_set(0)
+    # Hips
+    hipsCurves = [fc for fc in action.fcurves if fc.data_path.split('"')[1] in "Hips"]
+    xHipsLocation = hipsCurves[0]
+    yHipsLocation = hipsCurves[1]
+    zHipsLocation = hipsCurves[2]
+    # Root Motion
+    rootMotionCurves = [fc for fc in action.fcurves if fc.data_path.split('"')[1] in "RootMotion"]
+    xRootLocation = rootMotionCurves[0]
+    yRootLocation = rootMotionCurves[1]
+    zRootLocation = rootMotionCurves[2]
+    # frameIndex = 0
+    # frames = []
+    # while frameIndex < bpy.context.object.animation_data.action.frame_range[-1]:
+    #     frames.append(frameIndex)
+    #     frameIndex += 1
+    # samples = frames
+    # for fc in rootMotionCurves:
+    #     dp, i = fc.data_path, fc.array_index
+    #     action.fcurves.remove(fc)
+    #     fc = action.fcurves.new(dp, index=i)
+    #     fc.keyframe_points.add(count=len(frames))
+    #     fc.keyframe_points.foreach_set("co", [x for co in zip(frames, samples) for x in co])
+    #     fc.update()
+    # Remove Frames
+    # action.fcurves.remove(xHipsLocation)
+    # action.fcurves.remove(zHipsLocation)
+    # bpy.context.area.ui_type = 'VIEW_3D'
+
 # ------------------------------------------------------------------------
 #    Addon Scene Properties
 # ------------------------------------------------------------------------
 
 class AddonProperties(PropertyGroup):
 
+    action_name: StringProperty(name="Animation", description="Choose the action name you want to rename your animation in the dopesheet", maxlen=1024)
     target_name: PointerProperty(name="Target", description="Select the target armature you want the animations to be merged into", type=bpy.types.Object)
     animations: EnumProperty(name="Animations", description="Available armature animations", items=populateAnimations, default=None, options={'ANIMATABLE'}, update=None, get=None, set=None)
 
@@ -94,7 +146,7 @@ class WM_OT_RENAME_MIXAMORIG(Operator):
             for f in fc:
                 f.data_path = f.data_path.replace("mixamorig:","")
         if bpy.data.actions:
-            bpy.context.scene.frame_end=bpy.context.object.animation_data.action.frame_range[-1]
+            bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
         self.report({'INFO'}, 'Character Ready For Export Process')
         return {'FINISHED'}
 
@@ -110,16 +162,17 @@ class WM_OT_PREPARE_MIXAMORIG(Operator):
     def execute(self, context):
         scene = context.scene
         tool = scene.godot_game_tools
+        target_armature = tool.target_name
         bpy.ops.object.select_all(action='SELECT')
-        bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
-        bpy.context.area.ui_type = 'FCURVES'
-        bpy.context.space_data.dopesheet.filter_text = "location (mixamorig:Hips)"
-        bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
-        bpy.context.space_data.pivot_point = 'CURSOR'
-        bpy.context.scene.frame_current = 0
-        bpy.context.space_data.cursor_position_y = 0
-        bpy.ops.transform.resize(value=(1, 0.01, 1), orient_type='GLOBAL', orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL', constraint_axis=(False, True, False), mirror=True, use_proportional_edit=False, proportional_edit_falloff='SMOOTH', proportional_size=1, use_proportional_connected=False, use_proportional_projected=False)
-        bpy.context.area.ui_type = 'VIEW_3D'
+        if len(bpy.data.actions) > 0:
+            for anim in bpy.data.actions:
+                animation = anim.name
+                bpy.context.scene.frame_start = 0
+                animationToPlay = [anim for anim in bpy.data.actions.keys() if anim in (animation)]
+                animationIndex = bpy.data.actions.keys().index(animation)
+                target_armature.animation_data.action = bpy.data.actions.values()[animationIndex]
+                bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
+                mixamoRigFixer(self, context)
         self.report({'INFO'}, 'Rig Armature Prepared')
         return {'FINISHED'}
 
@@ -140,12 +193,94 @@ class WM_OT_ANIMATION_PLAYER(Operator):
         bpy.ops.screen.animation_cancel()
         bpy.context.view_layer.objects.active = target_armature
         bpy.context.scene.frame_start = 0
-        if bpy.data.actions:
+        if len(bpy.data.actions) > 0:
             animationToPlay = [anim for anim in bpy.data.actions.keys() if anim in (animation)]
             animationIndex = bpy.data.actions.keys().index(animation)
             target_armature.animation_data.action = bpy.data.actions.values()[animationIndex]
             bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
             bpy.ops.screen.animation_play()
+        return {'FINISHED'}
+
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+
+class WM_OT_ADD_ROOTMOTION(Operator):
+    bl_idname = "wm.add_rootmotion"
+    bl_label = "Add Root Motion Bone"
+    bl_description = "Adds Root Motion Bone To Animation"
+
+    def execute(self, context):
+        scene = context.scene
+        tool = scene.godot_game_tools
+        animation = tool.animations
+        target_armature = tool.target_name
+        if not target_armature:
+            self.report({'INFO'}, 'Please select a valid armature')
+        if target_armature.type == 'ARMATURE':
+            # Validates Required Bone Exists In Armature
+            createRootMotionBone = True
+            if len(target_armature.data.bones) > 0:
+                for bone in target_armature.data.bones:
+                    if bone.name == "RootMotion":
+                        createRootMotionBone = False
+                if target_armature.data.bones[0].name == "Hips" and createRootMotionBone:
+                    hipsBone = target_armature.data.bones["Hips"]
+                    bpy.ops.object.editmode_toggle()
+                    bpy.ops.armature.bone_primitive_add(name="RootMotion")
+                    rootMotionBone = target_armature.data.edit_bones["RootMotion"]
+                    # Rootbone Position
+                    rootMotionBone.head[1] = 0
+                    rootMotionBone.head[2] = 40
+                    rootMotionBone.head_radius = 0
+                    rootMotionBone.tail[1] = 30
+                    rootMotionBone.tail[2] = 40
+                    rootMotionBone.tail_radius = 0
+                    # Parent Bone
+                    target_armature.data.edit_bones.active = target_armature.data.edit_bones[hipsBone.name]
+                    rootMotionBone.select = True
+                    hipsBone.select = True
+                    bpy.ops.armature.parent_set(type='OFFSET')
+                    bpy.ops.object.editmode_toggle()
+
+                # Insert Initial Keyframe For Location on RootMotion Bone
+                bpy.ops.object.select_all(action='DESELECT')
+                bpy.ops.object.posemode_toggle()
+                target_armature.data.bones.active = target_armature.data.bones["RootMotion"]
+                bpy.ops.anim.keyframe_insert_menu(type='Location')
+                bpy.ops.object.mode_set(mode='OBJECT')
+                bpy.ops.object.select_all(action='DESELECT')
+                if len(target_armature.data.bones) > 0:
+                    for bone in target_armature.data.bones:
+                        bone.select = False
+                # Copy Hips Frames To RootMotion
+                # Select Order - Hips Bone Then Armature To Copy Frames
+                target_armature.data.bones.active = target_armature.data.bones["Hips"]
+                bpy.context.view_layer.objects.active = target_armature
+                target_armature.select_set(state=True)
+                copyBoneMotion(self, context)
+        else:
+            self.report({'INFO'}, 'Please select the armature')
+        self.report({'INFO'}, 'Root Motion Added')
+        return {'FINISHED'}
+
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+
+class WM_OT_RENAME_ANIMATION(Operator):
+    bl_idname = "wm.rename_animation"
+    bl_label = "Rename Current Animation"
+    bl_description = "Renames current animation"
+
+    def execute(self, context):
+        scene = context.scene
+        tool = scene.godot_game_tools
+        animation = tool.animations
+        target_armature = tool.target_name
+        actionName = tool.action_name
+        if len(bpy.data.actions) > 0:
+            bpy.context.object.animation_data.action.name = actionName
         return {'FINISHED'}
 
 # ------------------------------------------------------------------------ #
@@ -161,12 +296,14 @@ class WM_OT_JOIN_ANIMATIONS(Operator, ImportHelper):
     filter_glob = StringProperty(default="*.fbx", options={'HIDDEN'})
     files = CollectionProperty(type=bpy.types.PropertyGroup)
 
-    def importModels(self, path, target_armature):
+    def importModels(self, path, target_armature, context):
         extensions = ['fbx']
         filenames = sorted(os.listdir(path))
         valid_files = []
         fileNamesList = []
         removeList = []
+        # Debug
+        removeImports = True
 
         for filename in filenames:
             for ext in extensions:
@@ -201,9 +338,10 @@ class WM_OT_JOIN_ANIMATIONS(Operator, ImportHelper):
                                     removeList.append(mesh)
 
         # Delete Imported Armatures
-        objs = [ob for ob in removeList if ob.type in ('ARMATURE', 'MESH')]
-        bpy.ops.object.delete({"selected_objects": objs})
-        bpy.context.view_layer.objects.active = target_armature
+        if removeImports:
+            objs = [ob for ob in removeList if ob.type in ('ARMATURE', 'MESH')]
+            bpy.ops.object.delete({"selected_objects": objs})
+            bpy.context.view_layer.objects.active = target_armature
 
     def execute(self, context):
         scene = context.scene
@@ -217,7 +355,7 @@ class WM_OT_JOIN_ANIMATIONS(Operator, ImportHelper):
             bpy.context.object.animation_data.action.name = "T-Pose"
         else:
             self.report({'INFO'}, 'Please select the armature')
-        self.importModels(path, target_armature)
+        self.importModels(path, target_armature, context)
         return {'FINISHED'}
 
 # ------------------------------------------------------------------------
@@ -245,6 +383,9 @@ class OBJECT_PT_CustomPanel(Panel):
         box.operator("wm.join_animations", icon="IMPORT")
         box.operator("wm.prepare_mixamo_rig", icon="ASSET_MANAGER")
         box.operator("wm.rename_mixamo_rig", icon="BONE_DATA")
+        box.prop(tool, "action_name")
+        box.operator("wm.rename_animation", icon="ARMATURE_DATA")
+        box.operator("wm.add_rootmotion", icon="BONE_DATA")
         box.separator()
         box.prop(tool, "animations")
         box.operator("wm.animation_player", icon="SCENE")
@@ -261,6 +402,8 @@ classes = (
     WM_OT_RENAME_MIXAMORIG,
     WM_OT_JOIN_ANIMATIONS,
     WM_OT_ANIMATION_PLAYER,
+    WM_OT_RENAME_ANIMATION,
+    WM_OT_ADD_ROOTMOTION,
     OBJECT_PT_CustomPanel
 )
 
