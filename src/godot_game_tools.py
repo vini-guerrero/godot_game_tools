@@ -2,7 +2,7 @@ bl_info = {
     "name": "Godot Game Tools",
     "description": "This Add-On provides features for better export options with Godot Game Engine",
     "author": "Vinicius Guerrero",
-    "version": (1, 0, 2),
+    "version": (1, 0, 1),
     "blender": (2, 80, 0),
     "location": "3D View > Tools",
     "warning": "",
@@ -82,6 +82,15 @@ def get_fcurve(armature, bone_name):
       break
   return result
 
+def toggleArmatureVisibility(self, context):
+    scene = context.scene
+    tool = scene.godot_game_tools
+    target_armature = tool.target_name
+    visible_armature = tool.visible_armature
+    bpy.data.objects["Armature"].select_set(True)
+    target_armature.hide_viewport = not visible_armature
+    bpy.context.object.show_in_front = not visible_armature
+
 # ------------------------------------------------------------------------
 #    Addon Scene Properties
 # ------------------------------------------------------------------------
@@ -91,7 +100,7 @@ class AddonProperties(PropertyGroup):
     action_name: StringProperty(name="Animation", description="Choose the action name you want to rename your animation in the dopesheet", maxlen=1024)
     target_name: PointerProperty(name="Target", description="Select the target armature you want the animations to be merged into", type=bpy.types.Object)
     animations: EnumProperty(name="Animations", description="Available armature animations", items=populateAnimations, default=None, options={'ANIMATABLE'}, update=None, get=None, set=None)
-    visible_armature: BoolProperty(name="Show Armature Bones", description="Hides / Show armature bones once animations are loaded", default = False)
+    visible_armature: BoolProperty(name="Show Armature Bones", description="Hides / Show armature bones once animations are loaded", default=True, update=toggleArmatureVisibility)
 
 # ------------------------------------------------------------------------
 #    Operators
@@ -105,6 +114,10 @@ class WM_OT_RENAME_MIXAMORIG(Operator):
     def execute(self, context):
         scene = context.scene
         tool = scene.godot_game_tools
+        visible_armature = tool.visible_armature
+        target_armature = tool.target_name
+        bpy.data.objects["Armature"].select_set(True)
+        target_armature.hide_viewport = False
         bpy.ops.object.mode_set(mode='OBJECT')
         if not bpy.ops.object:
             self.report({'INFO'}, 'Please select the armature')
@@ -140,6 +153,9 @@ class WM_OT_PREPARE_MIXAMORIG(Operator):
         scene = context.scene
         tool = scene.godot_game_tools
         target_armature = tool.target_name
+        visible_armature = tool.visible_armature
+        bpy.data.objects["Armature"].select_set(True)
+        target_armature.hide_viewport = False
         bpy.ops.object.select_all(action='SELECT')
         if len(bpy.data.actions) > 0:
             for anim in bpy.data.actions:
@@ -267,7 +283,6 @@ class WM_OT_ADD_ROOTMOTION(Operator):
                           anim_root_bone.keyframe_insert(data_path='location')
                           anim_hip_bone.keyframe_delete(data_path='location')
                           bpy.ops.object.mode_set(mode='OBJECT')
-
         else:
             self.report({'INFO'}, 'Please select the armature')
         self.report({'INFO'}, 'Root Motion Added')
@@ -364,10 +379,9 @@ class WM_OT_JOIN_ANIMATIONS(Operator, ImportHelper):
             else:
                 self.report({'INFO'}, 'Please select the armature')
             self.importModels(path, target_armature, context)
-            visible_armature = tool.visible_armature
-            target_armature.hide_viewport = visible_armature
-            bpy.context.view_layer.objects.active = target_armature
-            bpy.context.object.show_in_front = visible_armature
+
+
+
         else:
             self.report({'INFO'}, 'Please select a valid armature')
         return {'FINISHED'}
@@ -400,7 +414,7 @@ class OBJECT_PT_CustomPanel(Panel):
         box.operator("wm.rename_mixamo_rig", icon="BONE_DATA")
         box.prop(tool, "action_name")
         box.operator("wm.rename_animation", icon="ARMATURE_DATA")
-        box.operator("wm.add_rootmotion", icon="BONE_DATA")
+        # box.operator("wm.add_rootmotion", icon="BONE_DATA")
         box.separator()
         box.prop(tool, "animations")
         box.operator("wm.animation_player", icon="SCENE")
