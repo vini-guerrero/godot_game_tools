@@ -87,12 +87,17 @@ def copyBoneMotion(self, context):
     xRootLocation = rootMotionCurves[0]
     yRootLocation = rootMotionCurves[1]
     zRootLocation = rootMotionCurves[2]
-    # frameIndex = 0
-    # frames = []
-    # while frameIndex < bpy.context.object.animation_data.action.frame_range[-1]:
-    #     frames.append(frameIndex)
-    #     frameIndex += 1
-    # samples = frames
+    frameIndex = 0
+    frames = []
+    samples = []
+    while frameIndex < bpy.context.object.animation_data.action.frame_range[-1]:
+        frames.append(frameIndex)
+        frameIndex += 1
+    for cvX in hipsCurves:
+        for keyframe in cvX.keyframe_points:
+            coords = keyframe.co
+            samples.append(coords)
+            console_write(coords)
     # for fc in rootMotionCurves:
     #     dp, i = fc.data_path, fc.array_index
     #     action.fcurves.remove(fc)
@@ -225,40 +230,42 @@ class WM_OT_ADD_ROOTMOTION(Operator):
                     if bone.name == "RootMotion":
                         createRootMotionBone = False
                 if target_armature.data.bones[0].name == "Hips" and createRootMotionBone:
-                    hipsBone = target_armature.data.bones["Hips"]
+                    bpy.ops.object.select_all(action='DESELECT')
+                    bpy.context.view_layer.objects.active.data.bones["Hips"].select = True
                     bpy.ops.object.editmode_toggle()
-                    bpy.ops.armature.bone_primitive_add(name="RootMotion")
-                    rootMotionBone = target_armature.data.edit_bones["RootMotion"]
-                    # Rootbone Position
-                    rootMotionBone.head[1] = 0
-                    rootMotionBone.head[2] = 40
-                    rootMotionBone.head_radius = 0
-                    rootMotionBone.tail[1] = 30
-                    rootMotionBone.tail[2] = 40
-                    rootMotionBone.tail_radius = 0
-                    # Parent Bone
-                    target_armature.data.edit_bones.active = target_armature.data.edit_bones[hipsBone.name]
-                    rootMotionBone.select = True
-                    hipsBone.select = True
-                    bpy.ops.armature.parent_set(type='OFFSET')
-                    bpy.ops.object.editmode_toggle()
-
-                # Insert Initial Keyframe For Location on RootMotion Bone
-                bpy.ops.object.select_all(action='DESELECT')
-                bpy.ops.object.posemode_toggle()
-                target_armature.data.bones.active = target_armature.data.bones["RootMotion"]
-                bpy.ops.anim.keyframe_insert_menu(type='Location')
-                bpy.ops.object.mode_set(mode='OBJECT')
-                bpy.ops.object.select_all(action='DESELECT')
-                if len(target_armature.data.bones) > 0:
-                    for bone in target_armature.data.bones:
-                        bone.select = False
-                # Copy Hips Frames To RootMotion
-                # Select Order - Hips Bone Then Armature To Copy Frames
-                target_armature.data.bones.active = target_armature.data.bones["Hips"]
-                bpy.context.view_layer.objects.active = target_armature
-                target_armature.select_set(state=True)
-                copyBoneMotion(self, context)
+                    bpy.ops.armature.duplicate_move(ARMATURE_OT_duplicate={"do_flip_names":False}, TRANSFORM_OT_translate={"value":(-0, -0, -1.14244), "orient_type":'GLOBAL', "orient_matrix":((1, 0, 0), (0, 1, 0), (0, 0, 1)), "orient_matrix_type":'GLOBAL', "constraint_axis":(False, False, True), "mirror":True, "use_proportional_edit":False, "proportional_edit_falloff":'SMOOTH', "proportional_size":1, "use_proportional_connected":False, "use_proportional_projected":False, "snap":False, "snap_target":'CLOSEST', "snap_point":(0, 0, 0), "snap_align":False, "snap_normal":(0, 0, 0), "gpencil_strokes":False, "cursor_transform":False, "texture_space":False, "remove_on_cancel":False, "release_confirm":False, "use_accurate":False})
+                #     bpy.ops.armature.bone_primitive_add(name="RootMotion")
+                #     rootMotionBone = target_armature.data.edit_bones["RootMotion"]
+                #     # Rootbone Position
+                #     rootMotionBone.head[1] = 0
+                #     rootMotionBone.head[2] = 40
+                #     rootMotionBone.head_radius = 0
+                #     rootMotionBone.tail[1] = 30
+                #     rootMotionBone.tail[2] = 40
+                #     rootMotionBone.tail_radius = 0
+                #     # Parent Bone
+                #     target_armature.data.edit_bones.active = target_armature.data.edit_bones[hipsBone.name]
+                #     rootMotionBone.select = True
+                #     hipsBone.select = True
+                #     bpy.ops.armature.parent_set(type='OFFSET')
+                #     bpy.ops.object.editmode_toggle()
+                #
+                # # Insert Initial Keyframe For Location on RootMotion Bone
+                # bpy.ops.object.select_all(action='DESELECT')
+                # bpy.ops.object.posemode_toggle()
+                # target_armature.data.bones.active = target_armature.data.bones["RootMotion"]
+                # bpy.ops.anim.keyframe_insert_menu(type='Location')
+                # bpy.ops.object.mode_set(mode='OBJECT')
+                # bpy.ops.object.select_all(action='DESELECT')
+                # if len(target_armature.data.bones) > 0:
+                #     for bone in target_armature.data.bones:
+                #         bone.select = False
+                # # Copy Hips Frames To RootMotion
+                # # Select Order - Hips Bone Then Armature To Copy Frames
+                # target_armature.data.bones.active = target_armature.data.bones["Hips"]
+                # bpy.context.view_layer.objects.active = target_armature
+                # target_armature.select_set(state=True)
+                # copyBoneMotion(self, context)
         else:
             self.report({'INFO'}, 'Please select the armature')
         self.report({'INFO'}, 'Root Motion Added')
