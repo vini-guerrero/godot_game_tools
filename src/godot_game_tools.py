@@ -2,8 +2,8 @@ bl_info = {
     "name": "Godot Game Tools",
     "description": "This Add-On provides features for better export options with Godot Game Engine",
     "author": "Vinicius Guerrero",
-    "version": (1, 0, 2),
-    "blender": (2, 80, 0),
+    "version": (1, 0, 3),
+    "blender": (2, 81, 0),
     "location": "3D View > Tools",
     "warning": "",
     "wiki_url": "",
@@ -67,6 +67,19 @@ def toggleArmatureVisibility(self, context):
     bpy.context.object.show_in_front = not visible_armature
 
 
+def validateArmature(self, context):
+    scene = context.scene
+    tool = scene.godot_game_tools
+    target_armature = tool.target_name
+    valid = False
+    if target_armature is not None:
+        if target_armature.type == "ARMATURE":
+            valid = True
+        else:
+            self.report({'INFO'}, 'Please select a valid armature')
+    else:
+        self.report({'INFO'}, 'Please select a valid armature')
+    return valid
 # ------------------------------------------------------------------------
 #    Addon Scene Properties
 # ------------------------------------------------------------------------
@@ -94,28 +107,30 @@ class WM_OT_RENAME_MIXAMORIG(Operator):
         tool = scene.godot_game_tools
         visible_armature = tool.visible_armature
         target_armature = tool.target_name
-        bpy.data.objects["Armature"].select_set(True)
-        target_armature.hide_viewport = False
-        bpy.ops.object.mode_set(mode='OBJECT')
-        if not bpy.ops.object:
-            self.report({'INFO'}, 'Please select the armature')
-        for rig in bpy.context.selected_objects:
-            if rig.type == 'ARMATURE':
-                for mesh in rig.children:
-                    for vg in mesh.vertex_groups:
-                        new_name = vg.name
-                        new_name = new_name.replace("mixamorig:","")
-                        rig.pose.bones[vg.name].name = new_name
-                        vg.name = new_name
-                for bone in rig.pose.bones:
-                    bone.name = bone.name.replace("mixamorig:","")
-        for action in bpy.data.actions:
-            fc = action.fcurves
-            for f in fc:
-                f.data_path = f.data_path.replace("mixamorig:","")
-        if bpy.data.actions:
-            bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
-        self.report({'INFO'}, 'Character Bones Successfully Renamed')
+        valid = validateArmature(self, context)
+        if valid:
+            bpy.data.objects["Armature"].select_set(True)
+            target_armature.hide_viewport = False
+            bpy.ops.object.mode_set(mode='OBJECT')
+            if not bpy.ops.object:
+                self.report({'INFO'}, 'Please select the armature')
+            for rig in bpy.context.selected_objects:
+                if rig.type == 'ARMATURE':
+                    for mesh in rig.children:
+                        for vg in mesh.vertex_groups:
+                            new_name = vg.name
+                            new_name = new_name.replace("mixamorig:","")
+                            rig.pose.bones[vg.name].name = new_name
+                            vg.name = new_name
+                    for bone in rig.pose.bones:
+                        bone.name = bone.name.replace("mixamorig:","")
+            for action in bpy.data.actions:
+                fc = action.fcurves
+                for f in fc:
+                    f.data_path = f.data_path.replace("mixamorig:","")
+            if bpy.data.actions:
+                bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
+            self.report({'INFO'}, 'Character Bones Successfully Renamed')
         return {'FINISHED'}
 
 # ------------------------------------------------------------------------ #
@@ -151,19 +166,21 @@ class WM_OT_PREPARE_MIXAMORIG(Operator):
         tool = scene.godot_game_tools
         target_armature = tool.target_name
         visible_armature = tool.visible_armature
-        bpy.data.objects["Armature"].select_set(True)
-        target_armature.hide_viewport = False
-        bpy.ops.object.select_all(action='SELECT')
-        if len(bpy.data.actions) > 0:
-            for anim in bpy.data.actions:
-                animation = anim.name
-                bpy.context.scene.frame_start = 0
-                animationToPlay = [anim for anim in bpy.data.actions.keys() if anim in (animation)]
-                animationIndex = bpy.data.actions.keys().index(animation)
-                target_armature.animation_data.action = bpy.data.actions.values()[animationIndex]
-                bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
-                self.mixamoRigFixer(context)
-        self.report({'INFO'}, 'Rig Armature Prepared')
+        valid = validateArmature(self, context)
+        if valid:
+            bpy.data.objects["Armature"].select_set(True)
+            target_armature.hide_viewport = False
+            bpy.ops.object.select_all(action='SELECT')
+            if len(bpy.data.actions) > 0:
+                for anim in bpy.data.actions:
+                    animation = anim.name
+                    bpy.context.scene.frame_start = 0
+                    animationToPlay = [anim for anim in bpy.data.actions.keys() if anim in (animation)]
+                    animationIndex = bpy.data.actions.keys().index(animation)
+                    target_armature.animation_data.action = bpy.data.actions.values()[animationIndex]
+                    bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
+                    self.mixamoRigFixer(context)
+            self.report({'INFO'}, 'Rig Armature Prepared')
         return {'FINISHED'}
 
 # ------------------------------------------------------------------------ #
@@ -182,13 +199,16 @@ class WM_OT_ANIMATION_PLAYER(Operator):
         target_armature = tool.target_name
         bpy.ops.screen.animation_cancel()
         bpy.context.view_layer.objects.active = target_armature
-        bpy.context.scene.frame_start = 0
-        if len(bpy.data.actions) > 0:
-            animationToPlay = [anim for anim in bpy.data.actions.keys() if anim in (animation)]
-            animationIndex = bpy.data.actions.keys().index(animation)
-            target_armature.animation_data.action = bpy.data.actions.values()[animationIndex]
-            bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
-            bpy.ops.screen.animation_play()
+        bpy.context.scene.frame_start = 2
+        valid = validateArmature(self, context)
+        if valid:
+            if len(bpy.data.actions) > 0:
+                animationToPlay = [anim for anim in bpy.data.actions.keys() if anim in (animation)]
+                animationIndex = bpy.data.actions.keys().index(animation)
+                target_armature.animation_data.action = bpy.data.actions.values()[animationIndex]
+                bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
+                bpy.ops.screen.animation_play()
+            self.report({'INFO'}, 'Playing Animation')
         return {'FINISHED'}
 
 
@@ -206,8 +226,11 @@ class WM_OT_STOP_ANIMATION(Operator):
         tool = scene.godot_game_tools
         animation = tool.animations
         target_armature = tool.target_name
-        bpy.context.scene.frame_current = 0
-        bpy.ops.screen.animation_cancel()
+        valid = validateArmature(self, context)
+        if valid:
+            bpy.context.scene.frame_current = 0
+            bpy.ops.screen.animation_cancel()
+            self.report({'INFO'}, 'Animation Stopped')
         return {'FINISHED'}
 
 
@@ -289,37 +312,39 @@ class WM_OT_ADD_ROOTMOTION(Operator):
         rootmotion_all = tool.rootmotion_all
         # Call Operator From Outside Class
         animationsForRootMotion = []
-        if rootmotion_all:
-            for action in bpy.data.actions: animationsForRootMotion.append(action)
-        else:
-            animationsForRootMotion.append(bpy.context.object.animation_data.action)
-        bpy.ops.wm.add_rootbone()
-        if len(bpy.data.actions) > 0:
-            for action in animationsForRootMotion:
-                animation = action.name
-                animationToPlay = [anim for anim in bpy.data.actions.keys() if anim in (animation)]
-                animationIndex = bpy.data.actions.keys().index(animation)
-                target_armature.animation_data.action = bpy.data.actions.values()[animationIndex]
-                bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
-                # Insert Location on RootMotion Bone
+        valid = validateArmature(self, context)
+        if valid:
+            if rootmotion_all:
+                for action in bpy.data.actions: animationsForRootMotion.append(action)
+            else:
+                animationsForRootMotion.append(bpy.context.object.animation_data.action)
+            bpy.ops.wm.add_rootbone()
+            if len(bpy.data.actions) > 0:
+                for action in animationsForRootMotion:
+                    animation = action.name
+                    animationToPlay = [anim for anim in bpy.data.actions.keys() if anim in (animation)]
+                    animationIndex = bpy.data.actions.keys().index(animation)
+                    target_armature.animation_data.action = bpy.data.actions.values()[animationIndex]
+                    bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
+                    # Insert Location on RootMotion Bone
+                    bpy.ops.object.mode_set(mode='OBJECT')
+                    bpy.ops.object.select_all(action='DESELECT')
+                    bpy.ops.object.mode_set(mode="POSE")
+                    anim_root_bone = target_armature.pose.bones[rootMotionBoneName]
+                    anim_hip_bone = target_armature.pose.bones["Hips"]
+                    scene.frame_set(1)
+                    anim_root_bone.keyframe_insert(data_path='location')
+                    hip_fcurve = self.get_fcurve(target_armature, "Hips")
+                    frames = []
+                    for point in hip_fcurve.keyframe_points[1:]:
+                      frames.append(point.co[0])
+                    for index in frames:
+                      scene.frame_set(index)
+                      anim_root_bone.location = anim_hip_bone.location
+                      anim_root_bone.keyframe_insert(data_path='location')
+                      anim_hip_bone.keyframe_delete(data_path='location')
                 bpy.ops.object.mode_set(mode='OBJECT')
-                bpy.ops.object.select_all(action='DESELECT')
-                bpy.ops.object.mode_set(mode="POSE")
-                anim_root_bone = target_armature.pose.bones[rootMotionBoneName]
-                anim_hip_bone = target_armature.pose.bones["Hips"]
-                scene.frame_set(1)
-                anim_root_bone.keyframe_insert(data_path='location')
-                hip_fcurve = self.get_fcurve(target_armature, "Hips")
-                frames = []
-                for point in hip_fcurve.keyframe_points[1:]:
-                  frames.append(point.co[0])
-                for index in frames:
-                  scene.frame_set(index)
-                  anim_root_bone.location = anim_hip_bone.location
-                  anim_root_bone.keyframe_insert(data_path='location')
-                  anim_hip_bone.keyframe_delete(data_path='location')
-                  bpy.ops.object.mode_set(mode='OBJECT')
-            self.report({'INFO'}, 'Root Motion Added')
+                self.report({'INFO'}, 'Root Motion Added')
         return {'FINISHED'}
 
 # ------------------------------------------------------------------------ #
@@ -337,8 +362,11 @@ class WM_OT_RENAME_ANIMATION(Operator):
         animation = tool.animations
         target_armature = tool.target_name
         actionName = tool.action_name
-        if len(bpy.data.actions) > 0:
-            bpy.context.object.animation_data.action.name = actionName
+        valid = validateArmature(self, context)
+        if valid:
+            if len(bpy.data.actions) > 0:
+                bpy.context.object.animation_data.action.name = actionName
+            self.report({'INFO'}, 'Animation Renamed')
         return {'FINISHED'}
 
 # ------------------------------------------------------------------------ #
@@ -417,15 +445,12 @@ class WM_OT_JOIN_ANIMATIONS(Operator, ImportHelper):
         target_armature = tool.target_name
         filePathWithName = bpy.path.abspath(self.properties.filepath)
         path = os.path.dirname(filePathWithName)
-        if target_armature is not None:
-            if target_armature.type == 'ARMATURE':
-                bpy.context.object.animation_data.action.name = "T-Pose"
-            else:
-                self.report({'INFO'}, 'Please select the armature')
+        valid = validateArmature(self, context)
+        if valid:
+            bpy.context.object.animation_data.action.name = "T-Pose"
             self.importModels(path, target_armature, context)
             self.setDefaultAnimation(context)
-        else:
-            self.report({'INFO'}, 'Please select a valid armature')
+            self.report({'INFO'}, 'Animations Imported Successfully')
         return {'FINISHED'}
 
 # ------------------------------------------------------------------------
