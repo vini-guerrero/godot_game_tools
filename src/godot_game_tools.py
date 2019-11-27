@@ -96,81 +96,45 @@ def mixamoRigFixer(self, context):
     bpy.ops.transform.resize(value=(1, 0.01, 1), orient_type='GLOBAL', orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL', constraint_axis=(False, True, False), mirror=True, use_proportional_edit=False, proportional_edit_falloff='SMOOTH', proportional_size=1, use_proportional_connected=False, use_proportional_projected=False)
     bpy.context.area.ui_type = 'VIEW_3D'
 
+
 def addRootMotion(self, context):
-    filter1 = "Location (Hips)"
-    filter2 = "Location (RootMotion)"
     scene = context.scene
     tool = scene.godot_game_tools
     target_armature = tool.target_name
     action = bpy.data.objects["Armature"].animation_data.action
-
-    bpy.ops.object.mode_set(mode='OBJECT')
-    bpy.ops.object.select_all(action='DESELECT')
-    bpy.context.view_layer.objects.active.data.bones["Hips"].select = True
-    bpy.context.view_layer.objects.active.data.bones["Hips"].select = True
     bpy.data.objects["Armature"].select_set(True)
     bpy.context.view_layer.objects.active = target_armature
-    bpy.context.area.ui_type = 'FCURVES'
-    bpy.context.space_data.dopesheet.filter_text = filter1
-    bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
-    bpy.context.space_data.pivot_point = 'CURSOR'
     bpy.context.scene.frame_current = 0
-    bpy.context.space_data.cursor_position_y = 0
+    fHipsCurves = [fc for fc in bpy.data.objects["Armature"].animation_data.action.fcurves if fc.data_path.split('"')[1] in "Hips"]
+    fRootCurves = [fc for fc in bpy.data.objects["Armature"].animation_data.action.fcurves if fc.data_path.split('"')[1] in "RootMotion"]
 
-    # Select X Curve
-    xCurvePoints = action.fcurves[0].keyframe_points
-    for point in xCurvePoints: point.select_control_point = True
-    # Select Z Curve
-    zCurvePoints = action.fcurves[2].keyframe_points
-    for point in zCurvePoints: point.select_control_point = True
-    # Copy Keys
-    bpy.ops.graph.copy()
-    bpy.ops.object.mode_set(mode='OBJECT')
-    bpy.ops.object.select_all(action='DESELECT')
-    bpy.context.view_layer.objects.active.data.bones["Hips"].select = False
-    bpy.context.view_layer.objects.active.data.bones["RootMotion"].select = True
-    bpy.data.objects["Armature"].select_set(True)
-    bpy.context.view_layer.objects.active = target_armature
-    bpy.context.area.ui_type = 'FCURVES'
-    bpy.context.space_data.dopesheet.filter_text = filter2
-    bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
-    bpy.context.space_data.pivot_point = 'CURSOR'
-    bpy.context.scene.frame_current = 0
-    bpy.context.space_data.cursor_position_y = 0
-    bpy.ops.graph.paste()
-
-    fHipsCurves = [fc for fc in action.fcurves if fc.data_path.split('"')[1] in "Hips"]
-    # X Curve
-    fHipsCurves[0].hide = True
-    fHipsCurves[0].mute = True
-    # Y Curve
-    fHipsCurves[1].hide = True
-    fHipsCurves[1].mute = False
-    # Z Curve
-    fHipsCurves[2].hide = True
-    fHipsCurves[2].mute = True
-
-    fRootCurves = [fc for fc in action.fcurves if fc.data_path.split('"')[1] in "RootMotion"]
-    # X Curve
-    fRootCurves[0].hide = False
-    fRootCurves[0].mute = False
-    # Y Curve
-    fRootCurves[1].hide = True
-    fRootCurves[1].mute = True
-    # Z Curve
-    fRootCurves[2].hide = False
-    fRootCurves[2].mute = False
-
-    # Parent Bone
-    bpy.ops.object.mode_set(mode='EDIT')
-    hipsBone = target_armature.data.edit_bones["Hips"]
-    rootMotionBone = target_armature.data.edit_bones["RootMotion"]
-    target_armature.data.edit_bones.active = hipsBone
-    rootMotionBone.select = True
-    hipsBone.select = True
-    bpy.ops.armature.parent_set(type='OFFSET')
-    bpy.ops.object.mode_set(mode='OBJECT')
-    bpy.ops.object.select_all(action='DESELECT')
+    if len(bpy.context.object.animation_data.action.frame_range) > 0:
+        # X Location
+        for point in fHipsCurves[0].keyframe_points:
+            fRootCurves[0].keyframe_points.insert(frame=point.co.x, value=point.co.y)
+            xIndex += 1
+        # Z Location
+        for point in fHipsCurves[2].keyframe_points:
+            fRootCurves[2].keyframe_points.insert(frame=point.co.x, value=point.co.y)
+            zIndex += 1
+        # X Curve
+        fHipsCurves[0].hide = True
+        fHipsCurves[0].mute = True
+        # Y Curve
+        fHipsCurves[1].hide = True
+        fHipsCurves[1].mute = False
+        # Z Curve
+        fHipsCurves[2].hide = True
+        fHipsCurves[2].mute = True
+        # X Curve
+        fRootCurves[0].hide = False
+        fRootCurves[0].mute = False
+        # Y Curve
+        fRootCurves[1].hide = True
+        fRootCurves[1].mute = True
+        # Z Curve
+        fRootCurves[2].hide = False
+        fRootCurves[2].mute = False
 
 # ------------------------------------------------------------------------
 #    Addon Scene Properties
@@ -280,6 +244,25 @@ class WM_OT_ANIMATION_PLAYER(Operator):
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 
+class WM_OT_STOP_ANIMATION(Operator):
+    bl_idname = "wm.animation_stop"
+    bl_label = "Stop Animation"
+    bl_description = "Stops curent animation"
+
+    def execute(self, context):
+        scene = context.scene
+        tool = scene.godot_game_tools
+        animation = tool.animations
+        target_armature = tool.target_name
+        bpy.context.scene.frame_current = 0
+        bpy.ops.screen.animation_cancel()
+        return {'FINISHED'}
+
+
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+
 class WM_OT_ADD_ROOTBONE(Operator):
     bl_idname = "wm.add_rootbone"
     bl_label = "Add Root Bone"
@@ -299,9 +282,8 @@ class WM_OT_ADD_ROOTBONE(Operator):
                 for bone in target_armature.data.bones:
                     if bone.name == "RootMotion":
                         createRootMotionBone = False
-                if target_armature.data.bones[0].name == "Hips" and createRootMotionBone:
+                if createRootMotionBone:
                     bpy.ops.object.select_all(action='DESELECT')
-                    bpy.context.view_layer.objects.active.data.bones["Hips"].select = True
                     bpy.ops.object.mode_set(mode='EDIT')
                     bpy.ops.armature.bone_primitive_add(name="RootMotion")
                     rootMotionBone = target_armature.data.edit_bones["RootMotion"]
@@ -317,29 +299,23 @@ class WM_OT_ADD_ROOTBONE(Operator):
                     bpy.context.view_layer.objects.active.data.bones["RootMotion"].select = True
                     scene.frame_set(1)
                     bpy.ops.anim.keyframe_insert_menu(type='Location')
+                    # Parent Bone
+                    bpy.ops.object.mode_set(mode='OBJECT')
+                    bpy.ops.object.select_all(action='DESELECT')
+                    bpy.ops.object.mode_set(mode='EDIT')
+                    hipsBone = target_armature.data.edit_bones["Hips"]
+                    rootMotionBone = target_armature.data.edit_bones["RootMotion"]
+                    target_armature.data.edit_bones.active = rootMotionBone
+                    rootMotionBone.select = False
+                    hipsBone.select = True
+                    rootMotionBone.select = True
+                    bpy.ops.armature.parent_set(type='OFFSET')
                     bpy.ops.object.mode_set(mode='OBJECT')
         else:
             self.report({'INFO'}, 'Please select the armature')
         self.report({'INFO'}, 'Root Bone Added')
         return {'FINISHED'}
 
-# ------------------------------------------------------------------------ #
-# ------------------------------------------------------------------------ #
-# ------------------------------------------------------------------------ #
-
-class WM_OT_STOP_ANIMATION(Operator):
-    bl_idname = "wm.animation_stop"
-    bl_label = "Stop Animation"
-    bl_description = "Stops curent animation"
-
-    def execute(self, context):
-        scene = context.scene
-        tool = scene.godot_game_tools
-        animation = tool.animations
-        target_armature = tool.target_name
-        bpy.context.scene.frame_current = 0
-        bpy.ops.screen.animation_cancel()
-        return {'FINISHED'}
 
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
@@ -350,12 +326,38 @@ class WM_OT_ADD_ROOTMOTION(Operator):
     bl_label = "Add Root Motion"
     bl_description = "Adds Root Motion Bone To Animation"
 
+    def get_fcurve(armature, bone_name):
+      result = None
+      for fcurve in armature.animation_data.action.fcurves:
+        fcurve_split = fcurve.data_path.split('"')
+        if fcurve_split[1] == bone_name and fcurve_split[2] == "].location":
+          result = fcurve
+          break
+      return result
+
     def execute(self, context):
         scene = context.scene
         tool = scene.godot_game_tools
         animation = tool.animations
         target_armature = tool.target_name
-        addRootMotion(self, context)
+        # addRootMotion(self, context)
+        # Insert Location on RootMotion Bone
+        bpy.ops.object.select_all(action='DESELECT')
+        bpy.ops.object.mode_set(mode="POSE")
+        anim_root_bone = target_armature.pose.bones['RootMotion']
+        anim_hip_bone = target_armature.pose.bones["Hips"]
+        scene.frame_set(1)
+        anim_root_bone.keyframe_insert(data_path='location')
+        hip_fcurve = get_fcurve(target_armature, "Hips")
+        frames = []
+        for point in hip_fcurve.keyframe_points[1:]:
+          frames.append(point.co[0])
+        for index in frames:
+          scene.frame_set(index)
+          anim_root_bone.location = anim_hip_bone.location
+          anim_root_bone.keyframe_insert(data_path='location')
+          anim_hip_bone.keyframe_delete(data_path='location')
+          bpy.ops.object.mode_set(mode='OBJECT')
         self.report({'INFO'}, 'Root Motion Added')
         return {'FINISHED'}
 
