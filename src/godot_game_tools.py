@@ -57,16 +57,6 @@ def populateAnimations(self, context):
     return animationsArr
 
 
-def get_fcurve(armature, bone_name):
-  result = None
-  for fcurve in armature.animation_data.action.fcurves:
-    fcurve_split = fcurve.data_path.split('"')
-    if fcurve_split[1] == bone_name and fcurve_split[2] == "].location":
-      result = fcurve
-      break
-  return result
-
-
 def toggleArmatureVisibility(self, context):
     scene = context.scene
     tool = scene.godot_game_tools
@@ -96,45 +86,6 @@ def mixamoRigFixer(self, context):
     bpy.ops.transform.resize(value=(1, 0.01, 1), orient_type='GLOBAL', orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL', constraint_axis=(False, True, False), mirror=True, use_proportional_edit=False, proportional_edit_falloff='SMOOTH', proportional_size=1, use_proportional_connected=False, use_proportional_projected=False)
     bpy.context.area.ui_type = 'VIEW_3D'
 
-
-def addRootMotion(self, context):
-    scene = context.scene
-    tool = scene.godot_game_tools
-    target_armature = tool.target_name
-    action = bpy.data.objects["Armature"].animation_data.action
-    bpy.data.objects["Armature"].select_set(True)
-    bpy.context.view_layer.objects.active = target_armature
-    bpy.context.scene.frame_current = 0
-    fHipsCurves = [fc for fc in bpy.data.objects["Armature"].animation_data.action.fcurves if fc.data_path.split('"')[1] in "Hips"]
-    fRootCurves = [fc for fc in bpy.data.objects["Armature"].animation_data.action.fcurves if fc.data_path.split('"')[1] in "RootMotion"]
-
-    if len(bpy.context.object.animation_data.action.frame_range) > 0:
-        # X Location
-        for point in fHipsCurves[0].keyframe_points:
-            fRootCurves[0].keyframe_points.insert(frame=point.co.x, value=point.co.y)
-            xIndex += 1
-        # Z Location
-        for point in fHipsCurves[2].keyframe_points:
-            fRootCurves[2].keyframe_points.insert(frame=point.co.x, value=point.co.y)
-            zIndex += 1
-        # X Curve
-        fHipsCurves[0].hide = True
-        fHipsCurves[0].mute = True
-        # Y Curve
-        fHipsCurves[1].hide = True
-        fHipsCurves[1].mute = False
-        # Z Curve
-        fHipsCurves[2].hide = True
-        fHipsCurves[2].mute = True
-        # X Curve
-        fRootCurves[0].hide = False
-        fRootCurves[0].mute = False
-        # Y Curve
-        fRootCurves[1].hide = True
-        fRootCurves[1].mute = True
-        # Z Curve
-        fRootCurves[2].hide = False
-        fRootCurves[2].mute = False
 
 # ------------------------------------------------------------------------
 #    Addon Scene Properties
@@ -326,7 +277,7 @@ class WM_OT_ADD_ROOTMOTION(Operator):
     bl_label = "Add Root Motion"
     bl_description = "Adds Root Motion Bone To Animation"
 
-    def get_fcurve(armature, bone_name):
+    def get_fcurve(self, armature, bone_name):
       result = None
       for fcurve in armature.animation_data.action.fcurves:
         fcurve_split = fcurve.data_path.split('"')
@@ -340,7 +291,6 @@ class WM_OT_ADD_ROOTMOTION(Operator):
         tool = scene.godot_game_tools
         animation = tool.animations
         target_armature = tool.target_name
-        # addRootMotion(self, context)
         # Insert Location on RootMotion Bone
         bpy.ops.object.select_all(action='DESELECT')
         bpy.ops.object.mode_set(mode="POSE")
@@ -348,7 +298,7 @@ class WM_OT_ADD_ROOTMOTION(Operator):
         anim_hip_bone = target_armature.pose.bones["Hips"]
         scene.frame_set(1)
         anim_root_bone.keyframe_insert(data_path='location')
-        hip_fcurve = get_fcurve(target_armature, "Hips")
+        hip_fcurve = self.get_fcurve(target_armature, "Hips")
         frames = []
         for point in hip_fcurve.keyframe_points[1:]:
           frames.append(point.co[0])
