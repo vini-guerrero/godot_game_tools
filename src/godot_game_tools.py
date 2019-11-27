@@ -98,7 +98,7 @@ def mixamoRigFixer(self, context):
 
 def addRootMotion(self, context):
     filter1 = "Location (Hips)"
-    filter2 = "RootMotion"
+    filter2 = "Location (RootMotion)"
     scene = context.scene
     tool = scene.godot_game_tools
     target_armature = tool.target_name
@@ -107,8 +107,7 @@ def addRootMotion(self, context):
     bpy.ops.object.mode_set(mode='OBJECT')
     bpy.ops.object.select_all(action='DESELECT')
     bpy.context.view_layer.objects.active.data.bones["Hips"].select = True
-    bpy.data.objects["Armature"].select_set(True)
-    bpy.context.view_layer.objects.active = target_armature
+    bpy.context.view_layer.objects.active.data.bones["Hips"].select = True
     bpy.data.objects["Armature"].select_set(True)
     bpy.context.view_layer.objects.active = target_armature
     bpy.context.area.ui_type = 'FCURVES'
@@ -118,12 +117,17 @@ def addRootMotion(self, context):
     bpy.context.scene.frame_current = 0
     bpy.context.space_data.cursor_position_y = 0
 
+    # Select X Curve
+    xCurvePoints = action.fcurves[0].keyframe_points
+    for point in xCurvePoints: point.select_control_point = True
+    # Select Z Curve
+    zCurvePoints = action.fcurves[2].keyframe_points
+    for point in zCurvePoints: point.select_control_point = True
     # Copy Keys
-    bpy.context.area.ui_type = 'FCURVES'
-    bpy.ops.graph.select_all(action='SELECT')
     bpy.ops.graph.copy()
     bpy.ops.object.mode_set(mode='OBJECT')
     bpy.ops.object.select_all(action='DESELECT')
+    bpy.context.view_layer.objects.active.data.bones["Hips"].select = False
     bpy.context.view_layer.objects.active.data.bones["RootMotion"].select = True
     bpy.data.objects["Armature"].select_set(True)
     bpy.context.view_layer.objects.active = target_armature
@@ -310,10 +314,9 @@ class WM_OT_ADD_ROOTBONE(Operator):
                     # rootMotionBone.tail_radius = 0
                     # Insert Location on RootMotion Bone
                     bpy.ops.object.mode_set(mode="POSE")
-                    anim_root_bone = target_armature.pose.bones['RootMotion']
-                    anim_hip_bone = target_armature.pose.bones["Hips"]
+                    bpy.context.view_layer.objects.active.data.bones["RootMotion"].select = True
                     scene.frame_set(1)
-                    anim_root_bone.keyframe_insert(data_path='location')
+                    bpy.ops.anim.keyframe_insert_menu(type='Location')
                     bpy.ops.object.mode_set(mode='OBJECT')
         else:
             self.report({'INFO'}, 'Please select the armature')
