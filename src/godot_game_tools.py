@@ -80,6 +80,8 @@ def validateArmature(self, context):
     else:
         self.report({'INFO'}, 'Please select a valid armature')
     return valid
+
+
 # ------------------------------------------------------------------------
 #    Addon Scene Properties
 # ------------------------------------------------------------------------
@@ -231,6 +233,39 @@ class WM_OT_STOP_ANIMATION(Operator):
             bpy.context.scene.frame_current = 0
             bpy.ops.screen.animation_cancel()
             self.report({'INFO'}, 'Animation Stopped')
+        return {'FINISHED'}
+
+
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+
+class WM_OT_NLA_TRACKS(Operator):
+    bl_idname = "wm.push_nlas"
+    bl_label = "Create NLA Tracks"
+    bl_description = "Push All Animations to NLA Tracks"
+
+    def execute(self, context):
+        scene = context.scene
+        tool = scene.godot_game_tools
+        animation = tool.animations
+        target_armature = tool.target_name
+        bpy.ops.screen.animation_cancel()
+        bpy.context.view_layer.objects.active = target_armature
+        bpy.context.scene.frame_start = 2
+        valid = validateArmature(self, context)
+        if valid:
+            if len(bpy.data.actions) > 0:
+                for action in bpy.data.actions:
+                    animation = action.name
+                    animationToPlay = [anim for anim in bpy.data.actions.keys() if anim in (animation)]
+                    animationIndex = bpy.data.actions.keys().index(animation)
+                    target_armature.animation_data.action = bpy.data.actions.values()[animationIndex]
+                    bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
+                    bpy.context.area.ui_type = 'NLA_EDITOR'
+                    bpy.ops.nla.action_pushdown(channel_index=1)
+            bpy.context.area.ui_type = 'VIEW_3D'
+            self.report({'INFO'}, 'NLA Tracks Generated')
         return {'FINISHED'}
 
 
@@ -483,6 +518,7 @@ class OBJECT_PT_CustomPanel(Panel):
         box.prop(tool, "visible_armature")
         box.prop(tool, "rootmotion_all")
         box.operator("wm.add_rootmotion", icon="ANIM_DATA")
+        box.operator("wm.push_nlas", icon="ANIM_DATA")
         box.separator()
         box.prop(tool, "animations")
         box.operator("wm.animation_player", icon="SCENE")
@@ -503,6 +539,7 @@ classes = (
     WM_OT_JOIN_ANIMATIONS,
     WM_OT_ANIMATION_PLAYER,
     WM_OT_STOP_ANIMATION,
+    WM_OT_NLA_TRACKS,
     WM_OT_RENAME_ANIMATION,
     WM_OT_ADD_ROOTBONE,
     WM_OT_ADD_ROOTMOTION,
