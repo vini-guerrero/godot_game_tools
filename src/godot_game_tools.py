@@ -67,26 +67,6 @@ def toggleArmatureVisibility(self, context):
     bpy.context.object.show_in_front = not visible_armature
 
 
-def mixamoRigFixer(self, context):
-    filter1 = "location (mixamorig:Hips)"
-    filter2 = "Location (Hips)"
-    bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
-    bpy.context.area.ui_type = 'FCURVES'
-    bpy.context.space_data.dopesheet.filter_text = filter1
-    bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
-    bpy.context.space_data.pivot_point = 'CURSOR'
-    bpy.context.scene.frame_current = 0
-    bpy.context.space_data.cursor_position_y = 0
-    bpy.ops.transform.resize(value=(1, 0.01, 1), orient_type='GLOBAL', orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL', constraint_axis=(False, True, False), mirror=True, use_proportional_edit=False, proportional_edit_falloff='SMOOTH', proportional_size=1, use_proportional_connected=False, use_proportional_projected=False)
-    bpy.context.space_data.dopesheet.filter_text = filter2
-    bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
-    bpy.context.space_data.pivot_point = 'CURSOR'
-    bpy.context.scene.frame_current = 0
-    bpy.context.space_data.cursor_position_y = 0
-    bpy.ops.transform.resize(value=(1, 0.01, 1), orient_type='GLOBAL', orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL', constraint_axis=(False, True, False), mirror=True, use_proportional_edit=False, proportional_edit_falloff='SMOOTH', proportional_size=1, use_proportional_connected=False, use_proportional_projected=False)
-    bpy.context.area.ui_type = 'VIEW_3D'
-
-
 # ------------------------------------------------------------------------
 #    Addon Scene Properties
 # ------------------------------------------------------------------------
@@ -145,6 +125,25 @@ class WM_OT_PREPARE_MIXAMORIG(Operator):
     bl_label = "Prepare Mixamo Rig"
     bl_description = "Fix mixamo rig to export for Godot"
 
+    def mixamoRigFixer(self, context):
+        filter1 = "location (mixamorig:Hips)"
+        filter2 = "Location (Hips)"
+        bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+        bpy.context.area.ui_type = 'FCURVES'
+        bpy.context.space_data.dopesheet.filter_text = filter1
+        bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+        bpy.context.space_data.pivot_point = 'CURSOR'
+        bpy.context.scene.frame_current = 0
+        bpy.context.space_data.cursor_position_y = 0
+        bpy.ops.transform.resize(value=(1, 0.01, 1), orient_type='GLOBAL', orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL', constraint_axis=(False, True, False), mirror=True, use_proportional_edit=False, proportional_edit_falloff='SMOOTH', proportional_size=1, use_proportional_connected=False, use_proportional_projected=False)
+        bpy.context.space_data.dopesheet.filter_text = filter2
+        bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+        bpy.context.space_data.pivot_point = 'CURSOR'
+        bpy.context.scene.frame_current = 0
+        bpy.context.space_data.cursor_position_y = 0
+        bpy.ops.transform.resize(value=(1, 0.01, 1), orient_type='GLOBAL', orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL', constraint_axis=(False, True, False), mirror=True, use_proportional_edit=False, proportional_edit_falloff='SMOOTH', proportional_size=1, use_proportional_connected=False, use_proportional_projected=False)
+        bpy.context.area.ui_type = 'VIEW_3D'
+
     def execute(self, context):
         scene = context.scene
         tool = scene.godot_game_tools
@@ -161,7 +160,7 @@ class WM_OT_PREPARE_MIXAMORIG(Operator):
                 animationIndex = bpy.data.actions.keys().index(animation)
                 target_armature.animation_data.action = bpy.data.actions.values()[animationIndex]
                 bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
-                mixamoRigFixer(self, context)
+                self.mixamoRigFixer(context)
         self.report({'INFO'}, 'Rig Armature Prepared')
         return {'FINISHED'}
 
