@@ -74,9 +74,11 @@ def toggleArmatureVisibility(self, context):
 class AddonProperties(PropertyGroup):
 
     action_name: StringProperty(name="Animation", description="Choose the action name you want to rename your animation in the dopesheet", maxlen=1024)
+    rootmotion_name: StringProperty(name="Rootmotion Name", description="Choose name you want for the RootMotion Bone", maxlen=1024, default="RootMotion")
     target_name: PointerProperty(name="Target", description="Select the target armature you want the animations to be merged into", type=bpy.types.Object)
     animations: EnumProperty(name="Animations", description="Available armature animations", items=populateAnimations, default=None, options={'ANIMATABLE'}, update=None, get=None, set=None)
     visible_armature: BoolProperty(name="Show Armature Bones", description="Hides / Show armature bones once animations are loaded", default=True, update=toggleArmatureVisibility)
+    rootmotion_all: BoolProperty(name="Apply Rootmotion To All Animations", description="Choose to apply rootmotion to all animations or current only", default=True, update=None)
 
 # ------------------------------------------------------------------------
 #    Operators
@@ -113,7 +115,7 @@ class WM_OT_RENAME_MIXAMORIG(Operator):
                 f.data_path = f.data_path.replace("mixamorig:","")
         if bpy.data.actions:
             bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
-        self.report({'INFO'}, 'Character Ready For Export Process')
+        self.report({'INFO'}, 'Character Bones Successfully Renamed')
         return {'FINISHED'}
 
 # ------------------------------------------------------------------------ #
@@ -223,6 +225,7 @@ class WM_OT_ADD_ROOTBONE(Operator):
         tool = scene.godot_game_tools
         animation = tool.animations
         target_armature = tool.target_name
+        rootMotionBoneName = tool.rootmotion_name
         if not target_armature:
             self.report({'INFO'}, 'Please select a valid armature')
         if target_armature.type == 'ARMATURE':
@@ -230,23 +233,16 @@ class WM_OT_ADD_ROOTBONE(Operator):
             createRootMotionBone = True
             if len(target_armature.data.bones) > 0:
                 for bone in target_armature.data.bones:
-                    if bone.name == "RootMotion":
+                    if bone.name == rootMotionBoneName:
                         createRootMotionBone = False
                 if createRootMotionBone:
                     bpy.ops.object.select_all(action='DESELECT')
                     bpy.ops.object.mode_set(mode='EDIT')
-                    bpy.ops.armature.bone_primitive_add(name="RootMotion")
-                    rootMotionBone = target_armature.data.edit_bones["RootMotion"]
-                    # Rootbone Position
-                    # rootMotionBone.head[1] = 0
-                    # rootMotionBone.head[2] = 40
-                    # rootMotionBone.head_radius = 0
-                    # rootMotionBone.tail[1] = 20
-                    # rootMotionBone.tail[2] = 40
-                    # rootMotionBone.tail_radius = 0
+                    bpy.ops.armature.bone_primitive_add(name=rootMotionBoneName)
+                    rootMotionBone = target_armature.data.edit_bones[rootMotionBoneName]
                     # Insert Location on RootMotion Bone
                     bpy.ops.object.mode_set(mode="POSE")
-                    bpy.context.view_layer.objects.active.data.bones["RootMotion"].select = True
+                    bpy.context.view_layer.objects.active.data.bones[rootMotionBoneName].select = True
                     scene.frame_set(1)
                     bpy.ops.anim.keyframe_insert_menu(type='Location')
                     # Parent Bone
@@ -254,7 +250,7 @@ class WM_OT_ADD_ROOTBONE(Operator):
                     bpy.ops.object.select_all(action='DESELECT')
                     bpy.ops.object.mode_set(mode='EDIT')
                     hipsBone = target_armature.data.edit_bones["Hips"]
-                    rootMotionBone = target_armature.data.edit_bones["RootMotion"]
+                    rootMotionBone = target_armature.data.edit_bones[rootMotionBoneName]
                     target_armature.data.edit_bones.active = rootMotionBone
                     rootMotionBone.select = False
                     hipsBone.select = True
@@ -288,26 +284,42 @@ class WM_OT_ADD_ROOTMOTION(Operator):
     def execute(self, context):
         scene = context.scene
         tool = scene.godot_game_tools
-        animation = tool.animations
         target_armature = tool.target_name
-        # Insert Location on RootMotion Bone
-        bpy.ops.object.select_all(action='DESELECT')
-        bpy.ops.object.mode_set(mode="POSE")
-        anim_root_bone = target_armature.pose.bones['RootMotion']
-        anim_hip_bone = target_armature.pose.bones["Hips"]
-        scene.frame_set(1)
-        anim_root_bone.keyframe_insert(data_path='location')
-        hip_fcurve = self.get_fcurve(target_armature, "Hips")
-        frames = []
-        for point in hip_fcurve.keyframe_points[1:]:
-          frames.append(point.co[0])
-        for index in frames:
-          scene.frame_set(index)
-          anim_root_bone.location = anim_hip_bone.location
-          anim_root_bone.keyframe_insert(data_path='location')
-          anim_hip_bone.keyframe_delete(data_path='location')
-          bpy.ops.object.mode_set(mode='OBJECT')
-        self.report({'INFO'}, 'Root Motion Added')
+        rootMotionBoneName = tool.rootmotion_name
+        rootmotion_all = tool.rootmotion_all
+        # Call Operator From Outside Class
+        animationsForRootMotion = []
+        if rootmotion_all:
+            for action in bpy.data.actions: animationsForRootMotion.append(action)
+        else:
+            animationsForRootMotion.append(bpy.context.object.animation_data.action)
+        bpy.ops.wm.add_rootbone()
+        if len(bpy.data.actions) > 0:
+            for action in animationsForRootMotion:
+                animation = action.name
+                animationToPlay = [anim for anim in bpy.data.actions.keys() if anim in (animation)]
+                animationIndex = bpy.data.actions.keys().index(animation)
+                target_armature.animation_data.action = bpy.data.actions.values()[animationIndex]
+                bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
+                # Insert Location on RootMotion Bone
+                bpy.ops.object.mode_set(mode='OBJECT')
+                bpy.ops.object.select_all(action='DESELECT')
+                bpy.ops.object.mode_set(mode="POSE")
+                anim_root_bone = target_armature.pose.bones[rootMotionBoneName]
+                anim_hip_bone = target_armature.pose.bones["Hips"]
+                scene.frame_set(1)
+                anim_root_bone.keyframe_insert(data_path='location')
+                hip_fcurve = self.get_fcurve(target_armature, "Hips")
+                frames = []
+                for point in hip_fcurve.keyframe_points[1:]:
+                  frames.append(point.co[0])
+                for index in frames:
+                  scene.frame_set(index)
+                  anim_root_bone.location = anim_hip_bone.location
+                  anim_root_bone.keyframe_insert(data_path='location')
+                  anim_hip_bone.keyframe_delete(data_path='location')
+                  bpy.ops.object.mode_set(mode='OBJECT')
+            self.report({'INFO'}, 'Root Motion Added')
         return {'FINISHED'}
 
 # ------------------------------------------------------------------------ #
@@ -389,6 +401,16 @@ class WM_OT_JOIN_ANIMATIONS(Operator, ImportHelper):
             bpy.ops.object.delete({"selected_objects": objs})
             bpy.context.view_layer.objects.active = target_armature
 
+    def setDefaultAnimation(self, context):
+        scene = context.scene
+        tool = scene.godot_game_tools
+        target_armature = tool.target_name
+        if len(bpy.data.actions) > 0:
+            for action in bpy.data.actions:
+                animation = action.name
+                if animation in "T-Pose":
+                    tool.animations = animation
+
     def execute(self, context):
         scene = context.scene
         tool = scene.godot_game_tools
@@ -401,9 +423,7 @@ class WM_OT_JOIN_ANIMATIONS(Operator, ImportHelper):
             else:
                 self.report({'INFO'}, 'Please select the armature')
             self.importModels(path, target_armature, context)
-
-
-
+            self.setDefaultAnimation(context)
         else:
             self.report({'INFO'}, 'Please select a valid armature')
         return {'FINISHED'}
@@ -430,18 +450,20 @@ class OBJECT_PT_CustomPanel(Panel):
         box = layout.box()
         box.label(text="Mixamo Utilities", icon='ARMATURE_DATA')
         box.prop(tool, "target_name")
-        box.prop(tool, "visible_armature")
         box.operator("wm.join_animations", icon="IMPORT")
         box.operator("wm.prepare_mixamo_rig", icon="ASSET_MANAGER")
         box.operator("wm.rename_mixamo_rig", icon="BONE_DATA")
-        box.prop(tool, "action_name")
-        box.operator("wm.rename_animation", icon="ARMATURE_DATA")
-        box.operator("wm.add_rootbone", icon="BONE_DATA")
-        box.operator("wm.add_rootmotion", icon="BONE_DATA")
+        # box.operator("wm.add_rootbone", icon="BONE_DATA")
+        box.prop(tool, "rootmotion_name")
+        box.prop(tool, "visible_armature")
+        box.prop(tool, "rootmotion_all")
+        box.operator("wm.add_rootmotion", icon="ANIM_DATA")
         box.separator()
         box.prop(tool, "animations")
         box.operator("wm.animation_player", icon="SCENE")
         box.operator("wm.animation_stop", icon="SCENE")
+        box.prop(tool, "action_name")
+        box.operator("wm.rename_animation", icon="ARMATURE_DATA")
         row.separator()
         row = layout.row()
 
