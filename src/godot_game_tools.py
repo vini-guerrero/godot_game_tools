@@ -120,17 +120,21 @@ class WM_OT_RENAME_MIXAMORIG(Operator):
                 if rig.type == 'ARMATURE':
                     for mesh in rig.children:
                         for vg in mesh.vertex_groups:
-                            new_name = vg.name
-                            new_name = new_name.replace("mixamorig:","")
-                            rig.pose.bones[vg.name].name = new_name
-                            vg.name = new_name
+                            # If no ':' probably its already renamed
+                            if ':' not in bone.name:
+                                continue
+                            new_name = bone.name.split(":")[1]
+                            bone.name = new_name
                     for bone in rig.pose.bones:
-                        bone.name = bone.name.replace("mixamorig:","")
-            for action in bpy.data.actions:
-                fc = action.fcurves
-                for f in fc:
-                    f.data_path = f.data_path.replace("mixamorig:","")
-            if bpy.data.actions:
+                        if ':' not in bone.name:
+                            continue
+                        new_name = bone.name.split(":")[1]
+                        bone.name = new_name
+            # for action in bpy.data.actions:
+            #     fc = action.fcurves
+            #     for f in fc:
+            #         f.data_path = f.data_path.replace("mixamorig:","")
+            # if bpy.data.actions:
                 bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
             self.report({'INFO'}, 'Character Bones Successfully Renamed')
         return {'FINISHED'}
