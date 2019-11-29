@@ -121,15 +121,13 @@ class WM_OT_RENAME_MIXAMORIG(Operator):
                     for mesh in rig.children:
                         for vg in mesh.vertex_groups:
                             # If no ':' probably its already renamed
-                            if ':' not in bone.name:
+                            if ':' not in vg.name:
                                 continue
-                            new_name = bone.name.split(":")[1]
-                            bone.name = new_name
+                            vg.name = vg.name.split(":")[1]
                     for bone in rig.pose.bones:
                         if ':' not in bone.name:
                             continue
-                        new_name = bone.name.split(":")[1]
-                        bone.name = new_name
+                        bone.name = bone.name.split(":")[1]
             # for action in bpy.data.actions:
             #     fc = action.fcurves
             #     for f in fc:
