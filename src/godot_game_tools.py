@@ -120,16 +120,18 @@ class WM_OT_RENAME_MIXAMORIG(Operator):
                 if rig.type == 'ARMATURE':
                     for mesh in rig.children:
                         for vg in mesh.vertex_groups:
-                            new_name = vg.name
-                            new_name = new_name.replace("mixamorig:","")
-                            rig.pose.bones[vg.name].name = new_name
-                            vg.name = new_name
+                            # If no ':' probably its already renamed
+                            if ':' not in vg.name:
+                                continue
+                            vg.name = vg.name.split(":")[1]
                     for bone in rig.pose.bones:
-                        bone.name = bone.name.replace("mixamorig:","")
-            for action in bpy.data.actions:
-                fc = action.fcurves
-                for f in fc:
-                    f.data_path = f.data_path.replace("mixamorig:","")
+                        if ':' not in bone.name:
+                            continue
+                        bone.name = bone.name.split(":")[1]
+            # for action in bpy.data.actions:
+            #     fc = action.fcurves
+            #     for f in fc:
+            #         f.data_path = f.data_path.replace("mixamorig:","")
             if bpy.data.actions:
                 bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
             self.report({'INFO'}, 'Character Bones Successfully Renamed')
@@ -144,24 +146,14 @@ class WM_OT_PREPARE_MIXAMORIG(Operator):
     bl_label = "Prepare Mixamo Rig"
     bl_description = "Fix mixamo rig to export for Godot"
 
-    def mixamoRigFixer(self, context):
-        filter1 = "location (mixamorig:Hips)"
-        filter2 = "Location (Hips)"
-        bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
-        bpy.context.area.ui_type = 'FCURVES'
-        bpy.context.space_data.dopesheet.filter_text = filter1
-        bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
-        bpy.context.space_data.pivot_point = 'CURSOR'
-        bpy.context.scene.frame_current = 0
-        bpy.context.space_data.cursor_position_y = 0
-        bpy.ops.transform.resize(value=(1, 0.01, 1), orient_type='GLOBAL', orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL', constraint_axis=(False, True, False), mirror=True, use_proportional_edit=False, proportional_edit_falloff='SMOOTH', proportional_size=1, use_proportional_connected=False, use_proportional_projected=False)
-        bpy.context.space_data.dopesheet.filter_text = filter2
-        bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
-        bpy.context.space_data.pivot_point = 'CURSOR'
-        bpy.context.scene.frame_current = 0
-        bpy.context.space_data.cursor_position_y = 0
-        bpy.ops.transform.resize(value=(1, 0.01, 1), orient_type='GLOBAL', orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL', constraint_axis=(False, True, False), mirror=True, use_proportional_edit=False, proportional_edit_falloff='SMOOTH', proportional_size=1, use_proportional_connected=False, use_proportional_projected=False)
-        bpy.context.area.ui_type = 'VIEW_3D'
+    def scale_action(self, action):
+        # Scale Hips Down to match the .01 scale on imported model
+        fc = action.fcurves
+        for f in fc:
+            if f.data_path == 'pose.bones["Hips"].location':
+                for keyframe in f.keyframe_points:
+                    keyframe.co[1] *= .01
+        return True
 
     def execute(self, context):
         scene = context.scene
@@ -169,6 +161,12 @@ class WM_OT_PREPARE_MIXAMORIG(Operator):
         target_armature = tool.target_name
         visible_armature = tool.visible_armature
         valid = validateArmature(self, context)
+        # Apply transformations on selected Armature
+        bpy.context.view_layer.objects.active = target_armature
+
+        bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+        bpy.ops.wm.rename_mixamo_rig('EXEC_DEFAULT')
+
         if valid:
             bpy.data.objects["Armature"].select_set(True)
             target_armature.hide_viewport = False
@@ -181,7 +179,8 @@ class WM_OT_PREPARE_MIXAMORIG(Operator):
                     animationIndex = bpy.data.actions.keys().index(animation)
                     target_armature.animation_data.action = bpy.data.actions.values()[animationIndex]
                     bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
-                    self.mixamoRigFixer(context)
+                    self.scale_action(anim)
+                    #self.mixamoRigFixer(context)
             self.report({'INFO'}, 'Rig Armature Prepared')
         return {'FINISHED'}
 
