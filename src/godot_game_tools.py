@@ -403,6 +403,76 @@ class WM_OT_RENAME_ANIMATION(Operator):
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 
+class INIT_CHARACTER_OT(bpy.types.Operator, ImportHelper):
+    """Initializes imported model for the tool"""
+    bl_idname = "wm.init_character"
+    bl_label = "Initialize Character"
+    bl_description = "Used to init 'Main' Armature. Loaded character should have 'T-Pose' animation from mixamo."
+    bl_options = {'REGISTER', 'UNDO'}
+    expected_filename = "t-pose.fbx"
+    filename_ext = ".fbx"
+    filter_glob = StringProperty(default="*.fbx", options={'HIDDEN'})
+    files = CollectionProperty(type=bpy.types.PropertyGroup)
+
+    def import_from_folder(self, path, context):
+        extensions = ['fbx']
+        filenames = sorted(os.listdir(path))
+        valid_files = []
+        fileNamesList = []
+        removeList = []
+        # Debug
+        removeImports = True
+
+        for filename in filenames:
+            for ext in extensions:
+                if filename.lower().endswith('.{}'.format(ext)):
+                    valid_files.append(filename)
+                    break
+
+        for name in valid_files:
+            file_path = os.path.join(path, name)
+            #extension = (os.path.splitext(file_path)[1])[1:].lower()
+
+            if ext == "fbx":
+                if hasattr(bpy.types, bpy.ops.import_scene.fbx.idname()):
+                    action_name, action_extension = os.path.splitext(name)
+                    if action_name.lower() == "t-pose":
+                        # Local Variable
+                        fileNamesList.append(action_name)
+                        bpy.ops.import_scene.fbx(filepath = file_path)
+                        print("importing file {}".format(file_path))
+
+                        tool = bpy.context.scene.godot_game_tools
+                        tool.target_name = bpy.context.object
+                        bpy.context.object.animation_data.action.name = action_name
+                        bpy.ops.wm.prepare_mixamo_rig('EXEC_DEFAULT')
+                        return
+                    else:
+                        print("no t-pose found, skipping {}".format(name))
+                        continue
+
+
+    def execute(self, context):
+        print("INIT_CHARACTER execute")
+
+
+        filePathWithName = bpy.path.abspath(self.properties.filepath)
+        path = os.path.dirname(filePathWithName)
+
+        self.import_from_folder(path, context)
+
+        # valid = validateArmature(self, context)
+        # if valid:
+        #     bpy.context.object.animation_data.action.name = "T-Pose"
+        #
+        #     self.setDefaultAnimation(context)
+        #     self.report({'INFO'}, 'Animations Imported Successfully')
+        return {'FINISHED'}
+
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+
 class WM_OT_JOIN_ANIMATIONS(Operator, ImportHelper):
     bl_idname = "wm.join_animations"
     bl_label = "Join Mixamo Animations"
@@ -528,6 +598,7 @@ class OBJECT_PT_ARMATURE_UTILITIES(bpy.types.Panel, ObjectButtonsPanel):
         box = layout.box()
         box.label(text="Armature Setup", icon='ARMATURE_DATA')
         box.prop(tool, "target_name")
+        box.operator("wm.init_character", icon="IMPORT")
         box.operator("wm.join_animations", icon="IMPORT")
         box.operator("wm.prepare_mixamo_rig", icon="ASSET_MANAGER")
         box.separator()
@@ -602,7 +673,8 @@ classes = (
     WM_OT_NLA_TRACKS,
     WM_OT_RENAME_ANIMATION,
     WM_OT_ADD_ROOTBONE,
-    WM_OT_ADD_ROOTMOTION
+    WM_OT_ADD_ROOTMOTION,
+    INIT_CHARACTER_OT
 )
 
 def register():
