@@ -6,19 +6,18 @@ bl_info = {
     "blender": (2, 81, 0),
     "location": "3D View > Tools",
     "warning": "",
-    "wiki_url": "",
-    "tracker_url": "",
+    "wiki_url": "https://github.com/vini-guerrero/Godot_Game_Tools",
+    "tracker_url": "https://github.com/vini-guerrero/Godot_Game_Tools",
     "category": "Godot Game Tools"
 }
 
 import bpy
 import glob
 import os
-
 from bpy_extras.io_utils import ImportHelper
+from bl_ui.properties_object import ObjectButtonsPanel, OBJECT_PT_transform
 from bpy.props import (StringProperty, PointerProperty, CollectionProperty, EnumProperty, BoolProperty)
 from bpy.types import (Panel, Menu, Operator, PropertyGroup)
-
 
 # ------------------------------------------------------------------------
 #    Development Functions
@@ -88,7 +87,7 @@ def validateArmature(self, context):
 
 class AddonProperties(PropertyGroup):
 
-    action_name: StringProperty(name="Animation", description="Choose the action name you want to rename your animation in the dopesheet", maxlen=1024)
+    action_name: StringProperty(name="New Name", description="Choose the action name you want to rename your animation in the dopesheet", maxlen=1024)
     rootmotion_name: StringProperty(name="Rootmotion Name", description="Choose name you want for the RootMotion Bone", maxlen=1024, default="RootMotion")
     target_name: PointerProperty(name="Target", description="Select the target armature you want the animations to be merged into", type=bpy.types.Object)
     animations: EnumProperty(name="Animations", description="Available armature animations", items=populateAnimations, default=None, options={'ANIMATABLE'}, update=None, get=None, set=None)
@@ -148,6 +147,7 @@ class WM_OT_PREPARE_MIXAMORIG(Operator):
 
     def scale_action(self, action):
         # Scale Hips Down to match the .01 scale on imported model
+        # To-Do Fix Correct Axis - Jumping Animations Are Currently Breaking Ex: Mixamo (Mutant Jump Attack)
         fc = action.fcurves
         for f in fc:
             if f.data_path == 'pose.bones["Hips"].location':
@@ -163,10 +163,8 @@ class WM_OT_PREPARE_MIXAMORIG(Operator):
         valid = validateArmature(self, context)
         # Apply transformations on selected Armature
         bpy.context.view_layer.objects.active = target_armature
-
         bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
         bpy.ops.wm.rename_mixamo_rig('EXEC_DEFAULT')
-
         if valid:
             bpy.data.objects["Armature"].select_set(True)
             target_armature.hide_viewport = False
@@ -180,7 +178,6 @@ class WM_OT_PREPARE_MIXAMORIG(Operator):
                     target_armature.animation_data.action = bpy.data.actions.values()[animationIndex]
                     bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
                     self.scale_action(anim)
-                    #self.mixamoRigFixer(context)
             self.report({'INFO'}, 'Rig Armature Prepared')
         return {'FINISHED'}
 
@@ -344,7 +341,6 @@ class WM_OT_ADD_ROOTMOTION(Operator):
         target_armature = tool.target_name
         rootMotionBoneName = tool.rootmotion_name
         rootmotion_all = tool.rootmotion_all
-        # Call Operator From Outside Class
         animationsForRootMotion = []
         valid = validateArmature(self, context)
         if valid:
@@ -352,7 +348,7 @@ class WM_OT_ADD_ROOTMOTION(Operator):
                 for action in bpy.data.actions: animationsForRootMotion.append(action)
             else:
                 animationsForRootMotion.append(bpy.context.object.animation_data.action)
-            bpy.ops.wm.add_rootbone()
+            bpy.ops.wm.add_rootbone('EXEC_DEFAULT')
             if len(bpy.data.actions) > 0:
                 for action in animationsForRootMotion:
                     animation = action.name
@@ -488,44 +484,103 @@ class WM_OT_JOIN_ANIMATIONS(Operator, ImportHelper):
         return {'FINISHED'}
 
 # ------------------------------------------------------------------------
-#    Panel in Object Mode
+#    Panels
 # ------------------------------------------------------------------------
 
-class OBJECT_PT_CustomPanel(Panel):
-    bl_idname = "object.custom_panel"
+class OBJECT_PT_BVH_UTILITIES(bpy.types.Panel, ObjectButtonsPanel):
+    bl_idname = "object.bvh_utilities_panel"
+    bl_label = "BVH Manager"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_context = "objectmode"
+    bl_parent_id = "object.main_panel"
+    bl_options = {"DEFAULT_CLOSED"}
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        obj = context.object
+        tool = scene.godot_game_tools
+        box = layout.box()
+        box.label(text="Work-In-Progress", icon='SCENE')
+
+class OBJECT_PT_MIXAMO_UTILITIES(bpy.types.Panel, ObjectButtonsPanel):
+    bl_idname = "object.mixamo_utilities_panel"
+    bl_label = "Mixamo Utilies"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_context = "objectmode"
+    bl_parent_id = "object.main_panel"
+    def draw(self, context):
+        pass
+
+class OBJECT_PT_ARMATURE_UTILITIES(bpy.types.Panel, ObjectButtonsPanel):
+    bl_idname = "object.armature_panel"
+    bl_label = "Armature"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_context = "objectmode"
+    bl_parent_id = "object.mixamo_utilities_panel"
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        obj = context.object
+        tool = scene.godot_game_tools
+        box = layout.box()
+        box.label(text="Armature Setup", icon='ARMATURE_DATA')
+        box.prop(tool, "target_name")
+        box.operator("wm.join_animations", icon="IMPORT")
+        box.operator("wm.prepare_mixamo_rig", icon="ASSET_MANAGER")
+        box.separator()
+
+class OBJECT_PT_ROOT_MOTION(bpy.types.Panel, ObjectButtonsPanel):
+    bl_idname = "object.rootmotion_panel"
+    bl_label = "Root Motion"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_context = "objectmode"
+    bl_parent_id = "object.mixamo_utilities_panel"
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        obj = context.object
+        tool = scene.godot_game_tools
+        box = layout.box()
+        box.label(text="Root Motion Setup", icon='ANIM_DATA')
+        box.prop(tool, "visible_armature")
+        box.prop(tool, "rootmotion_all")
+        box.operator("wm.add_rootmotion", icon="BONE_DATA")
+        box.separator()
+
+class OBJECT_PT_ANIMATIONS(bpy.types.Panel, ObjectButtonsPanel):
+    bl_idname = "object.animations_panel"
+    bl_label = "Animations"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_context = "objectmode"
+    bl_parent_id = "object.mixamo_utilities_panel"
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        obj = context.object
+        tool = scene.godot_game_tools
+        box = layout.box()
+        box.label(text="Animations Settings", icon='SCENE')
+        box.prop(tool, "animations")
+        box.operator("wm.animation_player", icon="PLAY")
+        box.operator("wm.animation_stop", icon="PAUSE")
+        box.prop(tool, "action_name")
+        box.operator("wm.rename_animation", icon="ARMATURE_DATA")
+        box.operator("wm.push_nlas", icon="ANIM_DATA")
+        box.separator()
+
+class OBJECT_PT_ADDON_PANEL(Panel):
+    bl_idname = "object.main_panel"
     bl_label = "Godot Game Tools"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_category = "Godot Game Tools"
     bl_context = "objectmode"
-
-    def draw(self, context):
-        layout = self.layout
-        scene = context.scene
-        tool = scene.godot_game_tools
-
-        # Render Settings
-        row = layout.row()
-        box = layout.box()
-        box.label(text="Mixamo Utilities", icon='ARMATURE_DATA')
-        box.prop(tool, "target_name")
-        box.operator("wm.join_animations", icon="IMPORT")
-        box.operator("wm.prepare_mixamo_rig", icon="ASSET_MANAGER")
-        box.operator("wm.rename_mixamo_rig", icon="BONE_DATA")
-        # box.operator("wm.add_rootbone", icon="BONE_DATA")
-        box.prop(tool, "rootmotion_name")
-        box.prop(tool, "visible_armature")
-        box.prop(tool, "rootmotion_all")
-        box.operator("wm.add_rootmotion", icon="ANIM_DATA")
-        box.operator("wm.push_nlas", icon="ANIM_DATA")
-        box.separator()
-        box.prop(tool, "animations")
-        box.operator("wm.animation_player", icon="SCENE")
-        box.operator("wm.animation_stop", icon="SCENE")
-        box.prop(tool, "action_name")
-        box.operator("wm.rename_animation", icon="ARMATURE_DATA")
-        row.separator()
-        row = layout.row()
+    def draw(self, context): pass
 
 # ------------------------------------------------------------------------
 #    Addon Registration
@@ -533,6 +588,12 @@ class OBJECT_PT_CustomPanel(Panel):
 
 classes = (
     AddonProperties,
+    OBJECT_PT_ADDON_PANEL,
+    OBJECT_PT_MIXAMO_UTILITIES,
+    OBJECT_PT_BVH_UTILITIES,
+    OBJECT_PT_ARMATURE_UTILITIES,
+    OBJECT_PT_ROOT_MOTION,
+    OBJECT_PT_ANIMATIONS,
     WM_OT_PREPARE_MIXAMORIG,
     WM_OT_RENAME_MIXAMORIG,
     WM_OT_JOIN_ANIMATIONS,
@@ -541,8 +602,7 @@ classes = (
     WM_OT_NLA_TRACKS,
     WM_OT_RENAME_ANIMATION,
     WM_OT_ADD_ROOTBONE,
-    WM_OT_ADD_ROOTMOTION,
-    OBJECT_PT_CustomPanel
+    WM_OT_ADD_ROOTMOTION
 )
 
 def register():
