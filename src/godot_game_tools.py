@@ -446,6 +446,7 @@ class INIT_CHARACTER_OT(bpy.types.Operator, ImportHelper):
                         tool.target_name = bpy.context.object
                         bpy.context.object.animation_data.action.name = action_name
                         bpy.ops.wm.prepare_mixamo_rig('EXEC_DEFAULT')
+
                         return
                     else:
                         print("no t-pose found, skipping {}".format(name))
@@ -482,6 +483,16 @@ class WM_OT_JOIN_ANIMATIONS(Operator, ImportHelper):
     filter_glob = StringProperty(default="*.fbx", options={'HIDDEN'})
     files = CollectionProperty(type=bpy.types.PropertyGroup)
 
+    def scale_action(self, action):
+        # Scale Hips Down to match the .01 scale on imported model
+        # To-Do Fix Correct Axis - Jumping Animations Are Currently Breaking Ex: Mixamo (Mutant Jump Attack)
+        fc = action.fcurves
+        for f in fc:
+            if f.data_path == 'pose.bones["Hips"].location':
+                for keyframe in f.keyframe_points:
+                    keyframe.co[1] *= .01
+        return True
+
     def importModels(self, path, target_armature, context):
         extensions = ['fbx']
         filenames = sorted(os.listdir(path))
@@ -515,8 +526,17 @@ class WM_OT_JOIN_ANIMATIONS(Operator, ImportHelper):
                     index = 0
                     for obj in col.objects:
                         if obj.type == "ARMATURE" and obj is not target_armature:
-                            obj.name = fileNamesList[index]
+                            print("Importing animation from file {}".format(obj.name))
                             obj.animation_data.action.name = fileNamesList[index]
+
+                            # Rename the bones
+                            for bone in obj.pose.bones:
+                                if ':' not in bone.name:
+                                    continue
+                                bone.name = bone.name.split(":")[1]
+
+                                self.scale_action(obj.animation_data.action)
+
                             removeList.append(obj)
                             index += 1
                             if len(obj.children) > 0:
