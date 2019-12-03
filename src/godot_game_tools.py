@@ -98,94 +98,8 @@ class AddonProperties(PropertyGroup):
 #    Operators
 # ------------------------------------------------------------------------
 
-class WM_OT_RENAME_MIXAMORIG(Operator):
-    bl_idname = "wm.rename_mixamo_rig"
-    bl_label = "Rename Rig Bones"
-    bl_description = "Rename rig bones"
 
-    def execute(self, context):
-        scene = context.scene
-        tool = scene.godot_game_tools
-        visible_armature = tool.visible_armature
-        target_armature = tool.target_name
-        valid = validateArmature(self, context)
-        if valid:
-            bpy.data.objects["Armature"].select_set(True)
-            target_armature.hide_viewport = False
-            bpy.ops.object.mode_set(mode='OBJECT')
-            if not bpy.ops.object:
-                self.report({'INFO'}, 'Please select the armature')
-            for rig in bpy.context.selected_objects:
-                if rig.type == 'ARMATURE':
-                    for mesh in rig.children:
-                        for vg in mesh.vertex_groups:
-                            # If no ':' probably its already renamed
-                            if ':' not in vg.name:
-                                continue
-                            vg.name = vg.name.split(":")[1]
-                    for bone in rig.pose.bones:
-                        if ':' not in bone.name:
-                            continue
-                        bone.name = bone.name.split(":")[1]
-            # for action in bpy.data.actions:
-            #     fc = action.fcurves
-            #     for f in fc:
-            #         f.data_path = f.data_path.replace("mixamorig:","")
-            if bpy.data.actions:
-                bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
-            self.report({'INFO'}, 'Character Bones Successfully Renamed')
-        return {'FINISHED'}
-
-# ------------------------------------------------------------------------ #
-# ------------------------------------------------------------------------ #
-# ------------------------------------------------------------------------ #
-
-class WM_OT_PREPARE_MIXAMORIG(Operator):
-    bl_idname = "wm.prepare_mixamo_rig"
-    bl_label = "Prepare Mixamo Rig"
-    bl_description = "Fix mixamo rig to export for Godot"
-
-    def scale_action(self, action):
-        # Scale Hips Down to match the .01 scale on imported model
-        # To-Do Fix Correct Axis - Jumping Animations Are Currently Breaking Ex: Mixamo (Mutant Jump Attack)
-        fc = action.fcurves
-        for f in fc:
-            if f.data_path == 'pose.bones["Hips"].location':
-                for keyframe in f.keyframe_points:
-                    keyframe.co[1] *= .01
-        return True
-
-    def execute(self, context):
-        scene = context.scene
-        tool = scene.godot_game_tools
-        target_armature = tool.target_name
-        visible_armature = tool.visible_armature
-        valid = validateArmature(self, context)
-        # Apply transformations on selected Armature
-        bpy.context.view_layer.objects.active = target_armature
-        bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
-        bpy.ops.wm.rename_mixamo_rig('EXEC_DEFAULT')
-        if valid:
-            bpy.data.objects["Armature"].select_set(True)
-            target_armature.hide_viewport = False
-            bpy.ops.object.select_all(action='SELECT')
-            if len(bpy.data.actions) > 0:
-                for anim in bpy.data.actions:
-                    animation = anim.name
-                    bpy.context.scene.frame_start = 0
-                    animationToPlay = [anim for anim in bpy.data.actions.keys() if anim in (animation)]
-                    animationIndex = bpy.data.actions.keys().index(animation)
-                    target_armature.animation_data.action = bpy.data.actions.values()[animationIndex]
-                    bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
-                    self.scale_action(anim)
-            self.report({'INFO'}, 'Rig Armature Prepared')
-        return {'FINISHED'}
-
-# ------------------------------------------------------------------------ #
-# ------------------------------------------------------------------------ #
-# ------------------------------------------------------------------------ #
-
-class WM_OT_ANIMATION_PLAYER(Operator):
+class ANIMATION_PLAYER_OT(Operator):
     bl_idname = "wm.animation_player"
     bl_label = "Play Animation"
     bl_description = "Play armature animations"
@@ -214,7 +128,7 @@ class WM_OT_ANIMATION_PLAYER(Operator):
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 
-class WM_OT_STOP_ANIMATION(Operator):
+class STOP_ANIMATION_OT(Operator):
     bl_idname = "wm.animation_stop"
     bl_label = "Stop Animation"
     bl_description = "Stops curent animation"
@@ -236,7 +150,7 @@ class WM_OT_STOP_ANIMATION(Operator):
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 
-class WM_OT_NLA_TRACKS(Operator):
+class NLA_TRACKS_OT(Operator):
     bl_idname = "wm.push_nlas"
     bl_label = "Create NLA Tracks"
     bl_description = "Push All Animations to NLA Tracks"
@@ -269,7 +183,7 @@ class WM_OT_NLA_TRACKS(Operator):
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 
-class WM_OT_ADD_ROOTBONE(Operator):
+class ADD_ROOTBONE_OT(Operator):
     bl_idname = "wm.add_rootbone"
     bl_label = "Add Root Bone"
     bl_description = "Adds armature root bone for root motion"
@@ -321,7 +235,7 @@ class WM_OT_ADD_ROOTBONE(Operator):
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 
-class WM_OT_ADD_ROOTMOTION(Operator):
+class ADD_ROOTMOTION_OT(Operator):
     bl_idname = "wm.add_rootmotion"
     bl_label = "Add Root Motion"
     bl_description = "Adds Root Motion Bone To Animation"
@@ -381,7 +295,7 @@ class WM_OT_ADD_ROOTMOTION(Operator):
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 
-class WM_OT_RENAME_ANIMATION(Operator):
+class RENAME_ANIMATION_OT(Operator):
     bl_idname = "wm.rename_animation"
     bl_label = "Rename Current Animation"
     bl_description = "Renames current animation"
@@ -419,9 +333,6 @@ class INIT_CHARACTER_OT(bpy.types.Operator, ImportHelper):
         filenames = sorted(os.listdir(path))
         valid_files = []
         fileNamesList = []
-        removeList = []
-        # Debug
-        removeImports = True
 
         for filename in filenames:
             for ext in extensions:
@@ -440,41 +351,30 @@ class INIT_CHARACTER_OT(bpy.types.Operator, ImportHelper):
                         # Local Variable
                         fileNamesList.append(action_name)
                         bpy.ops.import_scene.fbx(filepath = file_path)
-                        print("importing file {}".format(file_path))
-
+                        # print("importing file {}".format(file_path))
                         tool = bpy.context.scene.godot_game_tools
                         tool.target_name = bpy.context.object
                         bpy.context.object.animation_data.action.name = action_name
-                        bpy.ops.wm.prepare_mixamo_rig('EXEC_DEFAULT')
-
+                        # bpy.ops.wm.prepare_mixamo_rig('EXEC_DEFAULT')
+                        self.report({'INFO'}, 'T-Pose Loaded')
                         return
                     else:
-                        print("no t-pose found, skipping {}".format(name))
+                        self.report({'INFO'}, 'No T-Pose Found')
+                        # print("no t-pose found, skipping {}".format(name))
                         continue
 
-
     def execute(self, context):
-        print("INIT_CHARACTER execute")
-
-
+        self.report({'INFO'}, 'Loading Character T-Pose')
         filePathWithName = bpy.path.abspath(self.properties.filepath)
         path = os.path.dirname(filePathWithName)
-
         self.import_from_folder(path, context)
-
-        # valid = validateArmature(self, context)
-        # if valid:
-        #     bpy.context.object.animation_data.action.name = "T-Pose"
-        #
-        #     self.setDefaultAnimation(context)
-        #     self.report({'INFO'}, 'Animations Imported Successfully')
         return {'FINISHED'}
 
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 
-class WM_OT_JOIN_ANIMATIONS(Operator, ImportHelper):
+class JOIN_ANIMATIONS_OT(Operator, ImportHelper):
     bl_idname = "wm.join_animations"
     bl_label = "Join Mixamo Animations"
     bl_description = "Join mixamo animations into a single armature"
@@ -485,7 +385,6 @@ class WM_OT_JOIN_ANIMATIONS(Operator, ImportHelper):
 
     def scale_action(self, action):
         # Scale Hips Down to match the .01 scale on imported model
-        # To-Do Fix Correct Axis - Jumping Animations Are Currently Breaking Ex: Mixamo (Mutant Jump Attack)
         fc = action.fcurves
         for f in fc:
             if f.data_path == 'pose.bones["Hips"].location':
@@ -534,7 +433,6 @@ class WM_OT_JOIN_ANIMATIONS(Operator, ImportHelper):
                                 if ':' not in bone.name:
                                     continue
                                 bone.name = bone.name.split(":")[1]
-
                                 self.scale_action(obj.animation_data.action)
 
                             removeList.append(obj)
@@ -617,10 +515,10 @@ class OBJECT_PT_ARMATURE_UTILITIES(bpy.types.Panel, ObjectButtonsPanel):
         tool = scene.godot_game_tools
         box = layout.box()
         box.label(text="Armature Setup", icon='ARMATURE_DATA')
-        box.prop(tool, "target_name")
+        # box.prop(tool, "target_name")
         box.operator("wm.init_character", icon="IMPORT")
-        box.operator("wm.join_animations", icon="IMPORT")
-        box.operator("wm.prepare_mixamo_rig", icon="ASSET_MANAGER")
+        box.operator("wm.join_animations", icon="ASSET_MANAGER")
+        # box.operator("wm.prepare_mixamo_rig", icon="ASSET_MANAGER")
         box.separator()
 
 class OBJECT_PT_ROOT_MOTION(bpy.types.Panel, ObjectButtonsPanel):
@@ -685,16 +583,14 @@ classes = (
     OBJECT_PT_ARMATURE_UTILITIES,
     OBJECT_PT_ROOT_MOTION,
     OBJECT_PT_ANIMATIONS,
-    WM_OT_PREPARE_MIXAMORIG,
-    WM_OT_RENAME_MIXAMORIG,
-    WM_OT_JOIN_ANIMATIONS,
-    WM_OT_ANIMATION_PLAYER,
-    WM_OT_STOP_ANIMATION,
-    WM_OT_NLA_TRACKS,
-    WM_OT_RENAME_ANIMATION,
-    WM_OT_ADD_ROOTBONE,
-    WM_OT_ADD_ROOTMOTION,
-    INIT_CHARACTER_OT
+    INIT_CHARACTER_OT,
+    JOIN_ANIMATIONS_OT,
+    ANIMATION_PLAYER_OT,
+    STOP_ANIMATION_OT,
+    NLA_TRACKS_OT,
+    RENAME_ANIMATION_OT,
+    ADD_ROOTBONE_OT,
+    ADD_ROOTMOTION_OT
 )
 
 def register():
