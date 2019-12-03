@@ -376,7 +376,7 @@ class INIT_CHARACTER_OT(bpy.types.Operator, ImportHelper):
 
 class JOIN_ANIMATIONS_OT(Operator, ImportHelper):
     bl_idname = "wm.join_animations"
-    bl_label = "Join Mixamo Animations"
+    bl_label = "Join Animations"
     bl_description = "Join mixamo animations into a single armature"
     bl_options = {'PRESET', 'UNDO'}
     filename_ext = ".fbx"
