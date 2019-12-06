@@ -76,95 +76,14 @@ from operators.mixamo_controller import INIT_CHARACTER_OT, JOIN_ANIMATIONS_OT
 # ------------------------------------------------------------------------
 #    Panels
 # ------------------------------------------------------------------------
+from panels.bvh_panel import (OBJECT_PT_BVH_UTILITIES)
+from panels.mixamo_utilities_panel import (MIXAMO_UTILITIES_PN, ARMATURE_UTILITIES_PN, ROOT_MOTION_PN, ANIMATIONS_PN)
 
-class OBJECT_PT_BVH_UTILITIES(bpy.types.Panel, ObjectButtonsPanel):
-    bl_idname = "object.bvh_utilities_panel"
-    bl_label = "BVH Manager"
-    bl_space_type = "VIEW_3D"
-    bl_region_type = "UI"
-    bl_context = "objectmode"
-    bl_parent_id = "object.main_panel"
-    bl_options = {"DEFAULT_CLOSED"}
-    def draw(self, context):
-        layout = self.layout
-        scene = context.scene
-        obj = context.object
-        tool = scene.godot_game_tools
-        box = layout.box()
-        box.label(text="Work-In-Progress", icon='SCENE')
 
-class OBJECT_PT_MIXAMO_UTILITIES(bpy.types.Panel, ObjectButtonsPanel):
-    bl_idname = "object.mixamo_utilities_panel"
-    bl_label = "Mixamo Utilies"
-    bl_space_type = "VIEW_3D"
-    bl_region_type = "UI"
-    bl_context = "objectmode"
-    bl_parent_id = "object.main_panel"
-    def draw(self, context):
-        pass
-
-class OBJECT_PT_ARMATURE_UTILITIES(bpy.types.Panel, ObjectButtonsPanel):
-    bl_idname = "object.armature_panel"
-    bl_label = "Armature"
-    bl_space_type = "VIEW_3D"
-    bl_region_type = "UI"
-    bl_context = "objectmode"
-    bl_parent_id = "object.mixamo_utilities_panel"
-    def draw(self, context):
-        layout = self.layout
-        scene = context.scene
-        obj = context.object
-        tool = scene.godot_game_tools
-        box = layout.box()
-        box.label(text="Armature Setup", icon='ARMATURE_DATA')
-        # box.prop(tool, "target_name")
-        box.operator("wm.init_character", icon="IMPORT")
-        box.operator("wm.join_animations", icon="ASSET_MANAGER")
-        # box.operator("wm.prepare_mixamo_rig", icon="ASSET_MANAGER")
-        box.separator()
-
-class OBJECT_PT_ROOT_MOTION(bpy.types.Panel, ObjectButtonsPanel):
-    bl_idname = "object.rootmotion_panel"
-    bl_label = "Root Motion"
-    bl_space_type = "VIEW_3D"
-    bl_region_type = "UI"
-    bl_context = "objectmode"
-    bl_parent_id = "object.mixamo_utilities_panel"
-    def draw(self, context):
-        layout = self.layout
-        scene = context.scene
-        obj = context.object
-        tool = scene.godot_game_tools
-        box = layout.box()
-        box.label(text="Root Motion Setup", icon='ANIM_DATA')
-        box.prop(tool, "visible_armature")
-        box.prop(tool, "rootmotion_all")
-        box.operator("wm.add_rootmotion", icon="BONE_DATA")
-        box.separator()
-
-class OBJECT_PT_ANIMATIONS(bpy.types.Panel, ObjectButtonsPanel):
-    bl_idname = "object.animations_panel"
-    bl_label = "Animations"
-    bl_space_type = "VIEW_3D"
-    bl_region_type = "UI"
-    bl_context = "objectmode"
-    bl_parent_id = "object.mixamo_utilities_panel"
-    def draw(self, context):
-        layout = self.layout
-        scene = context.scene
-        obj = context.object
-        tool = scene.godot_game_tools
-        box = layout.box()
-        box.label(text="Animations Settings", icon='SCENE')
-        box.prop(tool, "animations")
-        box.operator("wm.animation_player", icon="PLAY")
-        box.operator("wm.animation_stop", icon="PAUSE")
-        box.prop(tool, "action_name")
-        box.operator("wm.rename_animation", icon="ARMATURE_DATA")
-        box.operator("wm.push_nlas", icon="ANIM_DATA")
-        box.separator()
-
-class OBJECT_PT_ADDON_PANEL(Panel):
+# ------------------------------------------------------------------------
+#    MAIN ADD-ON PANEL
+# ------------------------------------------------------------------------
+class GGT_PANEL(Panel):
     bl_idname = "object.main_panel"
     bl_label = "Godot Game Tools"
     bl_space_type = "VIEW_3D"
@@ -179,12 +98,12 @@ class OBJECT_PT_ADDON_PANEL(Panel):
 
 classes = (
     AddonProperties,
-    OBJECT_PT_ADDON_PANEL,
-    OBJECT_PT_MIXAMO_UTILITIES,
+    GGT_PANEL,
+    MIXAMO_UTILITIES_PN,
     OBJECT_PT_BVH_UTILITIES,
-    OBJECT_PT_ARMATURE_UTILITIES,
-    OBJECT_PT_ROOT_MOTION,
-    OBJECT_PT_ANIMATIONS,
+    ARMATURE_UTILITIES_PN,
+    ROOT_MOTION_PN,
+    ANIMATIONS_PN,
     INIT_CHARACTER_OT,
     JOIN_ANIMATIONS_OT,
     ANIMATION_PLAYER_OT,
