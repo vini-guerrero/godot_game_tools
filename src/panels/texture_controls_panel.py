@@ -3,9 +3,9 @@ import bpy
 from bl_ui.properties_object import ObjectButtonsPanel, OBJECT_PT_transform
 from bpy.types import (Panel, Menu)
 
-class OBJECT_PT_BVH_UTILITIES(bpy.types.Panel, ObjectButtonsPanel):
-    bl_idname = "object.bvh_utilities_panel"
-    bl_label = "BVH Manager"
+class _PT_TEXTURE_CONTROLS_PT_(bpy.types.Panel, ObjectButtonsPanel):
+    bl_idname = "object.texture_controls_panel"
+    bl_label = "Texture Controls"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_context = "objectmode"
@@ -17,4 +17,7 @@ class OBJECT_PT_BVH_UTILITIES(bpy.types.Panel, ObjectButtonsPanel):
         obj = context.object
         tool = scene.godot_game_tools
         box = layout.box()
-        box.label(text="Work-In-Progress", icon='SCENE')
+        box.label(text="Texture Baking", icon='SCENE')
+        box.prop(tool, "bake_texture_size")
+        box.operator("wm.bake_texture", icon="ANIM_DATA")
+        box.operator("wm.save_bake_textures", icon="ANIM_DATA")

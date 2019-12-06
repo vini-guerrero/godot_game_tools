@@ -15,7 +15,7 @@ import bpy
 import glob
 import os
 from bl_ui.properties_object import ObjectButtonsPanel, OBJECT_PT_transform
-from bpy.props import (StringProperty, PointerProperty, CollectionProperty, EnumProperty, BoolProperty)
+from bpy.props import (IntProperty, StringProperty, PointerProperty, CollectionProperty, EnumProperty, BoolProperty)
 from bpy.types import (Panel, Menu, Operator, PropertyGroup)
 
 
@@ -53,13 +53,13 @@ def toggleArmatureVisibility(self, context):
 # ------------------------------------------------------------------------
 
 class AddonProperties(PropertyGroup):
-
     action_name: StringProperty(name="New Name", description="Choose the action name you want to rename your animation in the dopesheet", maxlen=1024)
     rootmotion_name: StringProperty(name="Rootmotion Name", description="Choose name you want for the RootMotion Bone", maxlen=1024, default="RootMotion")
     target_name: PointerProperty(name="Target", description="Select the target armature you want the animations to be merged into", type=bpy.types.Object)
     animations: EnumProperty(name="Animations", description="Available armature animations", items=populateAnimations, default=None, options={'ANIMATABLE'}, update=None, get=None, set=None)
     visible_armature: BoolProperty(name="Show Armature Bones", description="Hides / Show armature bones once animations are loaded", default=True, update=toggleArmatureVisibility)
     rootmotion_all: BoolProperty(name="Apply Rootmotion To All Animations", description="Choose to apply rootmotion to all animations or current only", default=True, update=None)
+    bake_texture_size: IntProperty(name = "Bake Texture Size", description="Define here the size of textures images to bake", default = 1024, min = 8, max = 4096)
 
 # ------------------------------------------------------------------------
 #    Operators
@@ -68,6 +68,7 @@ from operators.nla_tracks_controller import NLA_TRACKS_OT
 from operators.animation_controller import ANIMATION_PLAYER_OT, STOP_ANIMATION_OT, RENAME_ANIMATION_OT
 from operators.rootmotion_controller import ADD_ROOTBONE_OT, ADD_ROOTMOTION_OT
 from operators.mixamo_controller import INIT_CHARACTER_OT, JOIN_ANIMATIONS_OT
+from operators.texture_controller import SAVE_BAKE_TEXTURES_OT, BAKE_TEXTURE_OT
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
@@ -76,14 +77,15 @@ from operators.mixamo_controller import INIT_CHARACTER_OT, JOIN_ANIMATIONS_OT
 # ------------------------------------------------------------------------
 #    Panels
 # ------------------------------------------------------------------------
-from panels.bvh_panel import (OBJECT_PT_BVH_UTILITIES)
-from panels.mixamo_utilities_panel import (MIXAMO_UTILITIES_PN, ARMATURE_UTILITIES_PN, ROOT_MOTION_PN, ANIMATIONS_PN)
+from panels.bvh_utilities_panel import (_PT_BVH_UTILITIES_PT_)
+from panels.texture_controls_panel import (_PT_TEXTURE_CONTROLS_PT_)
+from panels.mixamo_utilities_panel import (_PT_MIXAMO_UTILITIES_PT_, _PT_ARMATURE_UTILITIES_PT_, _PT_ROOT_MOTION_PT_, _PT_ANIMATIONS_PT_)
 
 
 # ------------------------------------------------------------------------
 #    MAIN ADD-ON PANEL
 # ------------------------------------------------------------------------
-class GGT_PANEL(Panel):
+class _PT_GGT_PT_(Panel):
     bl_idname = "object.main_panel"
     bl_label = "Godot Game Tools"
     bl_space_type = "VIEW_3D"
@@ -98,12 +100,13 @@ class GGT_PANEL(Panel):
 
 classes = (
     AddonProperties,
-    GGT_PANEL,
-    MIXAMO_UTILITIES_PN,
-    OBJECT_PT_BVH_UTILITIES,
-    ARMATURE_UTILITIES_PN,
-    ROOT_MOTION_PN,
-    ANIMATIONS_PN,
+    _PT_GGT_PT_,
+    _PT_MIXAMO_UTILITIES_PT_,
+    _PT_TEXTURE_CONTROLS_PT_,
+    _PT_BVH_UTILITIES_PT_,
+    _PT_ARMATURE_UTILITIES_PT_,
+    _PT_ROOT_MOTION_PT_,
+    _PT_ANIMATIONS_PT_,
     INIT_CHARACTER_OT,
     JOIN_ANIMATIONS_OT,
     ANIMATION_PLAYER_OT,
@@ -111,7 +114,9 @@ classes = (
     NLA_TRACKS_OT,
     RENAME_ANIMATION_OT,
     ADD_ROOTBONE_OT,
-    ADD_ROOTMOTION_OT
+    ADD_ROOTMOTION_OT,
+    SAVE_BAKE_TEXTURES_OT,
+    BAKE_TEXTURE_OT
 )
 
 def register():

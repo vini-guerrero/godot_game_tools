@@ -69,8 +69,8 @@ class JOIN_ANIMATIONS_OT(Operator, ImportHelper):
     bl_description = "Join mixamo animations into a single armature"
     bl_options = {'PRESET', 'UNDO'}
     filename_ext = ".fbx"
-    filter_glob = StringProperty(default="*.fbx", options={'HIDDEN'})
-    files = CollectionProperty(type=bpy.types.PropertyGroup)
+    filter_glob: StringProperty(default="*.fbx", options={'HIDDEN'})
+    files: CollectionProperty(type=bpy.types.PropertyGroup)
 
     def scale_action(self, action):
         # Scale Hips Down to match the .01 scale on imported model

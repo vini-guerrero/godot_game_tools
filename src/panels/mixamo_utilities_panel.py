@@ -3,7 +3,7 @@ import bpy
 from bl_ui.properties_object import ObjectButtonsPanel, OBJECT_PT_transform
 from bpy.types import (Panel, Menu)
 
-class MIXAMO_UTILITIES_PN(bpy.types.Panel, ObjectButtonsPanel):
+class _PT_MIXAMO_UTILITIES_PT_(bpy.types.Panel, ObjectButtonsPanel):
     bl_idname = "object.mixamo_utilities_panel"
     bl_label = "Mixamo Utilies"
     bl_space_type = "VIEW_3D"
@@ -13,7 +13,7 @@ class MIXAMO_UTILITIES_PN(bpy.types.Panel, ObjectButtonsPanel):
     def draw(self, context):
         pass
 
-class ARMATURE_UTILITIES_PN(bpy.types.Panel, ObjectButtonsPanel):
+class _PT_ARMATURE_UTILITIES_PT_(bpy.types.Panel, ObjectButtonsPanel):
     bl_idname = "object.armature_panel"
     bl_label = "Armature"
     bl_space_type = "VIEW_3D"
@@ -34,7 +34,7 @@ class ARMATURE_UTILITIES_PN(bpy.types.Panel, ObjectButtonsPanel):
         box.separator()
 
 
-class ROOT_MOTION_PN(bpy.types.Panel, ObjectButtonsPanel):
+class _PT_ROOT_MOTION_PT_(bpy.types.Panel, ObjectButtonsPanel):
     bl_idname = "object.rootmotion_panel"
     bl_label = "Root Motion"
     bl_space_type = "VIEW_3D"
@@ -54,7 +54,7 @@ class ROOT_MOTION_PN(bpy.types.Panel, ObjectButtonsPanel):
         box.separator()
 
 
-class ANIMATIONS_PN(bpy.types.Panel, ObjectButtonsPanel):
+class _PT_ANIMATIONS_PT_(bpy.types.Panel, ObjectButtonsPanel):
     bl_idname = "object.animations_panel"
     bl_label = "Animations"
     bl_space_type = "VIEW_3D"
