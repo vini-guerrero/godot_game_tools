@@ -122,7 +122,7 @@ class JOIN_ANIMATIONS_OT(Operator, ImportHelper):
                                 if ':' not in bone.name:
                                     continue
                                 bone.name = bone.name.split(":")[1]
-                                self.scale_action(obj.animation_data.action)
+                            self.scale_action(obj.animation_data.action)
 
                             removeList.append(obj)
                             index += 1
