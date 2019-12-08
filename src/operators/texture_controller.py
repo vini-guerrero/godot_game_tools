@@ -25,6 +25,10 @@ class BAKE_TEXTURE_OT(bpy.types.Operator):
                 self.report({'INFO'}, 'Please select a valid mesh to bake the texture')
         return {'FINISHED'}
 
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+
 class SAVE_BAKE_TEXTURES_OT(Operator):
     bl_idname = "wm.save_bake_textures"
     bl_label = "Save Bake Textures"

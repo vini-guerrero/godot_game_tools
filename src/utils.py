@@ -8,6 +8,10 @@ def console_get():
                     return area, space
     return None, None
 
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+
 def console_write(text):
     area, space = console_get()
     if space is None:
@@ -18,7 +22,12 @@ def console_write(text):
     for line in text.split("\n"):
         bpy.ops.console.scrollback_append(context, text=line, type='OUTPUT')
 
-def validateArmature(self, context):
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+
+def validateArmature():
+    context = bpy.context
     scene = context.scene
     tool = scene.godot_game_tools
     target_armature = tool.target_name
