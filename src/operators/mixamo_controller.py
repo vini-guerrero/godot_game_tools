@@ -44,7 +44,7 @@ class INIT_CHARACTER_OT(bpy.types.Operator, ImportHelper):
                         tool = bpy.context.scene.godot_game_tools
                         tool.target_name = bpy.context.object
                         bpy.context.object.animation_data.action.name = action_name
-                        # bpy.ops.wm.prepare_mixamo_rig('EXEC_DEFAULT')
+                        bpy.ops.wm.prepare_mixamo_rig('EXEC_DEFAULT')
                         self.report({'INFO'}, 'T-Pose Loaded')
                         return
                     else:
@@ -156,4 +156,131 @@ class JOIN_ANIMATIONS_OT(Operator, ImportHelper):
         self.importModels(path, target_armature, context)
         self.setDefaultAnimation(context)
         self.report({'INFO'}, 'Animations Imported Successfully')
+        return {'FINISHED'}
+
+from ..utils import validateArmature
+
+class RENAME_RIG_OT(Operator):
+    bl_idname = "wm.rename_mixamo_rig"
+    bl_label = "Rename Rig Bones"
+    bl_description = "Rename rig bones"
+
+    def execute(self, context):
+        scene = context.scene
+        tool = scene.godot_game_tools
+        visible_armature = tool.visible_armature
+        target_armature = tool.target_name
+        valid = validateArmature(bpy.context)
+        if valid:
+            bpy.data.objects["Armature"].select_set(True)
+            target_armature.hide_viewport = False
+            bpy.ops.object.mode_set(mode='OBJECT')
+            if not bpy.ops.object:
+                self.report({'INFO'}, 'Please select the armature')
+            for rig in bpy.context.selected_objects:
+                if rig.type == 'ARMATURE':
+                    for mesh in rig.children:
+                        for vg in mesh.vertex_groups:
+                            # If no ':' probably its already renamed
+                            if ':' not in vg.name:
+                                continue
+                            vg.name = vg.name.split(":")[1]
+                    for bone in rig.pose.bones:
+                        if ':' not in bone.name:
+                            continue
+                        bone.name = bone.name.split(":")[1]
+            # for action in bpy.data.actions:
+            #     fc = action.fcurves
+            #     for f in fc:
+            #         f.data_path = f.data_path.replace("mixamorig:","")
+            if bpy.data.actions:
+                bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
+            self.report({'INFO'}, 'Character Bones Successfully Renamed')
+        return {'FINISHED'}
+
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+
+
+class PREPARE_RIG_OT(Operator):
+    bl_idname = "wm.prepare_mixamo_rig"
+    bl_label = "Prepare Mixamo Rig"
+    bl_description = "Fix mixamo rig to export for Godot"
+
+    def scale_action(self, action):
+        # Scale Hips Down to match the .01 scale on imported model
+        # To-Do Fix Correct Axis - Jumping Animations Are Currently Breaking Ex: Mixamo (Mutant Jump Attack)
+        fc = action.fcurves
+        for f in fc:
+            if f.data_path == 'pose.bones["Hips"].location':
+                for keyframe in f.keyframe_points:
+                    keyframe.co[1] *= .01
+        return True
+
+
+
+    def execute(self, context):
+
+        scene = context.scene
+        tool = scene.godot_game_tools
+        target_armature = tool.target_name
+        visible_armature = tool.visible_armature
+        valid = True
+        # Apply transformations on selected Armature
+        bpy.context.view_layer.objects.active = target_armature
+        bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+        bpy.ops.wm.rename_mixamo_rig('EXEC_DEFAULT')
+        if valid:
+            bpy.data.objects["Armature"].select_set(True)
+            target_armature.hide_viewport = False
+            bpy.ops.object.select_all(action='SELECT')
+            if len(bpy.data.actions) > 0:
+                for anim in bpy.data.actions:
+                    animation = anim.name
+                    bpy.context.scene.frame_start = 0
+                    animationToPlay = [anim for anim in bpy.data.actions.keys() if anim in (animation)]
+                    animationIndex = bpy.data.actions.keys().index(animation)
+                    target_armature.animation_data.action = bpy.data.actions.values()[animationIndex]
+                    bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
+                    self.scale_action(anim)
+            self.report({'INFO'}, 'Rig Armature Prepared')
+        return {'FINISHED'}
+
+class WM_OT_RENAME_MIXAMORIG(Operator):
+    bl_idname = "wm.rename_mixamo_rig"
+    bl_label = "Rename Rig Bones"
+    bl_description = "Rename rig bones"
+
+    def execute(self, context):
+        scene = context.scene
+        tool = scene.godot_game_tools
+        visible_armature = tool.visible_armature
+        target_armature = tool.target_name
+        valid = validateArmature(self, context)
+        if valid:
+            bpy.data.objects["Armature"].select_set(True)
+            target_armature.hide_viewport = False
+            bpy.ops.object.mode_set(mode='OBJECT')
+            if not bpy.ops.object:
+                self.report({'INFO'}, 'Please select the armature')
+            for rig in bpy.context.selected_objects:
+                if rig.type == 'ARMATURE':
+                    for mesh in rig.children:
+                        for vg in mesh.vertex_groups:
+                            # If no ':' probably its already renamed
+                            if ':' not in vg.name:
+                                continue
+                            vg.name = vg.name.split(":")[1]
+                    for bone in rig.pose.bones:
+                        if ':' not in bone.name:
+                            continue
+                        bone.name = bone.name.split(":")[1]
+            # for action in bpy.data.actions:
+            #     fc = action.fcurves
+            #     for f in fc:
+            #         f.data_path = f.data_path.replace("mixamorig:","")
+            if bpy.data.actions:
+                bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
+            self.report({'INFO'}, 'Character Bones Successfully Renamed')
         return {'FINISHED'}
