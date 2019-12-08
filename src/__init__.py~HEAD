@@ -64,11 +64,11 @@ class AddonProperties(PropertyGroup):
 # ------------------------------------------------------------------------
 #    Operators
 # ------------------------------------------------------------------------
-from operators.nla_tracks_controller import NLA_TRACKS_OT
-from operators.animation_controller import ANIMATION_PLAYER_OT, STOP_ANIMATION_OT, RENAME_ANIMATION_OT
-from operators.rootmotion_controller import ADD_ROOTBONE_OT, ADD_ROOTMOTION_OT
-from operators.mixamo_controller import INIT_CHARACTER_OT, JOIN_ANIMATIONS_OT
-from operators.texture_controller import SAVE_BAKE_TEXTURES_OT, BAKE_TEXTURE_OT
+from .operators.nla_tracks_controller import NLA_TRACKS_OT
+from .operators.animation_controller import ANIMATION_PLAYER_OT, STOP_ANIMATION_OT, RENAME_ANIMATION_OT
+from .operators.rootmotion_controller import ADD_ROOTBONE_OT, ADD_ROOTMOTION_OT
+from .operators.mixamo_controller import INIT_CHARACTER_OT, JOIN_ANIMATIONS_OT, PREPARE_RIG_OT, RENAME_RIG_OT
+from .operators.texture_controller import SAVE_BAKE_TEXTURES_OT, BAKE_TEXTURE_OT
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
@@ -77,9 +77,9 @@ from operators.texture_controller import SAVE_BAKE_TEXTURES_OT, BAKE_TEXTURE_OT
 # ------------------------------------------------------------------------
 #    Panels
 # ------------------------------------------------------------------------
-from panels.bvh_utilities_panel import (_PT_BVH_UTILITIES_PT_)
-from panels.texture_controls_panel import (_PT_TEXTURE_CONTROLS_PT_)
-from panels.mixamo_utilities_panel import (_PT_MIXAMO_UTILITIES_PT_, _PT_ARMATURE_UTILITIES_PT_, _PT_ROOT_MOTION_PT_, _PT_ANIMATIONS_PT_)
+from .panels.bvh_utilities_panel import (_PT_BVH_UTILITIES_PT_)
+from .panels.texture_controls_panel import (_PT_TEXTURE_CONTROLS_PT_)
+from .panels.mixamo_utilities_panel import (_PT_MIXAMO_UTILITIES_PT_, _PT_ARMATURE_UTILITIES_PT_, _PT_ROOT_MOTION_PT_, _PT_ANIMATIONS_PT_)
 
 
 # ------------------------------------------------------------------------
@@ -109,6 +109,8 @@ classes = (
     _PT_ANIMATIONS_PT_,
     INIT_CHARACTER_OT,
     JOIN_ANIMATIONS_OT,
+    RENAME_RIG_OT,
+    PREPARE_RIG_OT,
     ANIMATION_PLAYER_OT,
     STOP_ANIMATION_OT,
     NLA_TRACKS_OT,

@@ -6,6 +6,8 @@ from bpy.props import (StringProperty, PointerProperty, CollectionProperty)
 from bpy.types import (Operator, PropertyGroup)
 from bpy_extras.io_utils import ImportHelper
 
+from ..utils import validateArmature
+
 class INIT_CHARACTER_OT(bpy.types.Operator, ImportHelper):
     """Initializes imported model for the tool"""
     bl_idname = "wm.init_character"
@@ -158,7 +160,13 @@ class JOIN_ANIMATIONS_OT(Operator, ImportHelper):
         self.report({'INFO'}, 'Animations Imported Successfully')
         return {'FINISHED'}
 
+<<<<<<< HEAD
 from ..utils import validateArmature
+=======
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+>>>>>>> upstream/Dev
 
 class RENAME_RIG_OT(Operator):
     bl_idname = "wm.rename_mixamo_rig"
@@ -170,7 +178,11 @@ class RENAME_RIG_OT(Operator):
         tool = scene.godot_game_tools
         visible_armature = tool.visible_armature
         target_armature = tool.target_name
+<<<<<<< HEAD
         valid = validateArmature(bpy.context)
+=======
+        valid = validateArmature()
+>>>>>>> upstream/Dev
         if valid:
             bpy.data.objects["Armature"].select_set(True)
             target_armature.hide_viewport = False
@@ -202,7 +214,10 @@ class RENAME_RIG_OT(Operator):
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> upstream/Dev
 class PREPARE_RIG_OT(Operator):
     bl_idname = "wm.prepare_mixamo_rig"
     bl_label = "Prepare Mixamo Rig"
@@ -218,19 +233,30 @@ class PREPARE_RIG_OT(Operator):
                     keyframe.co[1] *= .01
         return True
 
+<<<<<<< HEAD
 
 
     def execute(self, context):
 
+=======
+    def execute(self, context):
+>>>>>>> upstream/Dev
         scene = context.scene
         tool = scene.godot_game_tools
         target_armature = tool.target_name
         visible_armature = tool.visible_armature
+<<<<<<< HEAD
         valid = True
+=======
+>>>>>>> upstream/Dev
         # Apply transformations on selected Armature
         bpy.context.view_layer.objects.active = target_armature
         bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
         bpy.ops.wm.rename_mixamo_rig('EXEC_DEFAULT')
+<<<<<<< HEAD
+=======
+        valid = validateArmature()
+>>>>>>> upstream/Dev
         if valid:
             bpy.data.objects["Armature"].select_set(True)
             target_armature.hide_viewport = False
@@ -247,6 +273,13 @@ class PREPARE_RIG_OT(Operator):
             self.report({'INFO'}, 'Rig Armature Prepared')
         return {'FINISHED'}
 
+<<<<<<< HEAD
+=======
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+
+>>>>>>> upstream/Dev
 class WM_OT_RENAME_MIXAMORIG(Operator):
     bl_idname = "wm.rename_mixamo_rig"
     bl_label = "Rename Rig Bones"
@@ -257,7 +290,11 @@ class WM_OT_RENAME_MIXAMORIG(Operator):
         tool = scene.godot_game_tools
         visible_armature = tool.visible_armature
         target_armature = tool.target_name
+<<<<<<< HEAD
         valid = validateArmature(self, context)
+=======
+        valid = validateArmature()
+>>>>>>> upstream/Dev
         if valid:
             bpy.data.objects["Armature"].select_set(True)
             target_armature.hide_viewport = False
@@ -283,4 +320,8 @@ class WM_OT_RENAME_MIXAMORIG(Operator):
             if bpy.data.actions:
                 bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
             self.report({'INFO'}, 'Character Bones Successfully Renamed')
+<<<<<<< HEAD
         return {'FINISHED'}
+=======
+        return {'FINISHED'}
+>>>>>>> upstream/Dev
