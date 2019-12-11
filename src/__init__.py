@@ -3,7 +3,7 @@ import glob
 import os
 
 from bl_ui.properties_object import ObjectButtonsPanel, OBJECT_PT_transform
-from bpy.props import (IntProperty, StringProperty, PointerProperty, CollectionProperty, EnumProperty, BoolProperty)
+from bpy.props import (IntProperty, StringProperty, PointerProperty, CollectionProperty, EnumProperty, BoolProperty, FloatProperty)
 from bpy.types import (Panel, Menu, Operator, PropertyGroup)
 
 bl_info = {
@@ -37,7 +37,7 @@ def populateAnimations(self, context):
 def toggleArmatureVisibility(self, context):
     scene = context.scene
     tool = scene.godot_game_tools
-    target_armature = tool.target_name
+    target_armature = tool.target_object
     visible_armature = tool.visible_armature
     bpy.data.objects["Armature"].select_set(True)
     target_armature.hide_viewport = not visible_armature
@@ -50,21 +50,44 @@ def toggleArmatureVisibility(self, context):
 class AddonProperties(PropertyGroup):
     action_name: StringProperty(name="New Name", description="Choose the action name you want to rename your animation in the dopesheet", maxlen=1024)
     rootmotion_name: StringProperty(name="Rootmotion Name", description="Choose name you want for the RootMotion Bone", maxlen=1024, default="RootMotion")
-    target_name: PointerProperty(name="Target", description="Select the target armature you want the animations to be merged into", type=bpy.types.Object)
+    target_object: PointerProperty(name="Target", description="Select the target armature you want the animations to be merged into", type=bpy.types.Object)
     animations: EnumProperty(name="Animations", description="Available armature animations", items=populateAnimations, default=None, options={'ANIMATABLE'}, update=None, get=None, set=None)
     visible_armature: BoolProperty(name="Show Armature Bones", description="Hides / Show armature bones once animations are loaded", default=True, update=toggleArmatureVisibility)
     rootmotion_all: BoolProperty(name="Apply Rootmotion To All Animations", description="Choose to apply rootmotion to all animations or current only", default=True, update=None)
     bake_texture_size: IntProperty(name = "Bake Texture Size", description="Define here the size of textures images to bake", default = 1024, min = 8, max = 4096)
+    actions = []
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 
+
+# ------------------------------------------------------------------------
+#    Action Properties
+# ------------------------------------------------------------------------
+class ActionProperties(bpy.types.PropertyGroup):
+    hips_scale: FloatProperty(
+        name="Hips Scale",
+        description="Hips scale factor",
+        default=1.0)
+    use_root_motion: BoolProperty(
+        name="Root Motion",
+        description="Should this animation use root motion",
+        options={'ANIMATABLE'},
+        default=True,
+        update=None)
+        #TODO: update="toggle_root_motion")
+    use_root_motion_z: BoolProperty(
+        name="Root Motion Z",
+        description="Use z-axis with this animation",
+        default=False,
+        update=None)
+        #TODO: update = "toggle_root_motion_z")
 
 # ------------------------------------------------------------------------
 #    Operators
 # ------------------------------------------------------------------------
 from .operators.nla_tracks_controller import NLA_TRACKS_OT
-from .operators.animation_controller import ANIMATION_PLAYER_OT, STOP_ANIMATION_OT, RENAME_ANIMATION_OT
+from .operators.animation_controller import ANIMATION_PLAYER_OT, STOP_ANIMATION_OT, RENAME_ANIMATION_OT, PROCESS_ACTIONS_OT
 from .operators.rootmotion_controller import ADD_ROOTBONE_OT, ADD_ROOTMOTION_OT
 from .operators.mixamo_controller import INIT_CHARACTER_OT, JOIN_ANIMATIONS_OT, PREPARE_RIG_OT, RENAME_RIG_OT
 from .operators.texture_controller import SAVE_BAKE_TEXTURES_OT, BAKE_TEXTURE_OT
@@ -101,6 +124,7 @@ class _PT_GGT_PT_(Panel):
 # ------------------------------------------------------------------------
 classes = (
     AddonProperties,
+    ActionProperties,
     _PT_GGT_PT_,
     _PT_MIXAMO_UTILITIES_PT_,
     _PT_TEXTURE_CONTROLS_PT_,
@@ -116,24 +140,30 @@ classes = (
     STOP_ANIMATION_OT,
     NLA_TRACKS_OT,
     RENAME_ANIMATION_OT,
+    PROCESS_ACTIONS_OT,
     ADD_ROOTBONE_OT,
     ADD_ROOTMOTION_OT,
     SAVE_BAKE_TEXTURES_OT,
     BAKE_TEXTURE_OT
 )
 
+
 def register():
     from bpy.utils import register_class
     for cls in classes:
         register_class(cls)
 
-    bpy.types.Scene.godot_game_tools = PointerProperty(type=AddonProperties)
+    bpy.types.Scene.godot_game_tools = PointerProperty(type=AddonProperties, name="Godot Game Tools")
+    bpy.types.Action.ggt_props = PointerProperty(type=ActionProperties, name="GGT Action")
+
+
 
 def unregister():
     from bpy.utils import unregister_class
     for cls in reversed(classes):
         unregister_class(cls)
     del bpy.types.Scene.godot_game_tools
+    del bpy.types.Action.ggt_props
 
 if __name__ == "__main__":
     register()

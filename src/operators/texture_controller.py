@@ -38,8 +38,7 @@ class SAVE_BAKE_TEXTURES_OT(Operator):
         scene = context.scene
         tool = scene.godot_game_tools
         animation = tool.animations
-        target_armature = tool.target_name
-        actionName = tool.action_name
+        target_armature = tool.target_object
         activeObj = bpy.context.view_layer.objects.active
         if len(activeObj.material_slots) > 0:
             activeObj = bpy.context.view_layer.objects.active
