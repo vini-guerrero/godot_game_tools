@@ -56,6 +56,7 @@ class AddonProperties(PropertyGroup):
     rootmotion_all: BoolProperty(name="Apply Rootmotion To All Animations", description="Choose to apply rootmotion to all animations or current only", default=True, update=None)
     bake_texture_size: IntProperty(name = "Bake Texture Size", description="Define here the size of textures images to bake", default = 1024, min = 8, max = 4096)
     actions = []
+    tileset_generate_path: StringProperty(name="Tileset Path", description="Select the path destination folder you want tilset to be generated into", subtype="FILE_PATH")
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
@@ -91,7 +92,7 @@ from .operators.animation_controller import ANIMATION_PLAYER_OT, STOP_ANIMATION_
 from .operators.rootmotion_controller import ADD_ROOTBONE_OT, ADD_ROOTMOTION_OT
 from .operators.mixamo_controller import INIT_CHARACTER_OT, JOIN_ANIMATIONS_OT, PREPARE_RIG_OT, RENAME_RIG_OT
 from .operators.texture_controller import SAVE_BAKE_TEXTURES_OT, BAKE_TEXTURE_OT
-from .operators.tileset_controller import TILESET_GENERATE_TILE_OT, TILESET_SET_ISOMETRIC_CAMERA_OT, TILESET_MOVE_CAMERA_TILE_OT, TILESET_SET_TOPDOWN_CAMERA_OT
+from .operators.tileset_controller import TILESET_GENERATE_TILE_OT, TILESET_SET_ISOMETRIC_CAMERA_OT, TILESET_MOVE_CAMERA_TILE_OT, TILESET_SET_TOPDOWN_CAMERA_OT, TILESET_EXPORT_GODOT_TILESET_OT
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
@@ -148,6 +149,7 @@ classes = (
     ADD_ROOTMOTION_OT,
     SAVE_BAKE_TEXTURES_OT,
     BAKE_TEXTURE_OT,
+    TILESET_EXPORT_GODOT_TILESET_OT,
     TILESET_GENERATE_TILE_OT,
     TILESET_SET_ISOMETRIC_CAMERA_OT,
     TILESET_SET_TOPDOWN_CAMERA_OT,

@@ -1,4 +1,5 @@
 import bpy
+import os
 
 from bpy.types import (Operator)
 
@@ -24,6 +25,16 @@ def fixTilePositions():
                     tile.location.x += tileSize + tileSpacing
                     previousTilePosition = tile.location
                 tileIndex +=1
+
+def writeToFile(variable, content, lineBreakAmount = None):
+    variable += content
+    if lineBreakAmount == None:
+      variable += '\n'
+    else:
+      for index in range(0, lineBreakAmount):
+        variable += '\n'
+    return variable
+
 
 class TILESET_GENERATE_TILE_OT(Operator):
     bl_idname = "wm.tileset_generate_tile"
@@ -143,4 +154,48 @@ class TILESET_MOVE_CAMERA_TILE_OT(Operator):
             self.report({'INFO'}, 'Next Tile Camera Set')
         else:
             self.report({'INFO'}, 'Select A Valid Collection Tile Before Switching')
+        return {'FINISHED'}
+
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+
+class TILESET_EXPORT_GODOT_TILESET_OT(Operator):
+    bl_idname = "wm.tileset_export_godot_tileset"
+    bl_label = "Export Godot Tileset"
+    bl_description = "Exports a resource file and scene containing configurations for Godot Engine"
+
+    def execute(self, context):
+        scene = context.scene
+        tool = scene.godot_game_tools
+        tileset_generate_path = tool.tileset_generate_path
+        currentTile = bpy.context.view_layer.objects.active
+        if tileset_generate_path is not None:
+            exportFileName = "tileset.tres"
+            fileName = os.path.join(tileset_generate_path, exportFileName)
+            file = open(fileName, "w+")
+
+            fileHeader = ''
+            fileHeader = writeToFile(fileHeader, '[gd_resource type="TileSet" load_steps=2 format=2]')
+            fileHeader = writeToFile(fileHeader, '[ext_resource path="res://assets/tiles/default.png" type="Texture" id=1]', 2)
+            fileHeader = writeToFile(fileHeader, '[resource]')
+
+            fileContent = ''
+            fileContent = writeToFile(fileContent, '0/name = "default"')
+            fileContent = writeToFile(fileContent, '0/texture = ExtResource( 1 )')
+            fileContent = writeToFile(fileContent, '0/tex_offset = Vector2( 0, 0 )')
+            fileContent = writeToFile(fileContent, '0/modulate = Color( 0.0784314, 0.662745, 0.2, 1 )')
+            fileContent = writeToFile(fileContent, '0/region = Rect2( 0, 0, 32, 32 )')
+            fileContent = writeToFile(fileContent, '0/tile_mode = 0')
+            fileContent = writeToFile(fileContent, '0/occluder_offset = Vector2( 16, 16 )')
+            fileContent = writeToFile(fileContent, '0/navigation_offset = Vector2( 16, 16 )')
+            fileContent = writeToFile(fileContent, '0/shapes = [  ]')
+            fileContent = writeToFile(fileContent, '0/z_index = 0')
+
+            file.write(fileHeader)
+            file.write(fileContent)
+            file.close()
+            self.report({'INFO'}, 'Godot Engine Tileset Resource File Exported')
+        else:
+            self.report({'INFO'}, 'Please select a destination folder for the file export')
         return {'FINISHED'}

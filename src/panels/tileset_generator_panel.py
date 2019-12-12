@@ -18,7 +18,9 @@ class _PT_TILESET_GENERATOR_PT_(bpy.types.Panel, ObjectButtonsPanel):
         tool = scene.godot_game_tools
         box = layout.box()
         box.label(text="Tileset Manager", icon='SCENE')
+        box.prop(tool, "tileset_generate_path")
         box.operator("wm.tileset_set_topdown_camera", icon="ANIM_DATA")
         box.operator("wm.tileset_set_isometric_camera", icon="ANIM_DATA")
         box.operator("wm.tileset_generate_tile", icon="ANIM_DATA")
         box.operator("wm.tileset_move_camera_tile", icon="ANIM_DATA")
+        box.operator("wm.tileset_export_godot_tileset", icon="ANIM_DATA")
