@@ -20,6 +20,7 @@ class _PT_ARMATURE_UTILITIES_PT_(bpy.types.Panel, ObjectButtonsPanel):
     bl_region_type = "UI"
     bl_context = "objectmode"
     bl_parent_id = "object.mixamo_utilities_panel"
+    bl_options = {"DEFAULT_CLOSED"}
     def draw(self, context):
         layout = self.layout
         scene = context.scene
@@ -41,6 +42,7 @@ class _PT_ROOT_MOTION_PT_(bpy.types.Panel, ObjectButtonsPanel):
     bl_region_type = "UI"
     bl_context = "objectmode"
     bl_parent_id = "object.mixamo_utilities_panel"
+    bl_options = {"DEFAULT_CLOSED"}
     def draw(self, context):
         layout = self.layout
         scene = context.scene
@@ -61,6 +63,7 @@ class _PT_ANIMATIONS_PT_(bpy.types.Panel, ObjectButtonsPanel):
     bl_region_type = "UI"
     bl_context = "objectmode"
     bl_parent_id = "object.mixamo_utilities_panel"
+    bl_options = {"DEFAULT_CLOSED"}
     def draw(self, context):
         layout = self.layout
         scene = context.scene

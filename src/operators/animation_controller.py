@@ -77,9 +77,7 @@ class PROCESS_ACTIONS_OT(Operator):
 
     def execute(self, context):
         actions = bpy.data.actions
-
         for action in actions:
-
             if action.ggt_props.hips_scale == 1.0:
                 for f in action.fcurves:
                     if f.data_path == 'pose.bones["Hips"].location':
@@ -87,5 +85,4 @@ class PROCESS_ACTIONS_OT(Operator):
                             keyframe.co[1] *= .01
                 print("Action {} hips are scaled to 0.01.".format(action.name))
                 action.ggt_props.hips_scale = 0.01
-
         return {'FINISHED'}

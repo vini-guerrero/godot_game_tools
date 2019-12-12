@@ -69,7 +69,6 @@ class ADD_ROOTMOTION_OT(Operator):
       return result
 
     def execute(self, context):
-
         scene = context.scene
         tool = scene.godot_game_tools
         target_armature = tool.target_object
@@ -81,7 +80,6 @@ class ADD_ROOTMOTION_OT(Operator):
         else:
             animationsForRootMotion.append(bpy.context.object.animation_data.action)
         bpy.ops.wm.add_rootbone('EXEC_DEFAULT')
-
         if len(bpy.data.actions) > 0:
             for action in animationsForRootMotion:
                 animation = action.name
@@ -112,23 +110,9 @@ class ADD_ROOTMOTION_OT(Operator):
             self.report({'INFO'}, 'Root Motion Added')
         return {'FINISHED'}
 
-def enable_root_motion( action: bpy.types.Action, use_z_axis = False ) -> bool:
-
+def enable_root_motion(action: bpy.types.Action, use_z_axis = False ) -> bool:
     root_bone_name = bpy.context.scene.godot_game_tools.target.name.rootmotion_name
     #target_armature =
-
     animation_id = bpy.data.actions.keys().index(action.name)
     end_frame = action.frame_range[-1]
-
     return True
-
-
-
-
-
-
-
-
-
-
-

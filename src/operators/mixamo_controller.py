@@ -8,7 +8,6 @@ from bpy_extras.io_utils import ImportHelper
 
 from ..utils import validateArmature
 
-
 class INIT_CHARACTER_OT(bpy.types.Operator, ImportHelper):
     """Initializes imported model for the tool"""
     bl_idname = "wm.init_character"
@@ -34,23 +33,39 @@ class INIT_CHARACTER_OT(bpy.types.Operator, ImportHelper):
 
         for name in valid_files:
             file_path = os.path.join(path, name)
+            extension = (os.path.splitext(file_path)[1])[1:].lower()
+
             if ext == "fbx":
                 if hasattr(bpy.types, bpy.ops.import_scene.fbx.idname()):
-                    action_name, action_extension = os.path.splitext(name)
-                    fileNamesList.append(action_name)
-                    bpy.ops.import_scene.fbx(filepath=file_path)
-                    tool = bpy.context.scene.godot_game_tools
-                    tool.target_object = bpy.context.object
-                    bpy.context.object.animation_data.action.name = action_name
+                    actionName, actionExtension = os.path.splitext(name)
+                    if actionName == "T-Pose":
+                        # Local Variable
+                        fileNamesList.append(actionName)
+                        bpy.ops.import_scene.fbx(filepath = file_path)
 
     def execute(self, context):
+        scene = context.scene
+        tool = scene.godot_game_tools
+        characterCollectionName = tool.character_collection_name
+        if bpy.data.collections.get(characterCollectionName) is None:
+          characterCollection = bpy.data.collections.new(characterCollectionName)
+          bpy.context.scene.collection.children.link(characterCollection)
         self.report({'INFO'}, 'Loading Character T-Pose')
         filePathWithName = bpy.path.abspath(self.properties.filepath)
         path = os.path.dirname(filePathWithName)
         self.import_from_folder(path, context)
-        bpy.ops.wm.prepare_mixamo_rig('EXEC_DEFAULT')
+        # bpy.ops.wm.prepare_mixamo_rig('EXEC_DEFAULT')
+        if bpy.data.collections.get(characterCollectionName) is not None:
+            characterArmature = bpy.context.view_layer.objects.active
+            if len(characterArmature.children) > 0:
+                for mesh in characterArmature.children:
+                    bpy.context.scene.collection.children[0].objects.unlink(mesh)
+                    characterCollection.objects.link(mesh)
+            bpy.context.scene.collection.children[0].objects.unlink(characterArmature)
+            characterCollection.objects.link(characterArmature)
+            characterArmature.animation_data.action.name = "T-Pose"
+            tool.target_object = characterArmature
         return {'FINISHED'}
-
 
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
@@ -65,9 +80,10 @@ class JOIN_ANIMATIONS_OT(Operator, ImportHelper):
     filter_glob: StringProperty(default="*.fbx", options={'HIDDEN'})
     files: CollectionProperty(type=bpy.types.PropertyGroup)
 
-
-    # TODO: Only import selected files
     def importModels(self, path, target_armature, context):
+        scene = context.scene
+        tool = scene.godot_game_tools
+        characterCollectionName = tool.character_collection_name
         extensions = ['fbx']
         filenames = sorted(os.listdir(path))
         valid_files = []
@@ -76,44 +92,49 @@ class JOIN_ANIMATIONS_OT(Operator, ImportHelper):
         # Debug
         removeImports = True
 
-        for filename in filenames:
-            for ext in extensions:
-                if filename.lower().endswith('.{}'.format(ext)):
-                    valid_files.append(filename)
-                    break
+        if bpy.data.collections.get(characterCollectionName) is not None:
+            characterCollection = bpy.data.collections.get(characterCollectionName)
+            for filename in filenames:
+                for ext in extensions:
+                    if filename.lower().endswith('.{}'.format(ext)):
+                        valid_files.append(filename)
+                        break
 
-        for name in valid_files:
-            file_path = os.path.join(path, name)
-            extension = (os.path.splitext(file_path)[1])[1:].lower()
+            for name in valid_files:
+                file_path = os.path.join(path, name)
+                extension = (os.path.splitext(file_path)[1])[1:].lower()
 
-            if ext == "fbx":
-                if hasattr(bpy.types, bpy.ops.import_scene.fbx.idname()):
-                    actionName, actionExtension = os.path.splitext(name)
-                    if actionName != "T-Pose":
-                        # Local Variable
-                        fileNamesList.append(actionName)
-                        bpy.ops.import_scene.fbx(filepath = file_path)
+                if ext == "fbx":
+                    if hasattr(bpy.types, bpy.ops.import_scene.fbx.idname()):
+                        actionName, actionExtension = os.path.splitext(name)
+                        if actionName != "T-Pose":
+                            # Local Variable
+                            fileNamesList.append(actionName)
+                            bpy.ops.import_scene.fbx(filepath = file_path)
+                            characterArmature = bpy.context.view_layer.objects.active
+                            if len(characterArmature.children) > 0:
+                                for mesh in characterArmature.children:
+                                    bpy.context.scene.collection.children[0].objects.unlink(mesh)
+                                    characterCollection.objects.link(mesh)
+                            bpy.context.scene.collection.children[0].objects.unlink(characterArmature)
+                            characterCollection.objects.link(characterArmature)
 
-        if len(bpy.data.collections) > 0:
-            for col in bpy.data.collections:
-                if len(col.objects) > 0:
-                    index = 0
-                    for obj in col.objects:
-                        if obj.type == "ARMATURE" and obj is not target_armature:
-                            print("Importing animation from file {}".format(obj.name))
-                            obj.animation_data.action.name = fileNamesList[index]
-
-                            # Rename the bones
-                            for bone in obj.pose.bones:
-                                if ':' not in bone.name:
-                                    continue
-                                bone.name = bone.name.split(":")[1]
-
-                            removeList.append(obj)
-                            index += 1
-                            if len(obj.children) > 0:
-                                for mesh in obj.children:
-                                    removeList.append(mesh)
+            if len(characterCollection.objects) > 0:
+                index = 0
+                for obj in characterCollection.objects:
+                    if obj.type == "ARMATURE" and obj is not target_armature:
+                        print("Importing animation from file {}".format(obj.name))
+                        obj.animation_data.action.name = fileNamesList[index -1]
+                        # Rename the bones
+                        for bone in obj.pose.bones:
+                            if ':' not in bone.name:
+                                continue
+                            bone.name = bone.name.split(":")[1]
+                        removeList.append(obj)
+                        if len(obj.children) > 0:
+                            for mesh in obj.children:
+                                removeList.append(mesh)
+                        index += 1
 
         # Delete Imported Armatures
         if removeImports:
@@ -137,7 +158,6 @@ class JOIN_ANIMATIONS_OT(Operator, ImportHelper):
         target_armature = tool.target_object
         filePathWithName = bpy.path.abspath(self.properties.filepath)
         path = os.path.dirname(filePathWithName)
-        bpy.context.object.animation_data.action.name = "T-Pose"
         self.importModels(path, target_armature, context)
         bpy.ops.scene.process_actions('EXEC_DEFAULT')
         self.setDefaultAnimation(context)
@@ -218,9 +238,7 @@ class PREPARE_RIG_OT(Operator):
                     animationIndex = bpy.data.actions.keys().index(animation)
                     target_armature.animation_data.action = bpy.data.actions.values()[animationIndex]
                     bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
-
                     bpy.ops.scene.process_actions('EXEC_DEFAULT')
-
                     tool.actions.append(anim)
             self.report({'INFO'}, 'Rig Armature Prepared')
         return {'FINISHED'}
@@ -240,9 +258,7 @@ class WM_OT_RENAME_MIXAMORIG(Operator):
         tool = scene.godot_game_tools
         visible_armature = tool.visible_armature
         target_armature = tool.target_object
-
         valid = validateArmature(self, context)
-
         if valid:
             bpy.data.objects["Armature"].select_set(True)
             target_armature.hide_viewport = False
@@ -268,6 +284,4 @@ class WM_OT_RENAME_MIXAMORIG(Operator):
             if bpy.data.actions:
                 bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
             self.report({'INFO'}, 'Character Bones Successfully Renamed')
-
         return {'FINISHED'}
-
