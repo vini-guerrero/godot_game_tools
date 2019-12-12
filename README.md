@@ -1,7 +1,8 @@
 # Godot Game Tools
 This is a blender add-on that contains tools to ease the creation/import process of assets into Godot Game Engine <br/> https://github.com/godotengine/godot
 
-## Setup Process To Ease Mixamo 3D Animations Into Godot
+![Godot Game Tools](/cover.png "Godot Game Tools")
+<br/> <br/>
 
 ### How To Use
 https://www.youtube.com/watch?v=fzKitRyqAK0&t=79s
