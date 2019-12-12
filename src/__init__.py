@@ -10,7 +10,7 @@ bl_info = {
     "name": "Godot Game Tools",
     "description": "This Add-On provides features for better export options with Godot Game Engine",
     "author": "Vinicius Guerrero",
-    "version": (1, 0, 3),
+    "version": (1, 0, 4),
     "blender": (2, 81, 0),
     "location": "3D View > Tools",
     "warning": "",
@@ -91,6 +91,7 @@ from .operators.animation_controller import ANIMATION_PLAYER_OT, STOP_ANIMATION_
 from .operators.rootmotion_controller import ADD_ROOTBONE_OT, ADD_ROOTMOTION_OT
 from .operators.mixamo_controller import INIT_CHARACTER_OT, JOIN_ANIMATIONS_OT, PREPARE_RIG_OT, RENAME_RIG_OT
 from .operators.texture_controller import SAVE_BAKE_TEXTURES_OT, BAKE_TEXTURE_OT
+from .operators.tileset_controller import TILESET_GENERATE_TILE_OT, TILESET_SET_ISOMETRIC_CAMERA_OT, TILESET_MOVE_CAMERA_TILE_OT, TILESET_SET_TOPDOWN_CAMERA_OT
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
@@ -102,6 +103,7 @@ from .operators.texture_controller import SAVE_BAKE_TEXTURES_OT, BAKE_TEXTURE_OT
 from .panels.bvh_utilities_panel import (_PT_BVH_UTILITIES_PT_)
 from .panels.texture_controls_panel import (_PT_TEXTURE_CONTROLS_PT_)
 from .panels.mixamo_utilities_panel import (_PT_MIXAMO_UTILITIES_PT_, _PT_ARMATURE_UTILITIES_PT_, _PT_ROOT_MOTION_PT_, _PT_ANIMATIONS_PT_)
+from .panels.tileset_generator_panel import (_PT_TILESET_GENERATOR_PT_)
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
@@ -132,6 +134,7 @@ classes = (
     _PT_ARMATURE_UTILITIES_PT_,
     _PT_ROOT_MOTION_PT_,
     _PT_ANIMATIONS_PT_,
+    _PT_TILESET_GENERATOR_PT_,
     INIT_CHARACTER_OT,
     JOIN_ANIMATIONS_OT,
     RENAME_RIG_OT,
@@ -144,7 +147,11 @@ classes = (
     ADD_ROOTBONE_OT,
     ADD_ROOTMOTION_OT,
     SAVE_BAKE_TEXTURES_OT,
-    BAKE_TEXTURE_OT
+    BAKE_TEXTURE_OT,
+    TILESET_GENERATE_TILE_OT,
+    TILESET_SET_ISOMETRIC_CAMERA_OT,
+    TILESET_SET_TOPDOWN_CAMERA_OT,
+    TILESET_MOVE_CAMERA_TILE_OT
 )
 
 

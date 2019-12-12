@@ -24,7 +24,7 @@ This is a blender add-on that contains tools to ease the creation/import process
 
 ### About The Author - Vinicius Guerrero
 
-- Website: https://www.tinywarriorstudio.com/
+- Website: https://viniguerrero.itch.io/
 - Twitter: https://twitter.com/viiniiguerrero
 
 #### Special Thanks To
