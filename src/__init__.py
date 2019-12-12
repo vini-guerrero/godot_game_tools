@@ -54,9 +54,13 @@ class AddonProperties(PropertyGroup):
     animations: EnumProperty(name="Animations", description="Available armature animations", items=populateAnimations, default=None, options={'ANIMATABLE'}, update=None, get=None, set=None)
     visible_armature: BoolProperty(name="Show Armature Bones", description="Hides / Show armature bones once animations are loaded", default=True, update=toggleArmatureVisibility)
     rootmotion_all: BoolProperty(name="Apply Rootmotion To All Animations", description="Choose to apply rootmotion to all animations or current only", default=True, update=None)
-    bake_texture_size: IntProperty(name = "Bake Texture Size", description="Define here the size of textures images to bake", default = 1024, min = 8, max = 4096)
+    bake_texture_size: IntProperty(name="Bake Texture Size", description="Define here the size of textures images to bake", default = 1024, min = 8, max = 4096)
     actions = []
+    tile_collection_name: bpy.props.StringProperty(name="Tile Collection Name", default="TileCollection")
     tileset_generate_path: StringProperty(name="Tileset Path", description="Select the path destination folder you want tilset to be generated into", subtype="FILE_PATH")
+    tileset_tile_width: IntProperty(name="Tile Width", description="Define the tiles width desired", default=32, min=8, max=1024)
+    tileset_tile_height: IntProperty(name="Tile Height", description="Define the tiles width desired", default=32, min=8, max=1024)
+
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
