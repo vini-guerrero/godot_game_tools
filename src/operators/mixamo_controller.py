@@ -124,7 +124,7 @@ class JOIN_ANIMATIONS_OT(Operator, ImportHelper):
                 for obj in characterCollection.objects:
                     if obj.type == "ARMATURE" and obj is not target_armature:
                         print("Importing animation from file {}".format(obj.name))
-                        obj.animation_data.action.name = fileNamesList[index -1]
+                        obj.animation_data.action.name = fileNamesList[index]
                         # Rename the bones
                         for bone in obj.pose.bones:
                             if ':' not in bone.name:
