@@ -11,7 +11,7 @@ class ADD_ROOTBONE_OT(Operator):
         scene = context.scene
         tool = scene.godot_game_tools
         animation = tool.animations
-        target_armature = tool.target_name
+        target_armature = tool.target_object
         rootMotionBoneName = tool.rootmotion_name
         if not target_armature:
             self.report({'INFO'}, 'Please select a valid armature')
@@ -30,7 +30,7 @@ class ADD_ROOTBONE_OT(Operator):
                     # Insert Location on RootMotion Bone
                     bpy.ops.object.mode_set(mode="POSE")
                     bpy.context.view_layer.objects.active.data.bones[rootMotionBoneName].select = True
-                    scene.frame_set(1)
+                    scene.frame_set(0)
                     bpy.ops.anim.keyframe_insert_menu(type='Location')
                     # Parent Bone
                     bpy.ops.object.mode_set(mode='OBJECT')
@@ -69,9 +69,10 @@ class ADD_ROOTMOTION_OT(Operator):
       return result
 
     def execute(self, context):
+
         scene = context.scene
         tool = scene.godot_game_tools
-        target_armature = tool.target_name
+        target_armature = tool.target_object
         rootMotionBoneName = tool.rootmotion_name
         rootmotion_all = tool.rootmotion_all
         animationsForRootMotion = []
@@ -80,6 +81,7 @@ class ADD_ROOTMOTION_OT(Operator):
         else:
             animationsForRootMotion.append(bpy.context.object.animation_data.action)
         bpy.ops.wm.add_rootbone('EXEC_DEFAULT')
+
         if len(bpy.data.actions) > 0:
             for action in animationsForRootMotion:
                 animation = action.name
@@ -98,12 +100,35 @@ class ADD_ROOTMOTION_OT(Operator):
                 hip_fcurve = self.get_fcurve(target_armature, "Hips")
                 frames = []
                 for point in hip_fcurve.keyframe_points[1:]:
-                  frames.append(point.co[0])
+                    frames.append(point.co[0])
                 for index in frames:
-                  scene.frame_set(index)
-                  anim_root_bone.location = anim_hip_bone.location
-                  anim_root_bone.keyframe_insert(data_path='location')
-                  anim_hip_bone.keyframe_delete(data_path='location')
+                    scene.frame_set(index)
+                    anim_root_bone.location = anim_hip_bone.location
+                    anim_root_bone.keyframe_insert(data_path='location')
+                    anim_hip_bone.keyframe_delete(data_path='location')
+                    #hip_fcurve.location[0].mute = True
+                    #hip_fcurve.location[2].mute = True
             bpy.ops.object.mode_set(mode='OBJECT')
             self.report({'INFO'}, 'Root Motion Added')
         return {'FINISHED'}
+
+def enable_root_motion( action: bpy.types.Action, use_z_axis = False ) -> bool:
+
+    root_bone_name = bpy.context.scene.godot_game_tools.target.name.rootmotion_name
+    #target_armature =
+
+    animation_id = bpy.data.actions.keys().index(action.name)
+    end_frame = action.frame_range[-1]
+
+    return True
+
+
+
+
+
+
+
+
+
+
+

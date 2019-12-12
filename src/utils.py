@@ -1,4 +1,7 @@
 import bpy
+from bpy.props import (IntProperty, StringProperty, PointerProperty, CollectionProperty, EnumProperty, BoolProperty)
+from bpy.types import (PropertyGroup)
+
 
 def console_get():
     for area in bpy.context.screen.areas:
@@ -22,6 +25,7 @@ def console_write(text):
     for line in text.split("\n"):
         bpy.ops.console.scrollback_append(context, text=line, type='OUTPUT')
 
+
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
@@ -40,3 +44,8 @@ def validateArmature():
     else:
         self.report({'INFO'}, 'Please select a valid armature')
     return valid
+
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+

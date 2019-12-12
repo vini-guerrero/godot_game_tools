@@ -11,7 +11,7 @@ class NLA_TRACKS_OT(Operator):
         scene = context.scene
         tool = scene.godot_game_tools
         animation = tool.animations
-        target_armature = tool.target_name
+        target_armature = tool.target_object
         bpy.ops.screen.animation_cancel()
         bpy.context.view_layer.objects.active = target_armature
         bpy.context.scene.frame_start = 2
