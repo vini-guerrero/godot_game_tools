@@ -196,6 +196,7 @@ class TILESET_EXPORT_GODOT_TILESET_OT(Operator):
 
                 # Gather Tiles in Collection
                 headerTscnIndex = 0
+                subResourceHeader = 0
                 for tile in tilesInCollection:
                     bpy.ops.object.select_all(action='DESELECT')
                     bpy.context.view_layer.objects.active = tile
@@ -212,12 +213,28 @@ class TILESET_EXPORT_GODOT_TILESET_OT(Operator):
                         fileHeaderTscn = writeToFile(fileHeaderTscn, '[ext_resource path="' + assetPath +  str(tile.name) + '.png" type="Texture" id=' + str(headerTscnIndex) + ']', 2)
                     else:
                         fileHeaderTscn = writeToFile(fileHeaderTscn, '[ext_resource path="' + assetPath +  str(tile.name) + '.png" type="Texture" id=' + str(headerTscnIndex) + ']')
+
+                    subResourceHeader = headerTscnIndex
+                    # Collision
                     if (tile.get('TileCollision') is not None):
                         if tile.get('TileCollision') == True:
                             # Top-Down
                             if tileset_type == 0:
-                                fileHeaderTscn = writeToFile(fileHeaderTscn, '[sub_resource type="RectangleShape2D" id=' + str(headerTscnIndex) + ']')
-                                fileHeaderTscn = writeToFile(fileHeaderTscn, 'extents = Vector2( ' + str(tileset_tile_width / 2) + ', ' + str(tileset_tile_height / 2) + ' )', 2)
+                                fileHeaderTscn = writeToFile(fileHeaderTscn, '[sub_resource type="RectangleShape2D" id=' + str(subResourceHeader) + ']')
+                                fileHeaderTscn = writeToFile(fileHeaderTscn, 'extents = Vector2( ' + str(int(tileset_tile_width / 2)) + ', ' + str(int(tileset_tile_height / 2)) + ' )', 2)
+                                subResourceHeader += 1
+                    # Navigation
+                    if (tile.get('TileNavigation') is not None):
+                        if tile.get('TileNavigation') == True:
+                            # Top-Down
+                            if tileset_type == 0:
+                                halfTile = str(int(tileset_tile_width / 2))
+                                fileHeaderTscn = writeToFile(fileHeaderTscn, '[sub_resource type="NavigationPolygon" id=' + str(subResourceHeader) + ']')
+                                fileHeaderTscn = writeToFile(fileHeaderTscn, 'vertices = PoolVector2Array( -' + halfTile + ', ' + halfTile + ', -' + halfTile + ', -' + halfTile + ', ' + halfTile + ', -' + halfTile + ', ' + halfTile + ', ' + halfTile + ' )')
+                                fileHeaderTscn = writeToFile(fileHeaderTscn, 'polygons = [ PoolIntArray( 0, 1, 2, 3, 0 ) ]')
+                                fileHeaderTscn = writeToFile(fileHeaderTscn, 'outlines = [ PoolVector2Array( -' + halfTile + ', ' + halfTile + ', ' + halfTile + ', ' + halfTile + ', ' + halfTile + ', -' + halfTile + ', -' + halfTile + ', -' + halfTile + ', -' + halfTile + ', ' + halfTile + ' ) ]', 2)
+                                subResourceHeader += 1
+
                     headerTscnIndex += 1
 
                 fileHeaderTscn = writeToFile(fileHeaderTscn, '[node name="Tileset" type="Node2D"]', 2)
@@ -225,6 +242,7 @@ class TILESET_EXPORT_GODOT_TILESET_OT(Operator):
                 # File Content
                 fileContentTscn = ''
                 contentTscnIndex = 0
+                subResourceContent = 0
                 for tile in tilesInCollection:
                     if contentTscnIndex > 0:
                         tilePositionX = tileset_tile_width * contentTscnIndex
@@ -237,16 +255,27 @@ class TILESET_EXPORT_GODOT_TILESET_OT(Operator):
                     fileContentTscn = writeToFile(fileContentTscn, 'position = Vector2( ' + str(tilePositionX) + ', ' + str(tilePositionY) + ' )')
                     fileContentTscn = writeToFile(fileContentTscn, 'texture = ExtResource( ' + str(contentTscnIndex) + ' )', 2)
 
+                    subResourceContent = contentTscnIndex
+                    # Collision
                     if (tile.get('TileCollision') is not None):
                         if tile.get('TileCollision') == True:
                             # Top-Down
                             if tileset_type == 0:
                                 fileContentTscn = writeToFile(fileContentTscn, '[node name="CollisionShape2D" type="CollisionShape2D" parent="' + str (tile.name) + '"]')
-                                fileContentTscn = writeToFile(fileContentTscn, 'shape = SubResource( ' + str(contentTscnIndex) + ' )')
+                                fileContentTscn = writeToFile(fileContentTscn, 'shape = SubResource( ' + str(subResourceContent) + ' )', 2)
+                                subResourceContent += 1
                             # Isometric
                             if tileset_type == 1:
                                 fileContentTscn = writeToFile(fileContentTscn, '[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="' + str (tile.name) + '"]')
-                                fileContentTscn = writeToFile(fileContentTscn, 'polygon = PoolVector2Array( -0.0390739, 16.0384, 32.0454, -0.00385857, 0.0896072, -16.2177, -32.2522, -0.0896454 )')
+                                fileContentTscn = writeToFile(fileContentTscn, 'polygon = PoolVector2Array( -0.0390739, 16.0384, 32.0454, -0.00385857, 0.0896072, -16.2177, -32.2522, -0.0896454 )', 2)
+                    # Navigation
+                    if (tile.get('TileNavigation') is not None):
+                        if tile.get('TileNavigation') == True:
+                            # Top-Down
+                            if tileset_type == 0:
+                                fileContentTscn = writeToFile(fileContentTscn, '[node name="NavigationPolygonInstance" type="NavigationPolygonInstance" parent="' + str (tile.name) + '"]')
+                                fileContentTscn = writeToFile(fileContentTscn, 'navpoly = SubResource( ' + str(subResourceContent) + ' )', 2)
+                                subResourceContent += 1
 
                     contentTscnIndex += 1
 
