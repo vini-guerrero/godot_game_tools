@@ -1,5 +1,6 @@
 import bpy
 import os
+from pathlib import Path
 
 from bpy.types import (Operator)
 
@@ -180,7 +181,8 @@ class TILESET_EXPORT_GODOT_TILESET_OT(Operator):
             tileCollection = bpy.data.collections.get(tileCollectionName)
             tilesInCollection = tileCollection.objects
             totalTiles = len(tilesInCollection)
-            if totalTiles > 0:
+            if totalTiles > 0 and tool.tileset_generate_path is not None:
+                assetPath = "res://" + str(tool.tileset_generate_path.split(os.path.sep)[-2]) + "/"
 
                 # .TSCN Godot File
                 tilesetTscnFileName = "Tileset.tscn"
@@ -191,7 +193,7 @@ class TILESET_EXPORT_GODOT_TILESET_OT(Operator):
                 fileHeaderTscn = writeToFile(fileHeaderTscn, '[gd_scene load_steps=2 format=2]', 2)
 
                 # Gather Tiles in Collection
-                tileIndex = 0
+                headerTscnIndex = 0
                 for tile in tilesInCollection:
                     bpy.ops.object.select_all(action='DESELECT')
                     bpy.context.view_layer.objects.active = tile
@@ -203,28 +205,35 @@ class TILESET_EXPORT_GODOT_TILESET_OT(Operator):
                     file = os.path.join(tileset_generate_path, tile.name)
                     bpy.context.scene.render.filepath = file
                     bpy.ops.render.render(animation=False, write_still=True)
-
-                    if tileIndex == totalTiles -1:
-                        fileHeaderTscn = writeToFile(fileHeaderTscn, '[ext_resource path="' + file + '" type="Texture" id=' + str(tileIndex) + ']', 2)
+                    resourceDirectory = str(Path(file).parents[0])
+                    if headerTscnIndex == totalTiles -1:
+                        fileHeaderTscn = writeToFile(fileHeaderTscn, '[ext_resource path="' + assetPath + '" type="Texture" id=' + str(headerTscnIndex) + ']', 2)
                     else:
-                        fileHeaderTscn = writeToFile(fileHeaderTscn, '[ext_resource path="' + file + '" type="Texture" id=' + str(tileIndex) + ']')
-                    tileIndex += 1
+                        fileHeaderTscn = writeToFile(fileHeaderTscn, '[ext_resource path="' + assetPath + '" type="Texture" id=' + str(headerTscnIndex) + ']')
+                    headerTscnIndex += 1
 
                 fileHeaderTscn = writeToFile(fileHeaderTscn, '[node name="Tileset" type="Node2D"]', 2)
 
-                tileIndex = 0
+                # File Content
+                fileContentTscn = ''
+                contentTscnIndex = 0
                 for tile in tilesInCollection:
-                    # File Content
-                    fileContentTscn = ''
+                    if contentTscnIndex > 0:
+                        tilePositionX = tileset_tile_width * contentTscnIndex
+                        tilePositionY = 0
+                    else:
+                        tilePositionX = 0
+                        tilePositionY = 0
+
                     fileContentTscn = writeToFile(fileContentTscn, '[node name="default" type="Sprite" parent="."]')
-                    fileContentTscn = writeToFile(fileContentTscn, 'texture = ExtResource( ' + str(tileIndex) + ' )')
-                    tileIndex += 1
+                    fileContentTscn = writeToFile(fileContentTscn, 'position = Vector2( ' + str(tilePositionX) + ', ' + str(tilePositionY) + ' )')
+                    fileContentTscn = writeToFile(fileContentTscn, 'texture = ExtResource( ' + str(contentTscnIndex) + ' )', 1)
+                    contentTscnIndex += 1
 
                 # File to Disk
                 fileTscn.write(fileHeaderTscn)
                 fileTscn.write(fileContentTscn)
                 fileTscn.close()
-
 
 
                 # .TRES Godot File
@@ -235,30 +244,29 @@ class TILESET_EXPORT_GODOT_TILESET_OT(Operator):
                 fileHeaderTres = ''
                 fileHeaderTres = writeToFile(fileHeaderTres, '[gd_resource type="TileSet" load_steps=2 format=2]', 2)
 
-                tileIndex = 0
+                tileTresIndex = 0
                 for tile in tilesInCollection:
                     lineBreak = 1
-                    if tileIndex == totalTiles -1: lineBreak = 2
-                    fileHeaderTres = writeToFile(fileHeaderTres, '[ext_resource path="res://assets/tiles/default.png" type="Texture" id=' + str(tileIndex) + ']', lineBreak)
-                    tileIndex += 1
+                    if tileTresIndex == totalTiles -1: lineBreak = 2
+                    fileHeaderTres = writeToFile(fileHeaderTres, '[ext_resource path="' + assetPath +  str(tile.name) + '.png" type="Texture" id=' + str(tileTresIndex) + ']', lineBreak)
+                    tileTresIndex += 1
                 fileHeaderTres = writeToFile(fileHeaderTres, '[resource]')
 
                 # File Content
                 fileContentTres = ''
-
-                tileIndex = 0
+                contentTresIndex = 0
                 for tile in tilesInCollection:
                     # File Content
-                    fileContentTres = writeToFile(fileContentTres, str(tileIndex) + '/name = "default"')
-                    fileContentTres = writeToFile(fileContentTres, str(tileIndex) + '/texture = ExtResource( 1 )')
-                    fileContentTres = writeToFile(fileContentTres, str(tileIndex) + '/tex_offset = Vector2( 0, 0 )')
-                    fileContentTres = writeToFile(fileContentTres, str(tileIndex) + '/region = Rect2( 0, 0, ' + str(tileset_tile_width) + ', ' + str(tileset_tile_height) + ' )')
-                    fileContentTres = writeToFile(fileContentTres, str(tileIndex) + '/tile_mode = 0')
-                    fileContentTres = writeToFile(fileContentTres, str(tileIndex) + '/occluder_offset = Vector2( ' + str(tileset_tile_width) + ', ' + str(tileset_tile_height) + ' )')
-                    fileContentTres = writeToFile(fileContentTres, str(tileIndex) + '/navigation_offset = Vector2( ' + str(tileset_tile_width) + ', ' + str(tileset_tile_height) + ' )')
-                    fileContentTres = writeToFile(fileContentTres, str(tileIndex) + '/shapes = [  ]')
-                    fileContentTres = writeToFile(fileContentTres, str(tileIndex) + '/z_index = 0')
-                    tileIndex += 1
+                    fileContentTres = writeToFile(fileContentTres, str(contentTresIndex) + '/name = "default"')
+                    fileContentTres = writeToFile(fileContentTres, str(contentTresIndex) + '/texture = ExtResource( 1 )')
+                    fileContentTres = writeToFile(fileContentTres, str(contentTresIndex) + '/tex_offset = Vector2( 0, 0 )')
+                    fileContentTres = writeToFile(fileContentTres, str(contentTresIndex) + '/region = Rect2( 0, 0, ' + str(tileset_tile_width) + ', ' + str(tileset_tile_height) + ' )')
+                    fileContentTres = writeToFile(fileContentTres, str(contentTresIndex) + '/tile_mode = 0')
+                    fileContentTres = writeToFile(fileContentTres, str(contentTresIndex) + '/occluder_offset = Vector2( ' + str(tileset_tile_width) + ', ' + str(tileset_tile_height) + ' )')
+                    fileContentTres = writeToFile(fileContentTres, str(contentTresIndex) + '/navigation_offset = Vector2( ' + str(tileset_tile_width) + ', ' + str(tileset_tile_height) + ' )')
+                    fileContentTres = writeToFile(fileContentTres, str(contentTresIndex) + '/shapes = [  ]')
+                    fileContentTres = writeToFile(fileContentTres, str(contentTresIndex) + '/z_index = 0', 2)
+                    contentTresIndex += 1
 
                 # File to Disk
                 fileTres.write(fileHeaderTres)
