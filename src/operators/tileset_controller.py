@@ -176,6 +176,7 @@ class TILESET_EXPORT_GODOT_TILESET_OT(Operator):
         tileCollectionName = tool.tile_collection_name
         tileset_tile_width = tool.tileset_tile_width
         tileset_tile_height = tool.tileset_tile_height
+        tileset_type = int(tool.tileset_type)
         currentTile = bpy.context.view_layer.objects.active
         if tileset_generate_path is not None:
             tileCollection = bpy.data.collections.get(tileCollectionName)
@@ -210,6 +211,12 @@ class TILESET_EXPORT_GODOT_TILESET_OT(Operator):
                         fileHeaderTscn = writeToFile(fileHeaderTscn, '[ext_resource path="' + assetPath +  str(tile.name) + '.png" type="Texture" id=' + str(headerTscnIndex) + ']', 2)
                     else:
                         fileHeaderTscn = writeToFile(fileHeaderTscn, '[ext_resource path="' + assetPath +  str(tile.name) + '.png" type="Texture" id=' + str(headerTscnIndex) + ']')
+                    if (tile.get('TileCollision') is not None):
+                        if tile.get('TileCollision') == True:
+                            # Top-Down
+                            if tileset_type == 0:
+                                fileHeaderTscn = writeToFile(fileHeaderTscn, '[sub_resource type="RectangleShape2D" id=' + str(headerTscnIndex) + ']')
+                                fileHeaderTscn = writeToFile(fileHeaderTscn, 'extents = Vector2( ' + str(tileset_tile_width / 2) + ', ' + str(tileset_tile_height / 2) + ' )', 2)
                     headerTscnIndex += 1
 
                 fileHeaderTscn = writeToFile(fileHeaderTscn, '[node name="Tileset" type="Node2D"]', 2)
@@ -227,7 +234,19 @@ class TILESET_EXPORT_GODOT_TILESET_OT(Operator):
 
                     fileContentTscn = writeToFile(fileContentTscn, '[node name="' + str (tile.name) + '" type="Sprite" parent="."]')
                     fileContentTscn = writeToFile(fileContentTscn, 'position = Vector2( ' + str(tilePositionX) + ', ' + str(tilePositionY) + ' )')
-                    fileContentTscn = writeToFile(fileContentTscn, 'texture = ExtResource( ' + str(contentTscnIndex) + ' )', 1)
+                    fileContentTscn = writeToFile(fileContentTscn, 'texture = ExtResource( ' + str(contentTscnIndex) + ' )', 2)
+
+                    if (tile.get('TileCollision') is not None):
+                        if tile.get('TileCollision') == True:
+                            # Top-Down
+                            if tileset_type == 0:
+                                fileContentTscn = writeToFile(fileContentTscn, '[node name="CollisionShape2D" type="CollisionShape2D" parent="' + str (tile.name) + '"]')
+                                fileContentTscn = writeToFile(fileContentTscn, 'shape = SubResource( ' + str(contentTscnIndex) + ' )')
+                            # Isometric
+                            if tileset_type == 1:
+                                fileContentTscn = writeToFile(fileContentTscn, '[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="' + str (tile.name) + '"]')
+                                fileContentTscn = writeToFile(fileContentTscn, 'polygon = PoolVector2Array( -0.0390739, 16.0384, 32.0454, -0.00385857, 0.0896072, -16.2177, -32.2522, -0.0896454 )')
+
                     contentTscnIndex += 1
 
                 # File to Disk
@@ -278,4 +297,47 @@ class TILESET_EXPORT_GODOT_TILESET_OT(Operator):
                 self.report({'INFO'}, 'Godot Engine Tileset Resource File Exported')
         else:
             self.report({'INFO'}, 'Please select a destination folder for the file export')
+        return {'FINISHED'}
+
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+
+class TILESET_ADD_COLLISION_SHAPE_OT(Operator):
+    bl_idname = "wm.tileset_add_collision_shape"
+    bl_label = "Add Collision Shape"
+    bl_description = "Adds a collision shape to current selected tile"
+
+    def execute(self, context):
+        scene = context.scene
+        tool = scene.godot_game_tools
+        currentTile = bpy.context.view_layer.objects.active
+        if currentTile is not None:
+            if currentTile.get('TileCollision') is None:
+                currentTile["TileCollision"] = True
+            elif currentTile.get('TileCollision') is not None:
+                if currentTile.get('TileCollision') == False: currentTile["TileCollision"] = True
+            self.report({'INFO'}, 'Collision shape added')
+        else:
+            self.report({'INFO'}, 'No Tile Selected')
+        return {'FINISHED'}
+
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+
+class TILESET_REMOVE_COLLISION_SHAPE_OT(Operator):
+    bl_idname = "wm.tileset_remove_collision_shape"
+    bl_label = "Remove Collision Shape"
+    bl_description = "Removes existing collision shape to current selected tile"
+
+    def execute(self, context):
+        scene = context.scene
+        tool = scene.godot_game_tools
+        currentTile = bpy.context.view_layer.objects.active
+        if currentTile is not None:
+            if currentTile.get('TileCollision') is not None: currentTile["TileCollision"] = False
+            self.report({'INFO'}, 'Collision shape removed')
+        else:
+            self.report({'INFO'}, 'No Tile Selected')
         return {'FINISHED'}

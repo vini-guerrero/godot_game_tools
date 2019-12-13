@@ -60,6 +60,7 @@ class AddonProperties(PropertyGroup):
     tileset_generate_path: StringProperty(name="Tileset Path", description="Select the path destination folder you want tilset to be generated into", subtype="FILE_PATH")
     tileset_tile_width: IntProperty(name="Tile Width", description="Define the tiles width desired", default=32, min=8, max=1024)
     tileset_tile_height: IntProperty(name="Tile Height", description="Define the tiles width desired", default=32, min=8, max=1024)
+    tileset_type: EnumProperty(name="Tileset Type", description="Choose between available tileset types", items=[('0', "Top-Down", ""),('1', "Isometric", "")])
     actions = []
 
 # ------------------------------------------------------------------------ #
@@ -92,12 +93,38 @@ class ActionProperties(bpy.types.PropertyGroup):
 # ------------------------------------------------------------------------
 #    Operators
 # ------------------------------------------------------------------------
-from .operators.nla_tracks_controller import NLA_TRACKS_OT
-from .operators.animation_controller import ANIMATION_PLAYER_OT, STOP_ANIMATION_OT, RENAME_ANIMATION_OT, PROCESS_ACTIONS_OT
-from .operators.rootmotion_controller import ADD_ROOTBONE_OT, ADD_ROOTMOTION_OT
-from .operators.mixamo_controller import INIT_CHARACTER_OT, JOIN_ANIMATIONS_OT, PREPARE_RIG_OT, RENAME_RIG_OT
-from .operators.texture_controller import SAVE_BAKE_TEXTURES_OT, BAKE_TEXTURE_OT
-from .operators.tileset_controller import TILESET_GENERATE_TILE_OT, TILESET_SET_ISOMETRIC_CAMERA_OT, TILESET_MOVE_CAMERA_TILE_OT, TILESET_SET_TOPDOWN_CAMERA_OT, TILESET_EXPORT_GODOT_TILESET_OT
+from .operators.nla_tracks_controller import (
+    NLA_TRACKS_OT
+)
+from .operators.animation_controller import (
+    ANIMATION_PLAYER_OT,
+    STOP_ANIMATION_OT,
+    RENAME_ANIMATION_OT,
+    PROCESS_ACTIONS_OT
+)
+from .operators.rootmotion_controller import (
+    ADD_ROOTBONE_OT,
+    ADD_ROOTMOTION_OT
+)
+from .operators.mixamo_controller import (
+    INIT_CHARACTER_OT,
+    JOIN_ANIMATIONS_OT,
+    PREPARE_RIG_OT,
+    RENAME_RIG_OT
+)
+from .operators.texture_controller import (
+    SAVE_BAKE_TEXTURES_OT,
+    BAKE_TEXTURE_OT
+)
+from .operators.tileset_controller import (
+    TILESET_GENERATE_TILE_OT,
+    TILESET_SET_ISOMETRIC_CAMERA_OT,
+    TILESET_MOVE_CAMERA_TILE_OT,
+    TILESET_SET_TOPDOWN_CAMERA_OT,
+    TILESET_EXPORT_GODOT_TILESET_OT,
+    TILESET_ADD_COLLISION_SHAPE_OT,
+    TILESET_REMOVE_COLLISION_SHAPE_OT
+)
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
@@ -158,7 +185,9 @@ classes = (
     TILESET_GENERATE_TILE_OT,
     TILESET_SET_ISOMETRIC_CAMERA_OT,
     TILESET_SET_TOPDOWN_CAMERA_OT,
-    TILESET_MOVE_CAMERA_TILE_OT
+    TILESET_MOVE_CAMERA_TILE_OT,
+    TILESET_ADD_COLLISION_SHAPE_OT,
+    TILESET_REMOVE_COLLISION_SHAPE_OT
 )
 
 
