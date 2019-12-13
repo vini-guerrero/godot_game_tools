@@ -242,7 +242,7 @@ class TILESET_EXPORT_GODOT_TILESET_OT(Operator):
                 fileTres = open(fileNameTres, "w+")
                 # File Header
                 fileHeaderTres = ''
-                fileHeaderTres = writeToFile(fileHeaderTres, '[gd_resource type="TileSet" load_steps=2 format=2]', 2)
+                fileHeaderTres = writeToFile(fileHeaderTres, '[gd_resource type="TileSet" load_steps=' + str(totalTiles +1) + ' format=2]', 2)
 
                 tileTresIndex = 0
                 for tile in tilesInCollection:
@@ -258,14 +258,15 @@ class TILESET_EXPORT_GODOT_TILESET_OT(Operator):
                 for tile in tilesInCollection:
                     # File Content
                     fileContentTres = writeToFile(fileContentTres, str(contentTresIndex) + '/name = "' + str (tile.name) + '"')
-                    fileContentTres = writeToFile(fileContentTres, str(contentTresIndex) + '/texture = ExtResource( 1 )')
+                    fileContentTres = writeToFile(fileContentTres, str(contentTresIndex) + '/texture = ExtResource( ' + str(contentTresIndex) + ' )')
                     fileContentTres = writeToFile(fileContentTres, str(contentTresIndex) + '/tex_offset = Vector2( 0, 0 )')
+                    fileContentTres = writeToFile(fileContentTres, str(contentTresIndex) + '/modulate = Color( 1, 1, 1, 1 )')
                     fileContentTres = writeToFile(fileContentTres, str(contentTresIndex) + '/region = Rect2( 0, 0, ' + str(tileset_tile_width) + ', ' + str(tileset_tile_height) + ' )')
                     fileContentTres = writeToFile(fileContentTres, str(contentTresIndex) + '/tile_mode = 0')
                     fileContentTres = writeToFile(fileContentTres, str(contentTresIndex) + '/occluder_offset = Vector2( ' + str(tileset_tile_width) + ', ' + str(tileset_tile_height) + ' )')
                     fileContentTres = writeToFile(fileContentTres, str(contentTresIndex) + '/navigation_offset = Vector2( ' + str(tileset_tile_width) + ', ' + str(tileset_tile_height) + ' )')
                     fileContentTres = writeToFile(fileContentTres, str(contentTresIndex) + '/shapes = [  ]')
-                    fileContentTres = writeToFile(fileContentTres, str(contentTresIndex) + '/z_index = 0', 2)
+                    fileContentTres = writeToFile(fileContentTres, str(contentTresIndex) + '/z_index = 0')
                     contentTresIndex += 1
 
                 # File to Disk
