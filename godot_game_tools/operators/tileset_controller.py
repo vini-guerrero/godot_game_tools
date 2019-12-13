@@ -278,8 +278,10 @@ class TILESET_EXPORT_GODOT_TILESET_OT(Operator):
                                 subResourceContent += 1
                             # Isometric
                             if tileset_type == 1:
+                                halfTile = str(int(tileset_tile_width / 2) / 2)
+                                tileSize = str(int(tileset_tile_width) / 2)
                                 fileContentTscn = writeToFile(fileContentTscn, '[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="' + str (tile.name) + '"]')
-                                fileContentTscn = writeToFile(fileContentTscn, 'polygon = PoolVector2Array( -0.0390739, 16.0384, 32.0454, -0.00385857, 0.0896072, -16.2177, -32.2522, -0.0896454 )', 2)
+                                fileContentTscn = writeToFile(fileContentTscn, 'polygon = PoolVector2Array( -0, ' + halfTile + ', ' + tileSize + ', -0, 0, -' + halfTile + ', -' + tileSize + ', -0 )', 2)
                     # Navigation
                     if (tile.get('TileNavigation') is not None):
                         if tile.get('TileNavigation') == True:

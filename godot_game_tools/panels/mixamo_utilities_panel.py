@@ -10,6 +10,7 @@ class _PT_MIXAMO_UTILITIES_PT_(bpy.types.Panel, ObjectButtonsPanel):
     bl_region_type = "UI"
     bl_context = "objectmode"
     bl_parent_id = "object.main_panel"
+    bl_options = {"DEFAULT_CLOSED"}
     def draw(self, context):
         pass
 
