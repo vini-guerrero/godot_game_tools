@@ -179,6 +179,10 @@ class TILESET_EXPORT_GODOT_TILESET_OT(Operator):
         tileset_tile_height = tool.tileset_tile_height
         tileset_type = int(tool.tileset_type)
         currentTile = bpy.context.view_layer.objects.active
+        if int(tool.tileset_type) == 0:
+            bpy.ops.wm.tileset_set_topdown_camera('EXEC_DEFAULT')
+        elif int(tool.tileset_type) == 1:
+            bpy.ops.wm.tileset_set_isometric_camera('EXEC_DEFAULT')
         if tileset_generate_path is not None:
             tileCollection = bpy.data.collections.get(tileCollectionName)
             tilesInCollection = tileCollection.objects
@@ -234,7 +238,15 @@ class TILESET_EXPORT_GODOT_TILESET_OT(Operator):
                                 fileHeaderTscn = writeToFile(fileHeaderTscn, 'polygons = [ PoolIntArray( 0, 1, 2, 3, 0 ) ]')
                                 fileHeaderTscn = writeToFile(fileHeaderTscn, 'outlines = [ PoolVector2Array( -' + halfTile + ', ' + halfTile + ', ' + halfTile + ', ' + halfTile + ', ' + halfTile + ', -' + halfTile + ', -' + halfTile + ', -' + halfTile + ', -' + halfTile + ', ' + halfTile + ' ) ]', 2)
                                 subResourceHeader += 1
-
+                            # Isometric
+                            if tileset_type == 1:
+                                halfTile = str(int(tileset_tile_width / 2) / 2)
+                                tileSize = str(int(tileset_tile_width) / 2)
+                                fileHeaderTscn = writeToFile(fileHeaderTscn, '[sub_resource type="NavigationPolygon" id=' + str(subResourceHeader) + ']')
+                                fileHeaderTscn = writeToFile(fileHeaderTscn, 'vertices = PoolVector2Array( 0, ' + halfTile + ', -' + tileSize + ', 0, 0, -' + halfTile + ', ' + tileSize + ', 0 )')
+                                fileHeaderTscn = writeToFile(fileHeaderTscn, 'polygons = [ PoolIntArray( 0, 1, 2, 3, 0 ) ]')
+                                fileHeaderTscn = writeToFile(fileHeaderTscn, 'outlines = [ PoolVector2Array( 0, ' + halfTile + ', ' + tileSize + ', 0, 0, -' + halfTile + ', -' + tileSize + ', 0, 0, ' + halfTile + ' ) ]', 2)
+                                subResourceHeader += 1
                     headerTscnIndex += 1
 
                 fileHeaderTscn = writeToFile(fileHeaderTscn, '[node name="Tileset" type="Node2D"]', 2)
@@ -273,6 +285,11 @@ class TILESET_EXPORT_GODOT_TILESET_OT(Operator):
                         if tile.get('TileNavigation') == True:
                             # Top-Down
                             if tileset_type == 0:
+                                fileContentTscn = writeToFile(fileContentTscn, '[node name="NavigationPolygonInstance" type="NavigationPolygonInstance" parent="' + str (tile.name) + '"]')
+                                fileContentTscn = writeToFile(fileContentTscn, 'navpoly = SubResource( ' + str(subResourceContent) + ' )', 2)
+                                subResourceContent += 1
+                            # Isometric
+                            if tileset_type == 1:
                                 fileContentTscn = writeToFile(fileContentTscn, '[node name="NavigationPolygonInstance" type="NavigationPolygonInstance" parent="' + str (tile.name) + '"]')
                                 fileContentTscn = writeToFile(fileContentTscn, 'navpoly = SubResource( ' + str(subResourceContent) + ' )', 2)
                                 subResourceContent += 1

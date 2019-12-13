@@ -65,8 +65,8 @@ class AddonProperties(PropertyGroup):
     character_collection_name: bpy.props.StringProperty(name="Armature Collection Name", default="CharacterCollection")
     tile_collection_name: bpy.props.StringProperty(name="Tile Collection Name", default="TileCollection")
     tileset_generate_path: StringProperty(name="Tileset Path", description="Select the path destination folder you want tilset to be generated into", subtype="FILE_PATH")
-    tileset_tile_width: IntProperty(name="Tile Width", description="Define the tiles width desired", default=32, min=8, max=1024)
-    tileset_tile_height: IntProperty(name="Tile Height", description="Define the tiles width desired", default=32, min=8, max=1024)
+    tileset_tile_width: IntProperty(name="Tile Width", description="Define the tiles width desired", default=32, min=8, max=1024, update=updateTilesetGeneratorCamera, get=None, set=None)
+    tileset_tile_height: IntProperty(name="Tile Height", description="Define the tiles width desired", default=32, min=8, max=1024, update=updateTilesetGeneratorCamera, get=None, set=None)
     tileset_type: EnumProperty(name="Tileset Type", description="Choose between available tileset types", items=[('0', "Top-Down", ""),('1', "Isometric", "")], update=updateTilesetGeneratorCamera, get=None, set=None)
     actions = []
 
