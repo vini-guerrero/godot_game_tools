@@ -43,6 +43,13 @@ def toggleArmatureVisibility(self, context):
     target_armature.hide_viewport = not visible_armature
     bpy.context.object.show_in_front = not visible_armature
 
+def updateTilesetGeneratorCamera(self, context):
+    scene = context.scene
+    tool = scene.godot_game_tools
+    if int(tool.tileset_type) == 0:
+        bpy.ops.wm.tileset_set_topdown_camera('EXEC_DEFAULT')
+    elif int(tool.tileset_type) == 1:
+        bpy.ops.wm.tileset_set_isometric_camera('EXEC_DEFAULT')
 
 # ------------------------------------------------------------------------
 #    Addon Tool Properties
@@ -60,7 +67,7 @@ class AddonProperties(PropertyGroup):
     tileset_generate_path: StringProperty(name="Tileset Path", description="Select the path destination folder you want tilset to be generated into", subtype="FILE_PATH")
     tileset_tile_width: IntProperty(name="Tile Width", description="Define the tiles width desired", default=32, min=8, max=1024)
     tileset_tile_height: IntProperty(name="Tile Height", description="Define the tiles width desired", default=32, min=8, max=1024)
-    tileset_type: EnumProperty(name="Tileset Type", description="Choose between available tileset types", items=[('0', "Top-Down", ""),('1', "Isometric", "")])
+    tileset_type: EnumProperty(name="Tileset Type", description="Choose between available tileset types", items=[('0', "Top-Down", ""),('1', "Isometric", "")], update=updateTilesetGeneratorCamera, get=None, set=None)
     actions = []
 
 # ------------------------------------------------------------------------ #
@@ -123,7 +130,9 @@ from .operators.tileset_controller import (
     TILESET_SET_TOPDOWN_CAMERA_OT,
     TILESET_EXPORT_GODOT_TILESET_OT,
     TILESET_ADD_COLLISION_SHAPE_OT,
-    TILESET_REMOVE_COLLISION_SHAPE_OT
+    TILESET_REMOVE_COLLISION_SHAPE_OT,
+    TILESET_ADD_NAVIGATION_SHAPE_OT,
+    TILESET_REMOVE_NAVIGATION_SHAPE_OT,
 )
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
@@ -187,7 +196,9 @@ classes = (
     TILESET_SET_TOPDOWN_CAMERA_OT,
     TILESET_MOVE_CAMERA_TILE_OT,
     TILESET_ADD_COLLISION_SHAPE_OT,
-    TILESET_REMOVE_COLLISION_SHAPE_OT
+    TILESET_REMOVE_COLLISION_SHAPE_OT,
+    TILESET_ADD_NAVIGATION_SHAPE_OT,
+    TILESET_REMOVE_NAVIGATION_SHAPE_OT
 )
 
 

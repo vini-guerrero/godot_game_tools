@@ -147,15 +147,16 @@ class TILESET_MOVE_CAMERA_TILE_OT(Operator):
                 for tile in tilesInCollection:
                     if tile == currentTile and matchIndex is None: matchIndex = tileIndex
                     tileIndex += 1
-            if len(tilesInCollection) > matchIndex + 1:
-                nextTile = tilesInCollection[matchIndex + 1]
-            else:
-                nextTile = tilesInCollection[0]
-            bpy.ops.object.select_all(action='DESELECT')
-            bpy.context.view_layer.objects.active = nextTile
-            nextTile.select_set(True)
-            bpy.ops.view3d.camera_to_view_selected()
-            self.report({'INFO'}, 'Next Tile Camera Set')
+            if matchIndex is not None:
+                if len(tilesInCollection) > matchIndex + 1:
+                    nextTile = tilesInCollection[matchIndex + 1]
+                else:
+                    nextTile = tilesInCollection[0]
+                bpy.ops.object.select_all(action='DESELECT')
+                bpy.context.view_layer.objects.active = nextTile
+                nextTile.select_set(True)
+                bpy.ops.view3d.camera_to_view_selected()
+                self.report({'INFO'}, 'Next Tile Camera Set')
         else:
             self.report({'INFO'}, 'Select A Valid Collection Tile Before Switching')
         return {'FINISHED'}
@@ -338,6 +339,49 @@ class TILESET_REMOVE_COLLISION_SHAPE_OT(Operator):
         if currentTile is not None:
             if currentTile.get('TileCollision') is not None: currentTile["TileCollision"] = False
             self.report({'INFO'}, 'Collision shape removed')
+        else:
+            self.report({'INFO'}, 'No Tile Selected')
+        return {'FINISHED'}
+
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+
+class TILESET_ADD_NAVIGATION_SHAPE_OT(Operator):
+    bl_idname = "wm.tileset_add_navigation_shape"
+    bl_label = "Add Navigation Shape"
+    bl_description = "Adds a navigation shape to current selected tile"
+
+    def execute(self, context):
+        scene = context.scene
+        tool = scene.godot_game_tools
+        currentTile = bpy.context.view_layer.objects.active
+        if currentTile is not None:
+            if currentTile.get('TileNavigation') is None:
+                currentTile["TileNavigation"] = True
+            elif currentTile.get('TileNavigation') is not None:
+                if currentTile.get('TileNavigation') == False: currentTile["TileNavigation"] = True
+            self.report({'INFO'}, 'Navigation shape added')
+        else:
+            self.report({'INFO'}, 'No Tile Selected')
+        return {'FINISHED'}
+
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+
+class TILESET_REMOVE_NAVIGATION_SHAPE_OT(Operator):
+    bl_idname = "wm.tileset_remove_navigation_shape"
+    bl_label = "Remove Navigation Shape"
+    bl_description = "Removes existing navigation shape to current selected tile"
+
+    def execute(self, context):
+        scene = context.scene
+        tool = scene.godot_game_tools
+        currentTile = bpy.context.view_layer.objects.active
+        if currentTile is not None:
+            if currentTile.get('TileNavigation') is not None: currentTile["TileNavigation"] = False
+            self.report({'INFO'}, 'Navigation shape removed')
         else:
             self.report({'INFO'}, 'No Tile Selected')
         return {'FINISHED'}
