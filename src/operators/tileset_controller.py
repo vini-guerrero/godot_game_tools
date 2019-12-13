@@ -225,7 +225,7 @@ class TILESET_EXPORT_GODOT_TILESET_OT(Operator):
                         tilePositionX = 0
                         tilePositionY = 0
 
-                    fileContentTscn = writeToFile(fileContentTscn, '[node name="default" type="Sprite" parent="."]')
+                    fileContentTscn = writeToFile(fileContentTscn, '[node name="' + str (tile.name) + '" type="Sprite" parent="."]')
                     fileContentTscn = writeToFile(fileContentTscn, 'position = Vector2( ' + str(tilePositionX) + ', ' + str(tilePositionY) + ' )')
                     fileContentTscn = writeToFile(fileContentTscn, 'texture = ExtResource( ' + str(contentTscnIndex) + ' )', 1)
                     contentTscnIndex += 1
