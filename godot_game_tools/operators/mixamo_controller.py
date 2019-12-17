@@ -65,6 +65,7 @@ class INIT_CHARACTER_OT(bpy.types.Operator, ImportHelper):
             characterCollection.objects.link(characterArmature)
             characterArmature.animation_data.action.name = "T-Pose"
             tool.target_object = characterArmature
+            bpy.ops.wm.prepare_mixamo_rig('EXEC_DEFAULT')
         return {'FINISHED'}
 
 # ------------------------------------------------------------------------ #
