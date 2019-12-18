@@ -67,6 +67,7 @@ class AddonProperties(PropertyGroup):
     tileset_generate_path: StringProperty(name="Tileset Path", description="Select the path destination folder you want tilset to be generated into", subtype="FILE_PATH")
     tileset_tile_width: IntProperty(name="Tile Width", description="Define the tiles width desired", default=32, min=8, max=1024, update=updateTilesetGeneratorCamera, get=None, set=None)
     tileset_tile_height: IntProperty(name="Tile Height", description="Define the tiles width desired", default=32, min=8, max=1024, update=updateTilesetGeneratorCamera, get=None, set=None)
+    tileset_tile_margin: FloatProperty(name="Tile Margin", description="Define the tiles separation margin", default=2.0, step=1, precision=1, max=200.0, min=0.0, update=updateTilesetGeneratorCamera, get=None, set=None)
     tileset_type: EnumProperty(name="Tileset Type", description="Choose between available tileset types", items=[('0', "Top-Down", ""),('1', "Isometric", "")], update=updateTilesetGeneratorCamera, get=None, set=None)
     actions = []
 
