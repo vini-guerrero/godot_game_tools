@@ -1,0 +1,79 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://HDRI/satara_night_1k.hdr" type="Texture" id=1]
+[ext_resource path="res://Characters/Godot_Tan/GodotTan.tscn" type="PackedScene" id=2]
+
+[sub_resource type="PanoramaSky" id=1]
+radiance_size = 6
+panorama = ExtResource( 1 )
+
+[sub_resource type="Environment" id=2]
+background_mode = 2
+background_sky = SubResource( 1 )
+background_energy = 0.06
+ss_reflections_enabled = true
+ssao_enabled = true
+ssao_quality = 2
+glow_enabled = true
+glow_intensity = 8.0
+glow_bicubic_upscale = true
+
+[sub_resource type="SpatialMaterial" id=3]
+albedo_color = Color( 0.270588, 0.254902, 0.247059, 1 )
+metallic = 0.81
+metallic_specular = 0.0
+roughness = 0.11
+
+[sub_resource type="PlaneMesh" id=4]
+material = SubResource( 3 )
+size = Vector2( 50, 40 )
+
+[sub_resource type="GIProbeData" id=5]
+bounds = AABB( -10, -10, -10, 20, 20, 20 )
+cell_size = 0.0390625
+to_cell_xform = Transform( 25.6, 0, 0, 0, 25.6, 0, 0, 0, 25.6, 256, 256, 256 )
+dynamic_data = PoolIntArray( 0, 10, 512, 512, 512, 1, 0, 1065353216, 1065353216, 0, 0, 1065353216, -1082130432, 0, 0, 1065353216, -1, -1, -1, -1, -1, -1, -1, -1, 0, 0, 8355711, 0 )
+dynamic_range = 2
+bias = 1.5
+normal_bias = 0.0
+
+[node name="CharacterShowcase" type="Spatial"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource( 2 )
+
+[node name="MeshInstance" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00437188, 0.0120707, -0.00228357 )
+mesh = SubResource( 4 )
+material/0 = null
+
+[node name="SpotLight" type="SpotLight" parent="."]
+transform = Transform( 0.97745, 0.116221, -0.176305, 0, 0.834915, 0.55038, 0.211165, -0.537969, 0.816088, -0.563557, 2.25383, 1.23537 )
+light_color = Color( 0.952941, 0.827451, 0.803922, 1 )
+light_energy = 2.0
+light_specular = 1.0
+shadow_enabled = true
+
+[node name="SpotLight2" type="SpotLight" parent="."]
+transform = Transform( 0.663638, -0.534248, -0.523607, -0.379336, -0.84363, 0.379992, -0.64474, -0.0535541, -0.762524, -0.891407, 1.71874, -0.635574 )
+light_color = Color( 0.956863, 0.788235, 0.94902, 1 )
+light_specular = 1.0
+shadow_enabled = true
+
+[node name="Camera" type="Camera" parent="."]
+transform = Transform( 0.998351, 0.0127968, -0.0559596, 0, 0.974836, 0.222924, 0.0574041, -0.222557, 0.973229, -0.275042, 1.49014, 2.79581 )
+fov = 47.6
+
+[node name="GIProbe" type="GIProbe" parent="."]
+subdiv = 3
+dynamic_range = 2
+propagation = 1.0
+data = SubResource( 5 )
+
+[node name="OmniLight" type="OmniLight" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.28239, 0.468928, -0.732175 )
+light_color = Color( 0.854902, 0.666667, 0.666667, 1 )
+shadow_enabled = true
+
+[node name="GodotTan" parent="." instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.39624e-005, -9.29832e-006, 6.17653e-006 )
