@@ -20,7 +20,6 @@ class _PT_TILESET_GENERATOR_PT_(bpy.types.Panel, ObjectButtonsPanel):
         box.label(text="Tileset Settings", icon='SCENE')
         box.prop(tool, "tileset_type")
         box.prop(tool, "tileset_generate_path")
-        box.prop(tool, "tileset_tile_margin")
         box.prop(tool, "tileset_tile_width")
         box.prop(tool, "tileset_tile_height")
         box.label(text="Camera Shortcuts", icon='CAMERA_DATA')

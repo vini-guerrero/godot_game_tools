@@ -54,7 +54,6 @@ class INIT_CHARACTER_OT(bpy.types.Operator, ImportHelper):
         filePathWithName = bpy.path.abspath(self.properties.filepath)
         path = os.path.dirname(filePathWithName)
         self.import_from_folder(path, context)
-        # bpy.ops.wm.prepare_mixamo_rig('EXEC_DEFAULT')
         if bpy.data.collections.get(characterCollectionName) is not None:
             characterArmature = bpy.context.view_layer.objects.active
             if len(characterArmature.children) > 0:
@@ -65,7 +64,7 @@ class INIT_CHARACTER_OT(bpy.types.Operator, ImportHelper):
             characterCollection.objects.link(characterArmature)
             characterArmature.animation_data.action.name = "T-Pose"
             tool.target_object = characterArmature
-            bpy.ops.wm.prepare_mixamo_rig('EXEC_DEFAULT')
+        bpy.ops.wm.prepare_mixamo_rig('EXEC_DEFAULT')
         return {'FINISHED'}
 
 # ------------------------------------------------------------------------ #
@@ -195,10 +194,6 @@ class RENAME_RIG_OT(Operator):
                         if ':' not in bone.name:
                             continue
                         bone.name = bone.name.split(":")[1]
-            # for action in bpy.data.actions:
-            #     fc = action.fcurves
-            #     for f in fc:
-            #         f.data_path = f.data_path.replace("mixamorig:","")
             if bpy.data.actions:
                 bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
             self.report({'INFO'}, 'Character Bones Successfully Renamed')
@@ -241,6 +236,7 @@ class PREPARE_RIG_OT(Operator):
                     bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
                     bpy.ops.scene.process_actions('EXEC_DEFAULT')
                     tool.actions.append(anim)
+
             self.report({'INFO'}, 'Rig Armature Prepared')
         return {'FINISHED'}
 
