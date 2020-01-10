@@ -55,10 +55,10 @@ class RENAME_ANIMATION_OT(Operator):
         scene = context.scene
         tool = scene.godot_game_tools
         animation = tool.animations
-        target_armature = tool.target_name
+        target_armature = tool.target_object
         actionName = tool.action_name
         if len(bpy.data.actions) > 0:
-            bpy.context.object.animation_data.action.name = actionName
+            target_armature.animation_data.action.name = actionName
         self.report({'INFO'}, 'Animation Renamed')
         return {'FINISHED'}
 

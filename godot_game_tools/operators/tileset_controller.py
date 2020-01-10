@@ -35,6 +35,10 @@ def writeToFile(variable, content, lineBreakAmount = None):
         variable += '\n'
     return variable
 
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+
 
 class TILESET_GENERATE_TILE_OT(Operator):
     bl_idname = "wm.tileset_generate_tile"

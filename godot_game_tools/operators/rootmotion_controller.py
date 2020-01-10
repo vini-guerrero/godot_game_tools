@@ -56,8 +56,8 @@ class ADD_ROOTBONE_OT(Operator):
 
 class ADD_ROOTMOTION_OT(Operator):
     bl_idname = "wm.add_rootmotion"
-    bl_label = "Add Root Motion"
-    bl_description = "Adds Root Motion Bone To Animation"
+    bl_label = "Update Root Motion"
+    bl_description = "Updates Root Motion Bone To Animation"
 
     def get_fcurve(self, armature, bone_name):
       result = None
@@ -87,11 +87,8 @@ class ADD_ROOTMOTION_OT(Operator):
                 animationIndex = bpy.data.actions.keys().index(animation)
                 target_armature.animation_data.action = bpy.data.actions.values()[animationIndex]
                 bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
-
                 add_root_curves(target_armature.animation_data.action)
-
                 bpy.ops.wm.update_rootmotion('EXEC_DEFAULT')
-
             bpy.ops.object.mode_set(mode='OBJECT')
             self.report({'INFO'}, 'Root Motion Added')
         return {'FINISHED'}
@@ -110,7 +107,6 @@ class UPDATE_ROOTMOTION_OT(Operator):
         target_object = tool.target_object
         root_motion_name = tool.rootmotion_name
         action = target_object.animation_data.action
-
         use_root = target_object.animation_data.action.ggt_props.use_root_motion
         use_z = target_object.animation_data.action.ggt_props.use_root_motion_z
 
@@ -151,14 +147,14 @@ class UPDATE_ROOTMOTION_OT(Operator):
         else:
             action.fcurves[2].mute = False
 
-
-
         self.report({'INFO'}, "Root motion for action {} set to {} z: {}".format(action.name, use_root, use_z))
-
         return {'FINISHED'}
 
-def add_root_curves(action: bpy.types.Action):
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
 
+def add_root_curves(action: bpy.types.Action):
     rootmotion_name = bpy.context.scene.godot_game_tools.rootmotion_name
     if action.fcurves.find('pose.bones["{}"].location'.format(rootmotion_name)) is None:
         x_curve = action.fcurves.new(data_path='pose.bones["{}"].location'.format(rootmotion_name), index=0, action_group="RootMotion")
@@ -180,4 +176,3 @@ def add_root_curves(action: bpy.types.Action):
             kf = z_curve.keyframe_points.insert(frame=keyframe_point.co[0], value=keyframe_point.co[1]-z_offset, options={'FAST'}, keyframe_type='KEYFRAME')
             kf.interpolation = 'LINEAR'
         print('Added Root Motion Curves to action {}'.format(action.name))
-

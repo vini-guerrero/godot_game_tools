@@ -164,6 +164,10 @@ class JOIN_ANIMATIONS_OT(Operator, ImportHelper):
         self.report({'INFO'}, 'Animations Imported Successfully')
         return {'FINISHED'}
 
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+
 
 class RENAME_RIG_OT(Operator):
     bl_idname = "wm.rename_mixamo_rig"
@@ -214,9 +218,7 @@ class PREPARE_RIG_OT(Operator):
         tool = scene.godot_game_tools
         target_armature = tool.target_object
         visible_armature = tool.visible_armature
-
         valid = True
-
         # Apply transformations on selected Armature
         bpy.context.view_layer.objects.active = target_armature
         bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)

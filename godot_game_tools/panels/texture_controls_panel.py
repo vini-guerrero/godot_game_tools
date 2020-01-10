@@ -18,6 +18,7 @@ class _PT_TEXTURE_CONTROLS_PT_(bpy.types.Panel, ObjectButtonsPanel):
         tool = scene.godot_game_tools
         box = layout.box()
         box.label(text="Texture Baking", icon='SCENE')
+        box.label(text="Work-In-Progress", icon='SCENE')
         box.prop(tool, "bake_texture_size")
         box.operator("wm.bake_texture", icon="ANIM_DATA")
         box.operator("wm.save_bake_textures", icon="ANIM_DATA")
