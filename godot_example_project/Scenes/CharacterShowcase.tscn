@@ -1,0 +1,98 @@
+[gd_scene load_steps=9 format=2]
+
+[ext_resource path="res://Characters/Godot_Tan/GodotTan.tscn" type="PackedScene" id=1]
+
+[sub_resource type="ProceduralSky" id=14]
+
+[sub_resource type="Environment" id=15]
+background_mode = 2
+background_sky = SubResource( 14 )
+
+[sub_resource type="SpatialMaterial" id=11]
+albedo_color = Color( 0.117647, 0.121569, 0.12549, 1 )
+
+[sub_resource type="PlaneMesh" id=12]
+material = SubResource( 11 )
+size = Vector2( 20, 20 )
+
+[sub_resource type="ConcavePolygonShape" id=6]
+data = PoolVector3Array( 10, 0, 10, -10, 0, 10, 10, 0, -10, -10, 0, 10, -10, 0, -10, 10, 0, -10 )
+
+[sub_resource type="CubeMesh" id=13]
+
+[sub_resource type="GIProbeData" id=5]
+bounds = AABB( -10, -10, -10, 20, 20, 20 )
+cell_size = 0.0390625
+to_cell_xform = Transform( 25.6, 0, 0, 0, 25.6, 0, 0, 0, 25.6, 256, 256, 256 )
+dynamic_data = PoolIntArray( 0, 10, 512, 512, 512, 1, 0, 1065353216, 1065353216, 0, 0, 1065353216, -1082130432, 0, 0, 1065353216, -1, -1, -1, -1, -1, -1, -1, -1, 0, 0, 8355711, 0 )
+dynamic_range = 2
+bias = 1.5
+normal_bias = 0.0
+
+[node name="CharacterShowcase" type="Spatial"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource( 15 )
+
+[node name="MeshInstance" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00437188, 0.0120707, -0.00228357 )
+mesh = SubResource( 12 )
+material/0 = null
+
+[node name="StaticBody" type="StaticBody" parent="MeshInstance"]
+
+[node name="CollisionShape" type="CollisionShape" parent="MeshInstance/StaticBody"]
+shape = SubResource( 6 )
+
+[node name="MeshInstance2" type="MeshInstance" parent="MeshInstance"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 8.25631, 0, 0 )
+mesh = SubResource( 13 )
+material/0 = null
+
+[node name="MeshInstance4" type="MeshInstance" parent="MeshInstance"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -8.37748, 0, 0 )
+mesh = SubResource( 13 )
+material/0 = null
+
+[node name="MeshInstance3" type="MeshInstance" parent="MeshInstance"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 8.25631, 0, 8.03317 )
+mesh = SubResource( 13 )
+material/0 = null
+
+[node name="MeshInstance8" type="MeshInstance" parent="MeshInstance"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.557255, 0, 8.03317 )
+mesh = SubResource( 13 )
+material/0 = null
+
+[node name="MeshInstance9" type="MeshInstance" parent="MeshInstance"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.557255, 0, -8.60525 )
+mesh = SubResource( 13 )
+material/0 = null
+
+[node name="MeshInstance6" type="MeshInstance" parent="MeshInstance"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -8.37748, 0, 8.03317 )
+mesh = SubResource( 13 )
+material/0 = null
+
+[node name="MeshInstance5" type="MeshInstance" parent="MeshInstance"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 8.25631, 0, -8.35694 )
+mesh = SubResource( 13 )
+material/0 = null
+
+[node name="MeshInstance7" type="MeshInstance" parent="MeshInstance"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -8.37748, 0, -8.35694 )
+mesh = SubResource( 13 )
+material/0 = null
+
+[node name="GIProbe" type="GIProbe" parent="."]
+subdiv = 0
+dynamic_range = 2
+propagation = 1.0
+data = SubResource( 5 )
+
+[node name="GodotTan" parent="." instance=ExtResource( 1 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.39624e-005, -9.29832e-006, 6.17653e-006 )
+
+[node name="DirectionalLight" type="DirectionalLight" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.846355, 0.532619, 0, -0.532619, 0.846355, 0, 2.06913, 0 )
+shadow_enabled = true
