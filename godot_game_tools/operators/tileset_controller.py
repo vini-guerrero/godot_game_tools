@@ -5,10 +5,7 @@ from pathlib import Path
 from bpy.types import (Operator)
 
 def fixTilePositions(tileCollectionName):
-    context = bpy.context
-    scene = context.scene
-    tool = scene.godot_game_tools
-    tileSpacing = tool.tileset_tile_margin
+    tileSpacing = 2
     tileCollection = bpy.data.collections.get(tileCollectionName)
     tilesInCollection = tileCollection.objects
     if len(tilesInCollection) > 0:
@@ -176,7 +173,7 @@ class TILESET_EXPORT_GODOT_TILESET_OT(Operator):
     def execute(self, context):
         scene = context.scene
         tool = scene.godot_game_tools
-        tileset_generate_path = bpy.path.abspath(tool.tileset_generate_path)
+        tileset_generate_path = tool.tileset_generate_path
         tileCollectionName = tool.tile_collection_name
         tileset_tile_width = tool.tileset_tile_width
         tileset_tile_height = tool.tileset_tile_height

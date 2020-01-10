@@ -87,32 +87,97 @@ class ADD_ROOTMOTION_OT(Operator):
                 animationIndex = bpy.data.actions.keys().index(animation)
                 target_armature.animation_data.action = bpy.data.actions.values()[animationIndex]
                 bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
-                # Insert Location on RootMotion Bone
-                bpy.ops.object.mode_set(mode='OBJECT')
-                bpy.ops.object.select_all(action='DESELECT')
-                bpy.ops.object.mode_set(mode="POSE")
-                anim_root_bone = target_armature.pose.bones[rootMotionBoneName]
-                anim_hip_bone = target_armature.pose.bones["Hips"]
-                scene.frame_set(1)
-                anim_root_bone.keyframe_insert(data_path='location')
-                hip_fcurve = self.get_fcurve(target_armature, "Hips")
-                frames = []
-                for point in hip_fcurve.keyframe_points[1:]:
-                    frames.append(point.co[0])
-                for index in frames:
-                    scene.frame_set(index)
-                    anim_root_bone.location = anim_hip_bone.location
-                    anim_root_bone.keyframe_insert(data_path='location')
-                    anim_hip_bone.keyframe_delete(data_path='location')
-                    #hip_fcurve.location[0].mute = True
-                    #hip_fcurve.location[2].mute = True
+
+                add_root_curves(target_armature.animation_data.action)
+
+                bpy.ops.wm.update_rootmotion('EXEC_DEFAULT')
+
             bpy.ops.object.mode_set(mode='OBJECT')
             self.report({'INFO'}, 'Root Motion Added')
         return {'FINISHED'}
 
-def enable_root_motion(action: bpy.types.Action, use_z_axis = False ) -> bool:
-    root_bone_name = bpy.context.scene.godot_game_tools.target.name.rootmotion_name
-    #target_armature =
-    animation_id = bpy.data.actions.keys().index(action.name)
-    end_frame = action.frame_range[-1]
-    return True
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+
+class UPDATE_ROOTMOTION_OT(Operator):
+    bl_idname = "wm.update_rootmotion"
+    bl_label = "Update Root Motion"
+    bl_description = "Updates Root Motion For Animation"
+
+    def execute(self, context):
+        tool = bpy.context.scene.godot_game_tools
+        target_object = tool.target_object
+        root_motion_name = tool.rootmotion_name
+        action = target_object.animation_data.action
+
+        use_root = target_object.animation_data.action.ggt_props.use_root_motion
+        use_z = target_object.animation_data.action.ggt_props.use_root_motion_z
+
+        #add_root_curves(target_object.animation_data.action)
+
+        # Root Motion
+        for f in action.fcurves:
+            if f.data_path == 'pose.bones["{}"].location'.format(tool.rootmotion_name):
+                # root x
+                if f.array_index == 0:
+                    if use_root:
+                        f.mute = False
+                    else:
+                        f.mute = True
+                # root y
+                if f.array_index == 1:
+                    if use_z and use_root:
+                        f.mute = False
+                    else:
+                        f.mute = True
+                # root z
+                if f.array_index == 2:
+                    if use_root:
+                        f.mute = False
+                    else:
+                        f.mute = True
+        # Hips
+        if use_root:
+            action.fcurves[0].mute = True
+        else:
+            action.fcurves[0].mute = False
+        if use_z and use_root:
+            action.fcurves[1].mute = True
+        else:
+            action.fcurves[1].mute = False
+        if use_root:
+            action.fcurves[2].mute = True
+        else:
+            action.fcurves[2].mute = False
+
+
+
+        self.report({'INFO'}, "Root motion for action {} set to {} z: {}".format(action.name, use_root, use_z))
+
+        return {'FINISHED'}
+
+def add_root_curves(action: bpy.types.Action):
+
+    rootmotion_name = bpy.context.scene.godot_game_tools.rootmotion_name
+    if action.fcurves.find('pose.bones["{}"].location'.format(rootmotion_name)) is None:
+        x_curve = action.fcurves.new(data_path='pose.bones["{}"].location'.format(rootmotion_name), index=0, action_group="RootMotion")
+        x_hips = action.fcurves[0]
+        x_offset = x_hips.keyframe_points[0].co[1]
+        for frame_index, keyframe_point in enumerate(x_hips.keyframe_points):
+            kf = x_curve.keyframe_points.insert(frame=keyframe_point.co[0], value=keyframe_point.co[1]-x_offset, options={'FAST'}, keyframe_type='KEYFRAME')
+            kf.interpolation = 'LINEAR'
+        y_curve = action.fcurves.new(data_path='pose.bones["{}"].location'.format(rootmotion_name), index=1, action_group="RootMotion")
+        y_hips = action.fcurves[1]
+        y_offset = y_hips.keyframe_points[0].co[1]
+        for frame_index, keyframe_point in enumerate(y_hips.keyframe_points):
+            kf = y_curve.keyframe_points.insert(frame=keyframe_point.co[0], value=keyframe_point.co[1]-y_offset, options={'FAST'}, keyframe_type='KEYFRAME')
+            kf.interpolation = 'LINEAR'
+        z_curve = action.fcurves.new(data_path='pose.bones["{}"].location'.format(rootmotion_name), index=2, action_group="RootMotion")
+        z_hips = action.fcurves[2]
+        z_offset = z_hips.keyframe_points[0].co[1]
+        for frame_index, keyframe_point in enumerate(z_hips.keyframe_points):
+            kf = z_curve.keyframe_points.insert(frame=keyframe_point.co[0], value=keyframe_point.co[1]-z_offset, options={'FAST'}, keyframe_type='KEYFRAME')
+            kf.interpolation = 'LINEAR'
+        print('Added Root Motion Curves to action {}'.format(action.name))
+

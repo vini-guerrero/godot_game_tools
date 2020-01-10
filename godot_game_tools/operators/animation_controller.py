@@ -14,12 +14,8 @@ class ANIMATION_PLAYER_OT(Operator):
         target_armature = tool.target_object
         bpy.ops.screen.animation_cancel()
         bpy.context.view_layer.objects.active = target_armature
-        bpy.context.scene.frame_start = 2
+        bpy.context.scene.frame_start = 1
         if len(bpy.data.actions) > 0:
-            animationToPlay = [anim for anim in bpy.data.actions.keys() if anim in (animation)]
-            animationIndex = bpy.data.actions.keys().index(animation)
-            target_armature.animation_data.action = bpy.data.actions.values()[animationIndex]
-            bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
             bpy.ops.screen.animation_play()
             self.report({'INFO'}, 'Playing Animation')
         return {'FINISHED'}
@@ -32,7 +28,7 @@ class ANIMATION_PLAYER_OT(Operator):
 class STOP_ANIMATION_OT(Operator):
     bl_idname = "wm.animation_stop"
     bl_label = "Stop Animation"
-    bl_description = "Stops curent animation"
+    bl_description = "Stops current animation"
 
     def execute(self, context):
         scene = context.scene
@@ -40,7 +36,7 @@ class STOP_ANIMATION_OT(Operator):
         animation = tool.animations
         target_armature = tool.target_object
         bpy.context.scene.frame_current = 0
-        bpy.ops.screen.animation_cancel()
+        bpy.ops.screen.animation_cancel(0)
         self.report({'INFO'}, 'Animation Stopped')
         return {'FINISHED'}
 
@@ -78,6 +74,7 @@ class PROCESS_ACTIONS_OT(Operator):
     def execute(self, context):
         actions = bpy.data.actions
         for action in actions:
+            action.groups[0].name = action.name
             if action.ggt_props.hips_scale == 1.0:
                 for f in action.fcurves:
                     if f.data_path == 'pose.bones["Hips"].location':

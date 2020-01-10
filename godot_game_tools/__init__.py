@@ -51,6 +51,22 @@ def updateTilesetGeneratorCamera(self, context):
     elif int(tool.tileset_type) == 1:
         bpy.ops.wm.tileset_set_isometric_camera('EXEC_DEFAULT')
 
+def update_action_list(self, context):
+    ob = context.scene.godot_game_tools.target_object
+    if ob is None:
+        return
+    ob.animation_data.action = bpy.data.actions[context.scene.action_list_index]
+    bpy.context.scene.frame_current = 1
+    bpy.context.scene.frame_end = ob.animation_data.action.frame_range[1]
+
+def toggle_use_root_motion(self, context):
+    bpy.ops.wm.animation_stop('EXEC_DEFAULT')
+    bpy.ops.wm.update_rootmotion('EXEC_DEFAULT')
+
+def toggle_use_root_motion_z(self, context):
+    bpy.ops.wm.animation_stop('EXEC_DEFAULT')
+    bpy.ops.wm.update_rootmotion('EXEC_DEFAULT')
+
 # ------------------------------------------------------------------------
 #    Addon Tool Properties
 # ------------------------------------------------------------------------
@@ -67,7 +83,6 @@ class AddonProperties(PropertyGroup):
     tileset_generate_path: StringProperty(name="Tileset Path", description="Select the path destination folder you want tilset to be generated into", subtype="FILE_PATH")
     tileset_tile_width: IntProperty(name="Tile Width", description="Define the tiles width desired", default=32, min=8, max=1024, update=updateTilesetGeneratorCamera, get=None, set=None)
     tileset_tile_height: IntProperty(name="Tile Height", description="Define the tiles width desired", default=32, min=8, max=1024, update=updateTilesetGeneratorCamera, get=None, set=None)
-    tileset_tile_margin: FloatProperty(name="Tile Margin", description="Define the tiles separation margin", default=2.0, step=1, precision=1, max=200.0, min=0.0, update=updateTilesetGeneratorCamera, get=None, set=None)
     tileset_type: EnumProperty(name="Tileset Type", description="Choose between available tileset types", items=[('0', "Top-Down", ""),('1', "Isometric", "")], update=updateTilesetGeneratorCamera, get=None, set=None)
     actions = []
 
@@ -89,13 +104,13 @@ class ActionProperties(bpy.types.PropertyGroup):
         description="Should this animation use root motion",
         options={'ANIMATABLE'},
         default=True,
-        update=None)
+        update=toggle_use_root_motion)
         #TODO: update="toggle_root_motion")
     use_root_motion_z: BoolProperty(
         name="Root Motion Z",
         description="Use z-axis with this animation",
         default=False,
-        update=None)
+        update=toggle_use_root_motion_z)
         #TODO: update = "toggle_root_motion_z")
 
 # ------------------------------------------------------------------------
@@ -112,7 +127,8 @@ from .operators.animation_controller import (
 )
 from .operators.rootmotion_controller import (
     ADD_ROOTBONE_OT,
-    ADD_ROOTMOTION_OT
+    ADD_ROOTMOTION_OT,
+    UPDATE_ROOTMOTION_OT
 )
 from .operators.mixamo_controller import (
     INIT_CHARACTER_OT,
@@ -145,7 +161,7 @@ from .operators.tileset_controller import (
 # ------------------------------------------------------------------------
 from .panels.bvh_utilities_panel import (_PT_BVH_UTILITIES_PT_)
 from .panels.texture_controls_panel import (_PT_TEXTURE_CONTROLS_PT_)
-from .panels.mixamo_utilities_panel import (_PT_MIXAMO_UTILITIES_PT_, _PT_ARMATURE_UTILITIES_PT_, _PT_ROOT_MOTION_PT_, _PT_ANIMATIONS_PT_)
+from .panels.mixamo_utilities_panel import (_PT_MIXAMO_UTILITIES_PT_, _PT_ARMATURE_UTILITIES_PT_, ACTION_UL_list, _PT_ROOT_MOTION_PT_, _PT_ANIMATIONS_PT_)
 from .panels.tileset_generator_panel import (_PT_TILESET_GENERATOR_PT_)
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
@@ -178,6 +194,7 @@ classes = (
     _PT_ROOT_MOTION_PT_,
     _PT_ANIMATIONS_PT_,
     _PT_TILESET_GENERATOR_PT_,
+    ACTION_UL_list,
     INIT_CHARACTER_OT,
     JOIN_ANIMATIONS_OT,
     RENAME_RIG_OT,
@@ -189,6 +206,7 @@ classes = (
     PROCESS_ACTIONS_OT,
     ADD_ROOTBONE_OT,
     ADD_ROOTMOTION_OT,
+    UPDATE_ROOTMOTION_OT,
     SAVE_BAKE_TEXTURES_OT,
     BAKE_TEXTURE_OT,
     TILESET_EXPORT_GODOT_TILESET_OT,
@@ -210,7 +228,7 @@ def register():
 
     bpy.types.Scene.godot_game_tools = PointerProperty(type=AddonProperties, name="Godot Game Tools")
     bpy.types.Action.ggt_props = PointerProperty(type=ActionProperties, name="GGT Action")
-
+    bpy.types.Scene.action_list_index = bpy.props.IntProperty(update=update_action_list)
 
 
 def unregister():
@@ -219,6 +237,7 @@ def unregister():
         unregister_class(cls)
     del bpy.types.Scene.godot_game_tools
     del bpy.types.Action.ggt_props
+    del bpy.types.Scene.action_list_index
 
 if __name__ == "__main__":
     register()
