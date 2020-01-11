@@ -53,8 +53,7 @@ def updateTilesetGeneratorCamera(self, context):
 
 def update_action_list(self, context):
     ob = context.scene.godot_game_tools.target_object
-    if ob is None:
-        return
+    if ob is None: return
     ob.animation_data.action = bpy.data.actions[context.scene.action_list_index]
     bpy.context.scene.frame_current = 1
     bpy.context.scene.frame_end = ob.animation_data.action.frame_range[1]
@@ -90,28 +89,17 @@ class AddonProperties(PropertyGroup):
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 
-
 # ------------------------------------------------------------------------
 #    Action Properties
 # ------------------------------------------------------------------------
 class ActionProperties(bpy.types.PropertyGroup):
-    hips_scale: FloatProperty(
-        name="Hips Scale",
-        description="Hips scale factor",
-        default=1.0)
-    use_root_motion: BoolProperty(
-        name="Root Motion",
-        description="Should this animation use root motion",
-        options={'ANIMATABLE'},
-        default=True,
-        update=toggle_use_root_motion)
-        #TODO: update="toggle_root_motion")
-    use_root_motion_z: BoolProperty(
-        name="Root Motion Z",
-        description="Use z-axis with this animation",
-        default=False,
-        update=toggle_use_root_motion_z)
-        #TODO: update = "toggle_root_motion_z")
+    hips_scale: FloatProperty(name="Hips Scale", description="Hips scale factor", default=1.0)
+    use_root_motion: BoolProperty(name="Root Motion", description="Should this animation use root motion", options={'ANIMATABLE'}, default=True, update=toggle_use_root_motion)
+    use_root_motion_z: BoolProperty(name="Root Motion Z", description="Use z-axis with this animation", default=False, update=toggle_use_root_motion_z)
+
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
 
 # ------------------------------------------------------------------------
 #    Operators
@@ -225,7 +213,6 @@ def register():
     from bpy.utils import register_class
     for cls in classes:
         register_class(cls)
-
     bpy.types.Scene.godot_game_tools = PointerProperty(type=AddonProperties, name="Godot Game Tools")
     bpy.types.Action.ggt_props = PointerProperty(type=ActionProperties, name="GGT Action")
     bpy.types.Scene.action_list_index = bpy.props.IntProperty(update=update_action_list)
