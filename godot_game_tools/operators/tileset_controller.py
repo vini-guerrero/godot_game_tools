@@ -437,3 +437,37 @@ class TILESET_REMOVE_NAVIGATION_SHAPE_OT(Operator):
         else:
             self.report({'INFO'}, 'No Tile Selected')
         return {'FINISHED'}
+
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+
+class TILESET_ADD_RENDER_SETUP_OT(Operator):
+    bl_idname = "wm.tileset_add_render_setup"
+    bl_label = "Add Render Setup"
+    bl_description = "Adds a camera and light for tileset rendering"
+
+    def execute(self, context):
+        scene = context.scene
+        tool = scene.godot_game_tools
+        bpy.ops.object.select_all(action='DESELECT')
+        bpy.ops.object.camera_add(enter_editmode=False, align='VIEW', location=(0, 0, 1.1), rotation=(0, -0, 0))
+        newCamera = bpy.context.view_layer.objects.active
+        newCamera.data.ortho_scale = 2.0
+        newCamera.data.type = 'ORTHO'
+        bpy.ops.object.select_all(action='DESELECT')
+        bpy.ops.object.light_add(type='POINT', radius=1, location=(0, 0, 3))
+        newLight = bpy.context.view_layer.objects.active
+        newLight.data.energy = 100
+        bpy.ops.object.select_all(action='DESELECT')
+        # Parent Setup
+        newCamera.select_set(True)
+        newLight.select_set(True)
+        bpy.context.view_layer.objects.active = newCamera
+        bpy.ops.object.parent_set(type='OBJECT', keep_transform=False)
+        if int(tool.tileset_type) == 0:
+            bpy.ops.wm.tileset_set_topdown_camera('EXEC_DEFAULT')
+        elif int(tool.tileset_type) == 1:
+            bpy.ops.wm.tileset_set_isometric_camera('EXEC_DEFAULT')
+        self.report({'INFO'}, 'Render Setup Added')
+        return {'FINISHED'}

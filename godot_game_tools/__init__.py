@@ -10,7 +10,7 @@ bl_info = {
     "name": "Godot Game Tools",
     "description": "This Add-On provides features for better export options with Godot Game Engine",
     "author": "Vinicius Guerrero",
-    "version": (1, 0, 4),
+    "version": (1, 0, 5),
     "blender": (2, 81, 0),
     "location": "3D View > Tools",
     "warning": "",
@@ -138,6 +138,7 @@ from .operators.tileset_controller import (
     TILESET_REMOVE_COLLISION_SHAPE_OT,
     TILESET_ADD_NAVIGATION_SHAPE_OT,
     TILESET_REMOVE_NAVIGATION_SHAPE_OT,
+    TILESET_ADD_RENDER_SETUP_OT,
 )
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
@@ -205,7 +206,8 @@ classes = (
     TILESET_ADD_COLLISION_SHAPE_OT,
     TILESET_REMOVE_COLLISION_SHAPE_OT,
     TILESET_ADD_NAVIGATION_SHAPE_OT,
-    TILESET_REMOVE_NAVIGATION_SHAPE_OT
+    TILESET_REMOVE_NAVIGATION_SHAPE_OT,
+    TILESET_ADD_RENDER_SETUP_OT
 )
 
 
