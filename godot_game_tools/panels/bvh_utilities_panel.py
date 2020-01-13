@@ -17,4 +17,4 @@ class _PT_BVH_UTILITIES_PT_(bpy.types.Panel, ObjectButtonsPanel):
         obj = context.object
         tool = scene.godot_game_tools
         box = layout.box()
-        box.label(text="Work-In-Progress", icon='SCENE')
+        box.label(text="Work-In-Progress", icon='SORTTIME')

@@ -77,6 +77,9 @@ class AddonProperties(PropertyGroup):
     visible_armature: BoolProperty(name="Show Armature Bones", description="Hides / Show armature bones once animations are loaded", default=True, update=toggleArmatureVisibility)
     rootmotion_all: BoolProperty(name="Apply Rootmotion To All Animations", description="Choose to apply rootmotion to all animations or current only", default=True, update=None)
     bake_texture_size: IntProperty(name="Bake Texture Size", description="Define here the size of textures images to bake", default = 1024, min = 8, max = 4096)
+    bake_texture_name: StringProperty(name="Bake Name", description="Select the texture name to be saved", maxlen=1024)
+    bake_texture_path: StringProperty(name="Texture Path", description="Select the path destination folder you want textures to be saved", subtype="FILE_PATH")
+    bake_filter: EnumProperty(name="Bake Map", description="Choose between available bake maps", items=[('GLOSSY', "GLOSSY", ""),('DIFFUSE', "DIFFUSE", "")], update=None, get=None, set=None)
     character_collection_name: bpy.props.StringProperty(name="Armature Collection Name", default="CharacterCollection")
     tile_collection_name: bpy.props.StringProperty(name="Tile Collection Name", default="TileCollection")
     tileset_generate_path: StringProperty(name="Tileset Path", description="Select the path destination folder you want tilset to be generated into", subtype="FILE_PATH")
@@ -126,6 +129,7 @@ from .operators.mixamo_controller import (
 )
 from .operators.texture_controller import (
     SAVE_BAKE_TEXTURES_OT,
+    CREATE_BAKE_TEXTURES_OT,
     BAKE_TEXTURE_OT
 )
 from .operators.tileset_controller import (
@@ -198,6 +202,7 @@ classes = (
     UPDATE_ROOTMOTION_OT,
     SAVE_BAKE_TEXTURES_OT,
     BAKE_TEXTURE_OT,
+    CREATE_BAKE_TEXTURES_OT,
     TILESET_EXPORT_GODOT_TILESET_OT,
     TILESET_GENERATE_TILE_OT,
     TILESET_SET_ISOMETRIC_CAMERA_OT,
