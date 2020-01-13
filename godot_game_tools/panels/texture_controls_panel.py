@@ -24,5 +24,5 @@ class _PT_TEXTURE_CONTROLS_PT_(bpy.types.Panel, ObjectButtonsPanel):
         box.operator("wm.create_bake_texture", icon="FILE_IMAGE")
         # box.prop(tool, "bake_filter")
         box.operator("wm.bake_texture", icon="ANIM_DATA")
-        # box.prop(tool, "bake_texture_path")
-        # box.operator("wm.save_bake_textures", icon="ANIM_DATA")
+        box.prop(tool, "bake_texture_path")
+        box.operator("wm.save_bake_textures", icon="ANIM_DATA")

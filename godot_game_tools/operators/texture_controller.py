@@ -6,7 +6,7 @@ from bpy.types import (Operator)
 
 class BAKE_TEXTURE_OT(bpy.types.Operator):
     bl_idname = "wm.bake_texture"
-    bl_label = "Bake Textures"
+    bl_label = "Bake Texture"
     bl_description = "Bakes Selected Texture"
 
     def execute(self, context):
@@ -17,7 +17,7 @@ class BAKE_TEXTURE_OT(bpy.types.Operator):
         bake_texture_path = tool.bake_texture_path
         bake_texture_name = tool.bake_texture_name
         texturePath = bpy.path.abspath(bake_texture_path)
-        fileName = texturePath + "/" + bake_texture_name + ".png"
+        fileName = os.path.join(texturePath, bake_texture_name + ".png")
         currentEngine = bpy.context.scene.render.engine
         activeObj = bpy.context.view_layer.objects.active
         # Validate Mesh With Material Is Selected
@@ -103,7 +103,8 @@ class SAVE_BAKE_TEXTURES_OT(Operator):
         activeObj = bpy.context.view_layer.objects.active
         if len(activeObj.material_slots) > 0:
             bakedImage = bpy.data.images[bake_texture_name]
-            bakedImage.filepath = texturePath + "/" + bake_texture_name + ".png"
+            fileName = os.path.join(texturePath, bake_texture_name + ".png")
+            bakedImage.filepath = fileName
             bakedImage.save()
             self.report({'INFO'}, 'Bake Textures Saved')
         return {'FINISHED'}
