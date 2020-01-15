@@ -196,7 +196,7 @@ class TILESET_EXPORT_GODOT_TILESET_OT(Operator):
 
                 # .TSCN Godot File
                 tilesetTscnFileName = "Tileset.tscn"
-                fileNameTscn = os.path.join(tileset_generate_path, tilesetTscnFileName)
+                fileNameTscn = os.path.join(bpy.path.abspath(tileset_generate_path), tilesetTscnFileName)
                 fileTscn = open(fileNameTscn, "w+")
                 # File Header
                 fileHeaderTscn = ''
@@ -310,7 +310,7 @@ class TILESET_EXPORT_GODOT_TILESET_OT(Operator):
 
                 # .TRES Godot File
                 tilesetTresFileName = "tileset.tres"
-                fileNameTres = os.path.join(tileset_generate_path, tilesetTresFileName)
+                fileNameTres = os.path.join(bpy.path.abspath(tileset_generate_path), tilesetTresFileName)
                 fileTres = open(fileNameTres, "w+")
                 # File Header
                 fileHeaderTres = ''
