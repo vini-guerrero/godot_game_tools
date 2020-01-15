@@ -58,7 +58,7 @@ class TILESET_GENERATE_TILE_OT(Operator):
         tileCollection = bpy.data.collections.get(tileCollectionName)
         newTile = bpy.context.view_layer.objects.active
         newTile.name = "Tile"
-        bpy.context.scene.collection.children[0].objects.unlink(newTile)
+        bpy.context.scene.collection.objects.unlink(newTile)
         tileCollection.objects.link(newTile)
         fixTilePositions(tileCollectionName)
         if cam is not None: bpy.ops.view3d.camera_to_view_selected()
