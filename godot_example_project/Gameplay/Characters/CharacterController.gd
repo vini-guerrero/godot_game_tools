@@ -38,7 +38,7 @@ func _ready():
 func _input(event):
 	if event.is_action_pressed("quit"):
 		get_tree().quit()
-			
+
 func _physics_process(delta):
 	process_movement(delta)
 
@@ -52,7 +52,6 @@ const IDLE_MONTAGE_DELAY_INTERVAL = 5
 var idle_montage_delay_timer : float = 0.0
 
 func process_movement(delta):
-	
 	# Bring the camera along for the ride
 	_CameraManager.global_transform.origin = Vector3(\
 		self.global_transform.origin.x + self.camera_offset.x, \
@@ -61,7 +60,7 @@ func process_movement(delta):
 		
 	var motion_target = Vector2( 	Input.get_action_strength("move_right") - Input.get_action_strength("move_left"),
 									Input.get_action_strength("move_forward") - Input.get_action_strength("move_backward") )
-
+									
 	motion = motion.linear_interpolate(motion_target, MOTION_INTERPOLATE_SPEED * delta)
 
 	var q_from = Quat(orientation.basis)
@@ -79,11 +78,9 @@ func process_movement(delta):
 
 	var motion_length = motion.length()
 
-	is_sprinting = Input.is_action_pressed("sprint")
-
-	if is_sprinting:
-		motion_length *= 2
-		
+	if Input.is_action_pressed("sprint"): 
+		motion_length *= 8
+	
 	$AnimationTree["parameters/default_locomotion/blend_position"] = motion_length
 	
 	#idle_montage_delay_timer += delta

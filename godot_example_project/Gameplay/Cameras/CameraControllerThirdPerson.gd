@@ -3,8 +3,8 @@ extends Spatial
 #################
 # JOYPAD
 # You may need to adjust depending on the sensitivity of your joypad
-var JOYPAD_SENSITIVITY_Y = 4
-var JOYPAD_SENSITIVITY_X = 2
+var JOYPAD_SENSITIVITY_Y = 6
+var JOYPAD_SENSITIVITY_X = 4
 
 const JOYPAD_DEADZONE = 0.15
 const CAMERA_ROTATION_SPEED = .005 #0.001
@@ -23,6 +23,8 @@ func _input(event):
 		camera_x_rot = clamp(camera_x_rot + event.relative.y * CAMERA_ROTATION_SPEED,deg2rad(CAMERA_X_ROT_MIN), deg2rad(CAMERA_X_ROT_MAX) )
 		_CameraManager.get_node('CameraRotation').rotation.x = camera_x_rot
 
+func _physics_process(delta): process_joypad_input(delta)
+
 # For Gamepads | Xbox/Steam/ETC
 func process_joypad_input(delta):
 	# ----------------------------------
@@ -35,8 +37,7 @@ func process_joypad_input(delta):
 		elif OS.get_name() == "X11":
 			joypad_vec = Vector2(Input.get_joy_axis(0, 3), Input.get_joy_axis(0, 4))
 		elif OS.get_name() == "OSX":
-			joypad_vec = Vector2(Input.get_joy_axis(0, 3), Input.get_joy_axis(0, 4))
-
+			joypad_vec = Vector2(Input.get_joy_axis(0, 2), Input.get_joy_axis(0, 3))
 		# If the vector length of the joypad from a to b is less than the joypad deadzone, do nothing.
 		# This prevents jittering.
 		if joypad_vec.length() < JOYPAD_DEADZONE:
