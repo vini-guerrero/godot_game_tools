@@ -69,7 +69,7 @@ def toggle_use_root_motion_z(self, context):
 # ------------------------------------------------------------------------
 #    Addon Tool Properties
 # ------------------------------------------------------------------------
-class AddonProperties(PropertyGroup):
+class GGT_AddonProperties_GGT(PropertyGroup):
     action_name: StringProperty(name="New Name", description="Choose the action name you want to rename your animation in the dopesheet", maxlen=1024)
     rootmotion_name: StringProperty(name="Rootmotion Name", description="Choose name you want for the RootMotion Bone", maxlen=1024, default="RootMotion")
     target_object: PointerProperty(name="Target", description="Select the target armature you want the animations to be merged into", type=bpy.types.Object)
@@ -95,7 +95,7 @@ class AddonProperties(PropertyGroup):
 # ------------------------------------------------------------------------
 #    Action Properties
 # ------------------------------------------------------------------------
-class ActionProperties(bpy.types.PropertyGroup):
+class GGT_ActionProperties_GGT(bpy.types.PropertyGroup):
     hips_scale: FloatProperty(name="Hips Scale", description="Hips scale factor", default=1.0)
     use_root_motion: BoolProperty(name="Root Motion", description="Should this animation use root motion", options={'ANIMATABLE'}, default=True, update=toggle_use_root_motion)
     use_root_motion_z: BoolProperty(name="Root Motion Z", description="Use z-axis with this animation", default=False, update=toggle_use_root_motion_z)
@@ -108,41 +108,41 @@ class ActionProperties(bpy.types.PropertyGroup):
 #    Operators
 # ------------------------------------------------------------------------
 from .operators.nla_tracks_controller import (
-    NLA_TRACKS_OT
+    GGT_OT_NLA_TRACKS_OT_GGT
 )
 from .operators.animation_controller import (
-    ANIMATION_PLAYER_OT,
-    STOP_ANIMATION_OT,
-    RENAME_ANIMATION_OT,
-    PROCESS_ACTIONS_OT
+    GGT_OT_ANIMATION_PLAYER_OT_GGT,
+    GGT_OT_STOP_ANIMATION_OT_GGT,
+    GGT_OT_RENAME_ANIMATION_OT_GGT,
+    GGT_OT_PROCESS_ACTIONS_OT_GGT
 )
 from .operators.rootmotion_controller import (
-    ADD_ROOTBONE_OT,
-    ADD_ROOTMOTION_OT,
-    UPDATE_ROOTMOTION_OT
+    GGT_OT_ADD_ROOTBONE_OT_GGT,
+    GGT_OT_ADD_ROOTMOTION_OT_GGT,
+    GGT_OT_UPDATE_ROOTMOTION_OT_GGT
 )
 from .operators.mixamo_controller import (
-    INIT_CHARACTER_OT,
-    JOIN_ANIMATIONS_OT,
-    PREPARE_RIG_OT,
-    RENAME_RIG_OT
+    GGT_OT_INIT_CHARACTER_OT_GGT,
+    GGT_OT_JOIN_ANIMATIONS_OT_GGT,
+    GGT_OT_PREPARE_RIG_OT_GGT,
+    GGT_OT_RENAME_RIG_OT_GGT
 )
 from .operators.texture_controller import (
-    SAVE_BAKE_TEXTURES_OT,
-    CREATE_BAKE_TEXTURES_OT,
-    BAKE_TEXTURE_OT
+    GGT_OT_BAKE_TEXTURE_OT_GGT,
+    GGT_OT_CREATE_BAKE_TEXTURES_OT_GGT,
+    GGT_OT_SAVE_BAKE_TEXTURES_OT_GGT
 )
 from .operators.tileset_controller import (
-    TILESET_GENERATE_TILE_OT,
-    TILESET_SET_ISOMETRIC_CAMERA_OT,
-    TILESET_MOVE_CAMERA_TILE_OT,
-    TILESET_SET_TOPDOWN_CAMERA_OT,
-    TILESET_EXPORT_GODOT_TILESET_OT,
-    TILESET_ADD_COLLISION_SHAPE_OT,
-    TILESET_REMOVE_COLLISION_SHAPE_OT,
-    TILESET_ADD_NAVIGATION_SHAPE_OT,
-    TILESET_REMOVE_NAVIGATION_SHAPE_OT,
-    TILESET_ADD_RENDER_SETUP_OT
+    GGT_OT_TILESET_GENERATE_TILE_OT_GGT,
+    GGT_OT_TILESET_SET_ISOMETRIC_CAMERA_OT_GGT,
+    GGT_OT_TILESET_SET_TOPDOWN_CAMERA_OT_GGT,
+    GGT_OT_TILESET_MOVE_CAMERA_TILE_OT_GGT,
+    GGT_OT_TILESET_EXPORT_GODOT_TILESET_OT_GGT,
+    GGT_OT_TILESET_ADD_COLLISION_SHAPE_OT_GGT,
+    GGT_OT_TILESET_REMOVE_COLLISION_SHAPE_OT_GGT,
+    GGT_OT_TILESET_ADD_NAVIGATION_SHAPE_OT_GGT,
+    GGT_OT_TILESET_REMOVE_NAVIGATION_SHAPE_OT_GGT,
+    GGT_OT_TILESET_ADD_RENDER_SETUP_OT_GGT
 )
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
@@ -177,8 +177,10 @@ class GGT_PT_MAINPANEL_PT_(Panel):
 #    Addon Registration
 # ------------------------------------------------------------------------
 classes = (
-    AddonProperties,
-    ActionProperties,
+    # Default Add-On Properties
+    GGT_AddonProperties_GGT,
+    GGT_ActionProperties_GGT,
+    # Panels
     GGT_PT_MAINPANEL_PT_,
     GGT_PT_MIXAMO_UTILITIES_PT_GGT,
     GGT_PT_TEXTURE_CONTROLS_PT_GGT,
@@ -188,39 +190,45 @@ classes = (
     GGT_PT_ANIMATIONS_PT_GGT,
     GGT_PT_TILESET_GENERATOR_PT_GGT,
     ACTION_UL_list,
-    INIT_CHARACTER_OT,
-    JOIN_ANIMATIONS_OT,
-    RENAME_RIG_OT,
-    PREPARE_RIG_OT,
-    ANIMATION_PLAYER_OT,
-    STOP_ANIMATION_OT,
-    NLA_TRACKS_OT,
-    RENAME_ANIMATION_OT,
-    PROCESS_ACTIONS_OT,
-    ADD_ROOTBONE_OT,
-    ADD_ROOTMOTION_OT,
-    UPDATE_ROOTMOTION_OT,
-    SAVE_BAKE_TEXTURES_OT,
-    BAKE_TEXTURE_OT,
-    CREATE_BAKE_TEXTURES_OT,
-    TILESET_EXPORT_GODOT_TILESET_OT,
-    TILESET_GENERATE_TILE_OT,
-    TILESET_SET_ISOMETRIC_CAMERA_OT,
-    TILESET_SET_TOPDOWN_CAMERA_OT,
-    TILESET_MOVE_CAMERA_TILE_OT,
-    TILESET_ADD_COLLISION_SHAPE_OT,
-    TILESET_REMOVE_COLLISION_SHAPE_OT,
-    TILESET_ADD_NAVIGATION_SHAPE_OT,
-    TILESET_REMOVE_NAVIGATION_SHAPE_OT,
-    TILESET_ADD_RENDER_SETUP_OT
+    # Mixamo Controller
+    GGT_OT_INIT_CHARACTER_OT_GGT,
+    GGT_OT_JOIN_ANIMATIONS_OT_GGT,
+    GGT_OT_RENAME_RIG_OT_GGT,
+    GGT_OT_PREPARE_RIG_OT_GGT,
+    # Animation Controller
+    GGT_OT_ANIMATION_PLAYER_OT_GGT,
+    GGT_OT_STOP_ANIMATION_OT_GGT,
+    GGT_OT_RENAME_ANIMATION_OT_GGT,
+    GGT_OT_PROCESS_ACTIONS_OT_GGT,
+    # NLA Tracks Controller
+    GGT_OT_NLA_TRACKS_OT_GGT,
+    # RootMotion Controller
+    GGT_OT_ADD_ROOTBONE_OT_GGT,
+    GGT_OT_ADD_ROOTMOTION_OT_GGT,
+    GGT_OT_UPDATE_ROOTMOTION_OT_GGT,
+    # Texture Controller
+    GGT_OT_BAKE_TEXTURE_OT_GGT,
+    GGT_OT_CREATE_BAKE_TEXTURES_OT_GGT,
+    GGT_OT_SAVE_BAKE_TEXTURES_OT_GGT,
+    # Tileset Controller
+    GGT_OT_TILESET_GENERATE_TILE_OT_GGT,
+    GGT_OT_TILESET_SET_ISOMETRIC_CAMERA_OT_GGT,
+    GGT_OT_TILESET_SET_TOPDOWN_CAMERA_OT_GGT,
+    GGT_OT_TILESET_MOVE_CAMERA_TILE_OT_GGT,
+    GGT_OT_TILESET_EXPORT_GODOT_TILESET_OT_GGT,
+    GGT_OT_TILESET_ADD_COLLISION_SHAPE_OT_GGT,
+    GGT_OT_TILESET_REMOVE_COLLISION_SHAPE_OT_GGT,
+    GGT_OT_TILESET_ADD_NAVIGATION_SHAPE_OT_GGT,
+    GGT_OT_TILESET_REMOVE_NAVIGATION_SHAPE_OT_GGT,
+    GGT_OT_TILESET_ADD_RENDER_SETUP_OT_GGT
 )
 
 def register():
     from bpy.utils import register_class
     for cls in classes:
         register_class(cls)
-    bpy.types.Scene.godot_game_tools = PointerProperty(type=AddonProperties, name="Godot Game Tools")
-    bpy.types.Action.ggt_props = PointerProperty(type=ActionProperties, name="GGT Action")
+    bpy.types.Scene.godot_game_tools = PointerProperty(type=GGT_AddonProperties_GGT, name="Godot Game Tools")
+    bpy.types.Action.ggt_props = PointerProperty(type=GGT_ActionProperties_GGT, name="GGT Action")
     bpy.types.Scene.action_list_index = bpy.props.IntProperty(update=update_action_list)
 
 def unregister():

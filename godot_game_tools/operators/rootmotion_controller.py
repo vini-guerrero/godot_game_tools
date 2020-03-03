@@ -2,7 +2,7 @@ import bpy
 
 from bpy.types import (Operator)
 
-class ADD_ROOTBONE_OT(Operator):
+class GGT_OT_ADD_ROOTBONE_OT_GGT(Operator):
     bl_idname = "wm_ggt.add_rootbone"
     bl_label = "Add Root Bone"
     bl_description = "Adds armature root bone for root motion"
@@ -54,7 +54,7 @@ class ADD_ROOTBONE_OT(Operator):
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 
-class ADD_ROOTMOTION_OT(Operator):
+class GGT_OT_ADD_ROOTMOTION_OT_GGT(Operator):
     bl_idname = "wm_ggt.add_rootmotion"
     bl_label = "Update Root Motion"
     bl_description = "Updates Root Motion Bone To Animation"
@@ -97,7 +97,7 @@ class ADD_ROOTMOTION_OT(Operator):
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 
-class UPDATE_ROOTMOTION_OT(Operator):
+class GGT_OT_UPDATE_ROOTMOTION_OT_GGT(Operator):
     bl_idname = "wm_ggt.update_rootmotion"
     bl_label = "Update Root Motion"
     bl_description = "Updates Root Motion For Animation"
@@ -175,4 +175,4 @@ def add_root_curves(action: bpy.types.Action):
         for frame_index, keyframe_point in enumerate(z_hips.keyframe_points):
             kf = z_curve.keyframe_points.insert(frame=keyframe_point.co[0], value=keyframe_point.co[1]-z_offset, options={'FAST'}, keyframe_type='KEYFRAME')
             kf.interpolation = 'LINEAR'
-        print('Added Root Motion Curves to action {}'.format(action.name))
+        # print('Added Root Motion Curves to action {}'.format(action.name))

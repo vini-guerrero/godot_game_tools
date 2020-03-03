@@ -40,7 +40,7 @@ def writeToFile(variable, content, lineBreakAmount = None):
 # ------------------------------------------------------------------------ #
 
 
-class TILESET_GENERATE_TILE_OT(Operator):
+class GGT_OT_TILESET_GENERATE_TILE_OT_GGT(Operator):
     bl_idname = "wm_ggt.tileset_generate_tile"
     bl_label = "Generate New Tile"
     bl_description = "Adds a new tile configuration"
@@ -70,7 +70,7 @@ class TILESET_GENERATE_TILE_OT(Operator):
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 
-class TILESET_SET_ISOMETRIC_CAMERA_OT(Operator):
+class GGT_OT_TILESET_SET_ISOMETRIC_CAMERA_OT_GGT(Operator):
     bl_idname = "wm_ggt.tileset_set_isometric_camera"
     bl_label = "Set Isometric Camera"
     bl_description = "Sets active camera to isometric projection for tiles rendering"
@@ -101,7 +101,7 @@ class TILESET_SET_ISOMETRIC_CAMERA_OT(Operator):
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 
-class TILESET_SET_TOPDOWN_CAMERA_OT(Operator):
+class GGT_OT_TILESET_SET_TOPDOWN_CAMERA_OT_GGT(Operator):
     bl_idname = "wm_ggt.tileset_set_topdown_camera"
     bl_label = "Set Top-Down Camera"
     bl_description = "Sets active camera to top-down projection for tiles rendering"
@@ -133,7 +133,7 @@ class TILESET_SET_TOPDOWN_CAMERA_OT(Operator):
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 
-class TILESET_MOVE_CAMERA_TILE_OT(Operator):
+class GGT_OT_TILESET_MOVE_CAMERA_TILE_OT_GGT(Operator):
     bl_idname = "wm_ggt.tileset_move_camera_tile"
     bl_label = "Move Camera Next Tile"
     bl_description = "Moves the active camera towards next tile"
@@ -170,7 +170,7 @@ class TILESET_MOVE_CAMERA_TILE_OT(Operator):
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 
-class TILESET_EXPORT_GODOT_TILESET_OT(Operator):
+class GGT_OT_TILESET_EXPORT_GODOT_TILESET_OT_GGT(Operator):
     bl_idname = "wm_ggt.tileset_export_godot_tileset"
     bl_label = "Export Godot Tileset"
     bl_description = "Exports a resource file and scene containing configurations for Godot Engine"
@@ -357,7 +357,7 @@ class TILESET_EXPORT_GODOT_TILESET_OT(Operator):
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 
-class TILESET_ADD_COLLISION_SHAPE_OT(Operator):
+class GGT_OT_TILESET_ADD_COLLISION_SHAPE_OT_GGT(Operator):
     bl_idname = "wm_ggt.tileset_add_collision_shape"
     bl_label = "Add Collision Shape"
     bl_description = "Adds a collision shape to current selected tile"
@@ -380,7 +380,7 @@ class TILESET_ADD_COLLISION_SHAPE_OT(Operator):
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 
-class TILESET_REMOVE_COLLISION_SHAPE_OT(Operator):
+class GGT_OT_TILESET_REMOVE_COLLISION_SHAPE_OT_GGT(Operator):
     bl_idname = "wm_ggt.tileset_remove_collision_shape"
     bl_label = "Remove Collision Shape"
     bl_description = "Removes existing collision shape to current selected tile"
@@ -400,7 +400,7 @@ class TILESET_REMOVE_COLLISION_SHAPE_OT(Operator):
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 
-class TILESET_ADD_NAVIGATION_SHAPE_OT(Operator):
+class GGT_OT_TILESET_ADD_NAVIGATION_SHAPE_OT_GGT(Operator):
     bl_idname = "wm_ggt.tileset_add_navigation_shape"
     bl_label = "Add Navigation Shape"
     bl_description = "Adds a navigation shape to current selected tile"
@@ -423,7 +423,7 @@ class TILESET_ADD_NAVIGATION_SHAPE_OT(Operator):
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 
-class TILESET_REMOVE_NAVIGATION_SHAPE_OT(Operator):
+class GGT_OT_TILESET_REMOVE_NAVIGATION_SHAPE_OT_GGT(Operator):
     bl_idname = "wm_ggt.tileset_remove_navigation_shape"
     bl_label = "Remove Navigation Shape"
     bl_description = "Removes existing navigation shape to current selected tile"
@@ -443,7 +443,7 @@ class TILESET_REMOVE_NAVIGATION_SHAPE_OT(Operator):
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 
-class TILESET_ADD_RENDER_SETUP_OT(Operator):
+class GGT_OT_TILESET_ADD_RENDER_SETUP_OT_GGT(Operator):
     bl_idname = "wm_ggt.tileset_add_render_setup"
     bl_label = "Add Render Setup"
     bl_description = "Adds a camera and light for tileset rendering"
@@ -472,3 +472,7 @@ class TILESET_ADD_RENDER_SETUP_OT(Operator):
             bpy.ops.wm_ggt.tileset_set_isometric_camera('EXEC_DEFAULT')
         self.report({'INFO'}, 'Render Setup Added')
         return {'FINISHED'}
+
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #

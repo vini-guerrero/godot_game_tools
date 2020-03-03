@@ -2,7 +2,7 @@ import bpy
 
 from bpy.types import (Operator)
 
-class ANIMATION_PLAYER_OT(Operator):
+class GGT_OT_ANIMATION_PLAYER_OT_GGT(Operator):
     bl_idname = "wm_ggt.animation_player"
     bl_label = "Play Animation"
     bl_description = "Play armature animations"
@@ -25,7 +25,7 @@ class ANIMATION_PLAYER_OT(Operator):
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 
-class STOP_ANIMATION_OT(Operator):
+class GGT_OT_STOP_ANIMATION_OT_GGT(Operator):
     bl_idname = "wm_ggt.animation_stop"
     bl_label = "Stop Animation"
     bl_description = "Stops current animation"
@@ -46,7 +46,7 @@ class STOP_ANIMATION_OT(Operator):
 # ------------------------------------------------------------------------ #
 
 
-class RENAME_ANIMATION_OT(Operator):
+class GGT_OT_RENAME_ANIMATION_OT_GGT(Operator):
     bl_idname = "wm_ggt.rename_animation"
     bl_label = "Rename Current Animation"
     bl_description = "Renames current animation"
@@ -66,7 +66,7 @@ class RENAME_ANIMATION_OT(Operator):
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 
-class PROCESS_ACTIONS_OT(Operator):
+class GGT_OT_PROCESS_ACTIONS_OT_GGT(Operator):
     bl_idname = "scene.process_actions"
     bl_label = "Update Imported Animations"
     bl_description = "Run to process all actions in the scene. ( Rename and scale bones etc..)"
@@ -80,6 +80,6 @@ class PROCESS_ACTIONS_OT(Operator):
                     if f.data_path == 'pose.bones["Hips"].location':
                         for keyframe in f.keyframe_points:
                             keyframe.co[1] *= .01
-                print("Action {} hips are scaled to 0.01.".format(action.name))
+                # print("Action {} hips are scaled to 0.01.".format(action.name))
                 action.ggt_props.hips_scale = 0.01
         return {'FINISHED'}

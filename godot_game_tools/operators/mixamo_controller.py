@@ -8,7 +8,7 @@ from bpy_extras.io_utils import ImportHelper
 
 from ..utils import validateArmature
 
-class INIT_CHARACTER_OT(bpy.types.Operator, ImportHelper):
+class GGT_OT_INIT_CHARACTER_OT_GGT(bpy.types.Operator, ImportHelper):
     """Initializes imported model for the tool"""
     bl_idname = "wm_ggt.init_character"
     bl_label = "Initialize Character"
@@ -71,7 +71,7 @@ class INIT_CHARACTER_OT(bpy.types.Operator, ImportHelper):
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 
-class JOIN_ANIMATIONS_OT(Operator, ImportHelper):
+class GGT_OT_JOIN_ANIMATIONS_OT_GGT(Operator, ImportHelper):
     bl_idname = "wm_ggt.join_animations"
     bl_label = "Join Animations"
     bl_description = "Join mixamo animations into a single armature"
@@ -123,7 +123,7 @@ class JOIN_ANIMATIONS_OT(Operator, ImportHelper):
                 index = 0
                 for obj in characterCollection.objects:
                     if obj.type == "ARMATURE" and obj is not target_armature:
-                        print("Importing animation from file {}".format(obj.name))
+                        # print("Importing animation from file {}".format(obj.name))
                         obj.animation_data.action.name = fileNamesList[index]
                         # Rename the bones
                         for bone in obj.pose.bones:
@@ -169,7 +169,7 @@ class JOIN_ANIMATIONS_OT(Operator, ImportHelper):
 # ------------------------------------------------------------------------ #
 
 
-class RENAME_RIG_OT(Operator):
+class GGT_OT_RENAME_RIG_OT_GGT(Operator):
     bl_idname = "wm_ggt.rename_mixamo_rig"
     bl_label = "Rename Rig Bones"
     bl_description = "Rename rig bones"
@@ -208,7 +208,7 @@ class RENAME_RIG_OT(Operator):
 # ------------------------------------------------------------------------ #
 
 
-class PREPARE_RIG_OT(Operator):
+class GGT_OT_PREPARE_RIG_OT_GGT(Operator):
     bl_idname = "wm_ggt.prepare_mixamo_rig"
     bl_label = "Prepare Mixamo Rig"
     bl_description = "Fix mixamo rig to export for Godot"
@@ -247,7 +247,7 @@ class PREPARE_RIG_OT(Operator):
 # ------------------------------------------------------------------------ #
 
 
-class WM_OT_RENAME_MIXAMORIG(Operator):
+class GGT_OT_RENAME_MIXAMORIG_OT_GGT(Operator):
     bl_idname = "wm_ggt.rename_mixamo_rig"
     bl_label = "Rename Rig Bones"
     bl_description = "Rename rig bones"
