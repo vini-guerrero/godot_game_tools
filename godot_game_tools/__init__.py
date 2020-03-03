@@ -11,7 +11,7 @@ bl_info = {
     "description": "This Add-On provides features for better export options with Godot Game Engine",
     "author": "Vinicius Guerrero",
     "version": (2, 0, 0),
-    "blender": (2, 81, 0),
+    "blender": (2, 82, 0),
     "location": "3D View > Tools",
     "warning": "",
     "wiki_url": "https://github.com/vini-guerrero/Godot_Game_Tools",
@@ -47,9 +47,9 @@ def updateTilesetGeneratorCamera(self, context):
     scene = context.scene
     tool = scene.godot_game_tools
     if int(tool.tileset_type) == 0:
-        bpy.ops.wm.tileset_set_topdown_camera('EXEC_DEFAULT')
+        bpy.ops.wm_ggt.tileset_set_topdown_camera('EXEC_DEFAULT')
     elif int(tool.tileset_type) == 1:
-        bpy.ops.wm.tileset_set_isometric_camera('EXEC_DEFAULT')
+        bpy.ops.wm_ggt.tileset_set_isometric_camera('EXEC_DEFAULT')
 
 def update_action_list(self, context):
     ob = context.scene.godot_game_tools.target_object
@@ -59,12 +59,12 @@ def update_action_list(self, context):
     bpy.context.scene.frame_end = ob.animation_data.action.frame_range[1]
 
 def toggle_use_root_motion(self, context):
-    bpy.ops.wm.animation_stop('EXEC_DEFAULT')
-    bpy.ops.wm.update_rootmotion('EXEC_DEFAULT')
+    bpy.ops.wm_ggt.animation_stop('EXEC_DEFAULT')
+    bpy.ops.wm_ggt.update_rootmotion('EXEC_DEFAULT')
 
 def toggle_use_root_motion_z(self, context):
-    bpy.ops.wm.animation_stop('EXEC_DEFAULT')
-    bpy.ops.wm.update_rootmotion('EXEC_DEFAULT')
+    bpy.ops.wm_ggt.animation_stop('EXEC_DEFAULT')
+    bpy.ops.wm_ggt.update_rootmotion('EXEC_DEFAULT')
 
 # ------------------------------------------------------------------------
 #    Addon Tool Properties
@@ -152,10 +152,10 @@ from .operators.tileset_controller import (
 # ------------------------------------------------------------------------
 #    Panels
 # ------------------------------------------------------------------------
-from .panels.bvh_utilities_panel import (_PT_BVH_UTILITIES_PT_)
-from .panels.texture_controls_panel import (_PT_TEXTURE_CONTROLS_PT_)
-from .panels.mixamo_utilities_panel import (_PT_MIXAMO_UTILITIES_PT_, _PT_ARMATURE_UTILITIES_PT_, ACTION_UL_list, _PT_ROOT_MOTION_PT_, _PT_ANIMATIONS_PT_)
-from .panels.tileset_generator_panel import (_PT_TILESET_GENERATOR_PT_)
+from .panels.bvh_utilities_panel import (GGT_PT_BVH_UTILITIES_PT_GGT)
+from .panels.texture_controls_panel import (GGT_PT_TEXTURE_CONTROLS_PT_GGT)
+from .panels.mixamo_utilities_panel import (GGT_PT_MIXAMO_UTILITIES_PT_GGT, GGT_PT_ARMATURE_UTILITIES_PT_GGT, ACTION_UL_list, GGT_PT_ROOT_MOTION_PT_GGT, GGT_PT_ANIMATIONS_PT_GGT)
+from .panels.tileset_generator_panel import (GGT_PT_TILESET_GENERATOR_PT_GGT)
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
@@ -164,8 +164,8 @@ from .panels.tileset_generator_panel import (_PT_TILESET_GENERATOR_PT_)
 # ------------------------------------------------------------------------
 #    MAIN ADD-ON PANEL
 # ------------------------------------------------------------------------
-class _PT_GGT_PT_(Panel):
-    bl_idname = "object.main_panel"
+class GGT_PT_MAINPANEL_PT_(Panel):
+    bl_idname = "obj_ggt.main_panel"
     bl_label = "Godot Game Tools"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
@@ -179,14 +179,14 @@ class _PT_GGT_PT_(Panel):
 classes = (
     AddonProperties,
     ActionProperties,
-    _PT_GGT_PT_,
-    _PT_MIXAMO_UTILITIES_PT_,
-    _PT_TEXTURE_CONTROLS_PT_,
-    _PT_BVH_UTILITIES_PT_,
-    _PT_ARMATURE_UTILITIES_PT_,
-    _PT_ROOT_MOTION_PT_,
-    _PT_ANIMATIONS_PT_,
-    _PT_TILESET_GENERATOR_PT_,
+    GGT_PT_MAINPANEL_PT_,
+    GGT_PT_MIXAMO_UTILITIES_PT_GGT,
+    GGT_PT_TEXTURE_CONTROLS_PT_GGT,
+    GGT_PT_BVH_UTILITIES_PT_GGT,
+    GGT_PT_ARMATURE_UTILITIES_PT_GGT,
+    GGT_PT_ROOT_MOTION_PT_GGT,
+    GGT_PT_ANIMATIONS_PT_GGT,
+    GGT_PT_TILESET_GENERATOR_PT_GGT,
     ACTION_UL_list,
     INIT_CHARACTER_OT,
     JOIN_ANIMATIONS_OT,
@@ -215,7 +215,6 @@ classes = (
     TILESET_ADD_RENDER_SETUP_OT
 )
 
-
 def register():
     from bpy.utils import register_class
     for cls in classes:
@@ -223,7 +222,6 @@ def register():
     bpy.types.Scene.godot_game_tools = PointerProperty(type=AddonProperties, name="Godot Game Tools")
     bpy.types.Action.ggt_props = PointerProperty(type=ActionProperties, name="GGT Action")
     bpy.types.Scene.action_list_index = bpy.props.IntProperty(update=update_action_list)
-
 
 def unregister():
     from bpy.utils import unregister_class

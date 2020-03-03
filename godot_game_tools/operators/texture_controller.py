@@ -5,7 +5,7 @@ import glob
 from bpy.types import (Operator)
 
 class BAKE_TEXTURE_OT(bpy.types.Operator):
-    bl_idname = "wm.bake_texture"
+    bl_idname = "wm_ggt.bake_texture"
     bl_label = "Bake Texture"
     bl_description = "Bakes Selected Texture"
 
@@ -48,7 +48,7 @@ class BAKE_TEXTURE_OT(bpy.types.Operator):
 # ------------------------------------------------------------------------ #
 
 class CREATE_BAKE_TEXTURES_OT(Operator):
-    bl_idname = "wm.create_bake_texture"
+    bl_idname = "wm_ggt.create_bake_texture"
     bl_label = "Create Bake Texture"
     bl_description = "Create texture for proper bake"
 
@@ -90,7 +90,7 @@ class CREATE_BAKE_TEXTURES_OT(Operator):
 # ------------------------------------------------------------------------ #
 
 class SAVE_BAKE_TEXTURES_OT(Operator):
-    bl_idname = "wm.save_bake_textures"
+    bl_idname = "wm_ggt.save_bake_textures"
     bl_label = "Save Current Texture"
     bl_description = "Saves current active textures"
 

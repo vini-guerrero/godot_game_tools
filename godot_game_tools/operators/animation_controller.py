@@ -3,7 +3,7 @@ import bpy
 from bpy.types import (Operator)
 
 class ANIMATION_PLAYER_OT(Operator):
-    bl_idname = "wm.animation_player"
+    bl_idname = "wm_ggt.animation_player"
     bl_label = "Play Animation"
     bl_description = "Play armature animations"
 
@@ -26,7 +26,7 @@ class ANIMATION_PLAYER_OT(Operator):
 # ------------------------------------------------------------------------ #
 
 class STOP_ANIMATION_OT(Operator):
-    bl_idname = "wm.animation_stop"
+    bl_idname = "wm_ggt.animation_stop"
     bl_label = "Stop Animation"
     bl_description = "Stops current animation"
 
@@ -47,7 +47,7 @@ class STOP_ANIMATION_OT(Operator):
 
 
 class RENAME_ANIMATION_OT(Operator):
-    bl_idname = "wm.rename_animation"
+    bl_idname = "wm_ggt.rename_animation"
     bl_label = "Rename Current Animation"
     bl_description = "Renames current animation"
 

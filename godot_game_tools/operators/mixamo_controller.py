@@ -10,7 +10,7 @@ from ..utils import validateArmature
 
 class INIT_CHARACTER_OT(bpy.types.Operator, ImportHelper):
     """Initializes imported model for the tool"""
-    bl_idname = "wm.init_character"
+    bl_idname = "wm_ggt.init_character"
     bl_label = "Initialize Character"
     bl_description = "Used to init 'Main' Armature. Loaded character should have 'T-Pose' animation from mixamo."
     bl_options = {'REGISTER', 'UNDO'}
@@ -64,7 +64,7 @@ class INIT_CHARACTER_OT(bpy.types.Operator, ImportHelper):
             characterCollection.objects.link(characterArmature)
             characterArmature.animation_data.action.name = "T-Pose"
             tool.target_object = characterArmature
-        bpy.ops.wm.prepare_mixamo_rig('EXEC_DEFAULT')
+        bpy.ops.wm_ggt.prepare_mixamo_rig('EXEC_DEFAULT')
         return {'FINISHED'}
 
 # ------------------------------------------------------------------------ #
@@ -72,7 +72,7 @@ class INIT_CHARACTER_OT(bpy.types.Operator, ImportHelper):
 # ------------------------------------------------------------------------ #
 
 class JOIN_ANIMATIONS_OT(Operator, ImportHelper):
-    bl_idname = "wm.join_animations"
+    bl_idname = "wm_ggt.join_animations"
     bl_label = "Join Animations"
     bl_description = "Join mixamo animations into a single armature"
     bl_options = {'PRESET', 'UNDO'}
@@ -170,7 +170,7 @@ class JOIN_ANIMATIONS_OT(Operator, ImportHelper):
 
 
 class RENAME_RIG_OT(Operator):
-    bl_idname = "wm.rename_mixamo_rig"
+    bl_idname = "wm_ggt.rename_mixamo_rig"
     bl_label = "Rename Rig Bones"
     bl_description = "Rename rig bones"
 
@@ -209,7 +209,7 @@ class RENAME_RIG_OT(Operator):
 
 
 class PREPARE_RIG_OT(Operator):
-    bl_idname = "wm.prepare_mixamo_rig"
+    bl_idname = "wm_ggt.prepare_mixamo_rig"
     bl_label = "Prepare Mixamo Rig"
     bl_description = "Fix mixamo rig to export for Godot"
 
@@ -222,7 +222,7 @@ class PREPARE_RIG_OT(Operator):
         # Apply transformations on selected Armature
         bpy.context.view_layer.objects.active = target_armature
         bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
-        bpy.ops.wm.rename_mixamo_rig('EXEC_DEFAULT')
+        bpy.ops.wm_ggt.rename_mixamo_rig('EXEC_DEFAULT')
 
         if valid:
             bpy.data.objects["Armature"].select_set(True)
@@ -248,7 +248,7 @@ class PREPARE_RIG_OT(Operator):
 
 
 class WM_OT_RENAME_MIXAMORIG(Operator):
-    bl_idname = "wm.rename_mixamo_rig"
+    bl_idname = "wm_ggt.rename_mixamo_rig"
     bl_label = "Rename Rig Bones"
     bl_description = "Rename rig bones"
 

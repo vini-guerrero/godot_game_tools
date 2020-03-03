@@ -3,7 +3,7 @@ import bpy
 from bpy.types import (Operator)
 
 class NLA_TRACKS_OT(Operator):
-    bl_idname = "wm.push_nlas"
+    bl_idname = "wm_ggt.push_nlas"
     bl_label = "Create NLA Tracks"
     bl_description = "Push All Animations to NLA Tracks"
 

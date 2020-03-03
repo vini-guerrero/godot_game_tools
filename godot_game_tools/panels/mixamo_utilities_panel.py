@@ -3,24 +3,24 @@ import bpy
 from bl_ui.properties_object import ObjectButtonsPanel, OBJECT_PT_transform
 from bpy.types import (Panel, Menu, UIList)
 
-class _PT_MIXAMO_UTILITIES_PT_(bpy.types.Panel, ObjectButtonsPanel):
-    bl_idname = "object.mixamo_utilities_panel"
+class GGT_PT_MIXAMO_UTILITIES_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
+    bl_idname = "obj_ggt.mixamo_utilities_panel"
     bl_label = "Mixamo Utilies"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_context = "objectmode"
-    bl_parent_id = "object.main_panel"
+    bl_parent_id = "obj_ggt.main_panel"
     bl_options = {"DEFAULT_CLOSED"}
     def draw(self, context):
         pass
 
-class _PT_ARMATURE_UTILITIES_PT_(bpy.types.Panel, ObjectButtonsPanel):
-    bl_idname = "object.armature_panel"
+class GGT_PT_ARMATURE_UTILITIES_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
+    bl_idname = "obj_ggt.armature_panel"
     bl_label = "Armature"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_context = "objectmode"
-    bl_parent_id = "object.mixamo_utilities_panel"
+    bl_parent_id = "obj_ggt.mixamo_utilities_panel"
     bl_options = {"DEFAULT_CLOSED"}
     def draw(self, context):
         layout = self.layout
@@ -30,19 +30,18 @@ class _PT_ARMATURE_UTILITIES_PT_(bpy.types.Panel, ObjectButtonsPanel):
         box = layout.box()
         box.label(text="Armature Setup", icon='ARMATURE_DATA')
         # box.prop(tool, "target_name")
-        box.operator("wm.init_character", icon="IMPORT")
-        box.operator("wm.join_animations", icon="ASSET_MANAGER")
-        # box.operator("wm.prepare_mixamo_rig", icon="ASSET_MANAGER")
+        box.operator("wm_ggt.init_character", icon="IMPORT")
+        box.operator("wm_ggt.join_animations", icon="ASSET_MANAGER")
+        # box.operator("wm_ggt.prepare_mixamo_rig", icon="ASSET_MANAGER")
         box.separator()
 
-
-class _PT_ROOT_MOTION_PT_(bpy.types.Panel, ObjectButtonsPanel):
-    bl_idname = "object.rootmotion_panel"
+class GGT_PT_ROOT_MOTION_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
+    bl_idname = "obj_ggt.rootmotion_panel"
     bl_label = "Root Motion"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_context = "objectmode"
-    bl_parent_id = "object.mixamo_utilities_panel"
+    bl_parent_id = "obj_ggt.mixamo_utilities_panel"
     bl_options = {"DEFAULT_CLOSED"}
     def draw(self, context):
         layout = self.layout
@@ -57,7 +56,7 @@ class _PT_ROOT_MOTION_PT_(bpy.types.Panel, ObjectButtonsPanel):
         if ob is not None:
             box.prop(ob.animation_data.action.ggt_props, "use_root_motion")
             box.prop(ob.animation_data.action.ggt_props, "use_root_motion_z")
-        box.operator("wm.add_rootmotion", icon="BONE_DATA")
+        box.operator("wm_ggt.add_rootmotion", icon="BONE_DATA")
         box.separator()
 
 class ACTION_UL_list(UIList):
@@ -69,13 +68,13 @@ class ACTION_UL_list(UIList):
         elif self.layout_type in {'GRID'}:
             pass
 
-class _PT_ANIMATIONS_PT_(bpy.types.Panel, ObjectButtonsPanel):
-    bl_idname = "object.animations_panel"
+class GGT_PT_ANIMATIONS_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
+    bl_idname = "obj_ggt.animations_panel"
     bl_label = "Animations"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_context = "objectmode"
-    bl_parent_id = "object.mixamo_utilities_panel"
+    bl_parent_id = "obj_ggt.mixamo_utilities_panel"
     bl_options = {"DEFAULT_CLOSED"}
     def draw(self, context):
         layout = self.layout
@@ -84,9 +83,9 @@ class _PT_ANIMATIONS_PT_(bpy.types.Panel, ObjectButtonsPanel):
         ob = tool.target_object
         layout.template_list("ACTION_UL_list", "", bpy.data, "actions", scene, "action_list_index")
         box = layout.box()
-        box.operator("wm.animation_player", icon="PLAY")
-        box.operator("wm.animation_stop", icon="PAUSE")
+        box.operator("wm_ggt.animation_player", icon="PLAY")
+        box.operator("wm_ggt.animation_stop", icon="PAUSE")
         # box.prop(tool, "action_name")
-        # box.operator("wm.rename_animation", icon="ARMATURE_DATA")
-        box.operator("wm.push_nlas", icon="ANIM_DATA")
+        # box.operator("wm_ggt.rename_animation", icon="ARMATURE_DATA")
+        box.operator("wm_ggt.push_nlas", icon="ANIM_DATA")
         box.separator()

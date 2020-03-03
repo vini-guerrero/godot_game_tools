@@ -3,7 +3,7 @@ import bpy
 from bpy.types import (Operator)
 
 class ADD_ROOTBONE_OT(Operator):
-    bl_idname = "wm.add_rootbone"
+    bl_idname = "wm_ggt.add_rootbone"
     bl_label = "Add Root Bone"
     bl_description = "Adds armature root bone for root motion"
 
@@ -55,7 +55,7 @@ class ADD_ROOTBONE_OT(Operator):
 # ------------------------------------------------------------------------ #
 
 class ADD_ROOTMOTION_OT(Operator):
-    bl_idname = "wm.add_rootmotion"
+    bl_idname = "wm_ggt.add_rootmotion"
     bl_label = "Update Root Motion"
     bl_description = "Updates Root Motion Bone To Animation"
 
@@ -79,7 +79,7 @@ class ADD_ROOTMOTION_OT(Operator):
             for action in bpy.data.actions: animationsForRootMotion.append(action)
         else:
             animationsForRootMotion.append(bpy.context.object.animation_data.action)
-        bpy.ops.wm.add_rootbone('EXEC_DEFAULT')
+        bpy.ops.wm_ggt.add_rootbone('EXEC_DEFAULT')
         if len(bpy.data.actions) > 0:
             for action in animationsForRootMotion:
                 animation = action.name
@@ -88,7 +88,7 @@ class ADD_ROOTMOTION_OT(Operator):
                 target_armature.animation_data.action = bpy.data.actions.values()[animationIndex]
                 bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
                 add_root_curves(target_armature.animation_data.action)
-                bpy.ops.wm.update_rootmotion('EXEC_DEFAULT')
+                bpy.ops.wm_ggt.update_rootmotion('EXEC_DEFAULT')
             bpy.ops.object.mode_set(mode='OBJECT')
             self.report({'INFO'}, 'Root Motion Added')
         return {'FINISHED'}
@@ -98,7 +98,7 @@ class ADD_ROOTMOTION_OT(Operator):
 # ------------------------------------------------------------------------ #
 
 class UPDATE_ROOTMOTION_OT(Operator):
-    bl_idname = "wm.update_rootmotion"
+    bl_idname = "wm_ggt.update_rootmotion"
     bl_label = "Update Root Motion"
     bl_description = "Updates Root Motion For Animation"
 
