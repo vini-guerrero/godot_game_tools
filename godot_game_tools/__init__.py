@@ -142,7 +142,7 @@ from .operators.tileset_controller import (
     TILESET_REMOVE_COLLISION_SHAPE_OT,
     TILESET_ADD_NAVIGATION_SHAPE_OT,
     TILESET_REMOVE_NAVIGATION_SHAPE_OT,
-    TILESET_ADD_RENDER_SETUP_OT,
+    TILESET_ADD_RENDER_SETUP_OT
 )
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
