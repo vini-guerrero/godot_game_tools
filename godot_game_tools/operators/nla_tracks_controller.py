@@ -14,7 +14,7 @@ class GGT_OT_NLA_TRACKS_OT_GGT(Operator):
         target_armature = tool.target_object
         bpy.ops.screen.animation_cancel()
         bpy.context.view_layer.objects.active = target_armature
-        bpy.context.scene.frame_start = 2
+        bpy.context.scene.frame_start = 0
         if len(bpy.data.actions) > 0:
             for action in bpy.data.actions:
                 animation = action.name

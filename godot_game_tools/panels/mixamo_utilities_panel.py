@@ -53,10 +53,11 @@ class GGT_PT_ROOT_MOTION_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
         box.label(text="Root Motion Setup", icon='ANIM_DATA')
         box.prop(tool, "visible_armature")
         box.prop(tool, "rootmotion_all")
-        if ob is not None:
-            box.prop(ob.animation_data.action.ggt_props, "use_root_motion")
-            box.prop(ob.animation_data.action.ggt_props, "use_root_motion_z")
-        box.operator("wm_ggt.add_rootmotion", icon="BONE_DATA")
+        # if ob is not None:
+        #     box.prop(ob.animation_data.action.ggt_props, "use_root_motion")
+        #     box.prop(ob.animation_data.action.ggt_props, "use_root_motion_z")
+        # box.operator("wm_ggt.add_rootmotion", icon="BONE_DATA")
+        box.operator("wm_ggt.add_rootmotion_legacy", icon="BONE_DATA")
         box.separator()
 
 class ACTION_UL_list(UIList):
@@ -87,5 +88,6 @@ class GGT_PT_ANIMATIONS_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
         box.operator("wm_ggt.animation_stop", icon="PAUSE")
         # box.prop(tool, "action_name")
         # box.operator("wm_ggt.rename_animation", icon="ARMATURE_DATA")
+        box.operator("wm_ggt.add_animation_loop", icon="COPYDOWN")
         box.operator("wm_ggt.push_nlas", icon="ANIM_DATA")
         box.separator()
