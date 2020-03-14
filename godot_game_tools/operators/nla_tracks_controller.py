@@ -14,16 +14,13 @@ class GGT_OT_NLA_TRACKS_OT_GGT(Operator):
         target_armature = tool.target_object
         bpy.ops.screen.animation_cancel()
         bpy.context.view_layer.objects.active = target_armature
-        bpy.context.scene.frame_start = 0
         if len(bpy.data.actions) > 0:
             for action in bpy.data.actions:
-                animation = action.name
-                animationToPlay = [anim for anim in bpy.data.actions.keys() if anim in (animation)]
-                animationIndex = bpy.data.actions.keys().index(animation)
-                target_armature.animation_data.action = bpy.data.actions.values()[animationIndex]
-                bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
-                bpy.context.area.ui_type = 'NLA_EDITOR'
-                bpy.ops.nla.action_pushdown(channel_index=1)
-        bpy.context.area.ui_type = 'VIEW_3D'
+                if target_armature.animation_data is not None:
+                    if action is not None:
+                        # bpy.context.scene.frame_start = 0
+                        track = target_armature.animation_data.nla_tracks.new()
+                        track.strips.new(action.name, bpy.context.scene.frame_start, action)
+                        track.name = action.name
         self.report({'INFO'}, 'NLA Tracks Generated')
         return {'FINISHED'}
