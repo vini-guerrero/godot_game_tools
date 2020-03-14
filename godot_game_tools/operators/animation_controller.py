@@ -100,6 +100,6 @@ class GGT_OT_ADD_ANIMATION_LOOP_OT_GGT(Operator):
         animation = tool.animations
         actionName = target_armature.animation_data.action
         if len(bpy.data.actions) > 0:
-            bpy.context.object.animation_data.action.name = actionName + "-loop"
+            bpy.context.object.animation_data.action.name = animation + "-loop"
         self.report({'INFO'}, 'Animation Renamed')
         return {'FINISHED'}
