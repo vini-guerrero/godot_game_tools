@@ -27,10 +27,7 @@ class GGT_OT_NLA_TRACKS_OT_GGT(Operator):
         #         bpy.ops.object.mode_set(mode='OBJECT')
         # bpy.ops.object.mode_set(mode='OBJECT')
         if len(bpy.data.actions) > 0:
-            bpy.context.area.ui_type = 'DOPESHEET'
-            bpy.context.space_data.ui_mode = 'ACTION'
             for action in bpy.data.actions:
-                bpy.ops.action.push_down()
                 if target_armature.animation_data is not None:
                     if action is not None:
                         # bpy.context.scene.frame_start = 0
