@@ -156,28 +156,6 @@ class GGT_OT_ADD_ROOTMOTION_OT_GGT(Operator):
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 
-class GGT_OT_ADD_ANIMATION_LOOP_OT_GGT(Operator):
-    bl_idname = "wm_ggt.add_animation_loop"
-    bl_label = "Adds Godot Loop Rename To Selected Animation"
-    bl_description = "Adds armature root bone for root motion"
-
-    def execute(self, context):
-        scene = context.scene
-        tool = scene.godot_game_tools
-        animation = tool.animations
-        target_armature = tool.target_object
-        actionName = target_object.animation_data.action
-        valid = validateArmature(self, context)
-        if valid:
-            if len(bpy.data.actions) > 0:
-                bpy.context.object.animation_data.action.name = actionName + "-loop"
-            self.report({'INFO'}, 'Animation Renamed')
-        return {'FINISHED'}
-
-# ------------------------------------------------------------------------ #
-# ------------------------------------------------------------------------ #
-# ------------------------------------------------------------------------ #
-
 class GGT_OT_UPDATE_ROOTMOTION_OT_GGT(Operator):
     bl_idname = "wm_ggt.update_rootmotion"
     bl_label = "Update Root Motion"

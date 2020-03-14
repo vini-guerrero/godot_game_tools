@@ -83,3 +83,23 @@ class GGT_OT_PROCESS_ACTIONS_OT_GGT(Operator):
                 # print("Action {} hips are scaled to 0.01.".format(action.name))
                 action.ggt_props.hips_scale = 0.01
         return {'FINISHED'}
+
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+
+class GGT_OT_ADD_ANIMATION_LOOP_OT_GGT(Operator):
+    bl_idname = "wm_ggt.add_animation_loop"
+    bl_label = "Add Godot Animation Loop"
+    bl_description = "Adds Godot Loop Rename To Selected Animation"
+
+    def execute(self, context):
+        scene = context.scene
+        tool = scene.godot_game_tools
+        target_armature = tool.target_object
+        animation = tool.animations
+        actionName = target_armature.animation_data.action
+        if len(bpy.data.actions) > 0:
+            bpy.context.object.animation_data.action.name = actionName + "-loop"
+        self.report({'INFO'}, 'Animation Renamed')
+        return {'FINISHED'}
