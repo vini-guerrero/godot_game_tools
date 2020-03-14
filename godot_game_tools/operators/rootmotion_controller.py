@@ -13,6 +13,7 @@ class GGT_OT_ADD_ROOTBONE_OT_GGT(Operator):
         animation = tool.animations
         target_armature = tool.target_object
         rootMotionBoneName = tool.rootmotion_name
+        rootmotionStartFrame = tool.rootMotionStartFrame
         if not target_armature:
             self.report({'INFO'}, 'Please select a valid armature')
         if target_armature.type == 'ARMATURE':
@@ -30,7 +31,7 @@ class GGT_OT_ADD_ROOTBONE_OT_GGT(Operator):
                     # Insert Location on RootMotion Bone
                     bpy.ops.object.mode_set(mode="POSE")
                     bpy.context.view_layer.objects.active.data.bones[rootMotionBoneName].select = True
-                    scene.frame_set(0)
+                    scene.frame_set(rootmotionStartFrame)
                     bpy.ops.anim.keyframe_insert_menu(type='Location')
                     # Parent Bone
                     bpy.ops.object.mode_set(mode='OBJECT')
@@ -74,6 +75,7 @@ class GGT_OT_ADD_ROOTMOTION_LEGACY_OT_GGT(Operator):
         target_armature = tool.target_object
         rootMotionBoneName = tool.rootmotion_name
         rootmotion_all = tool.rootmotion_all
+        rootmotionStartFrame = tool.rootMotionStartFrame
         # Call Operator From Outside Class
         animationsForRootMotion = []
         if rootmotion_all:
@@ -94,7 +96,7 @@ class GGT_OT_ADD_ROOTMOTION_LEGACY_OT_GGT(Operator):
                 bpy.ops.object.mode_set(mode="POSE")
                 anim_root_bone = target_armature.pose.bones[rootMotionBoneName]
                 anim_hip_bone = target_armature.pose.bones["Hips"]
-                scene.frame_set(1)
+                scene.frame_set(rootmotionStartFrame)
                 anim_root_bone.keyframe_insert(data_path='location')
                 hip_fcurve = self.get_fcurve(target_armature, "Hips")
                 frames = []

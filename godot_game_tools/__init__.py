@@ -85,6 +85,7 @@ class GGT_AddonProperties_GGT(PropertyGroup):
     tileset_generate_path: StringProperty(name="Tileset Path", description="Select the path destination folder where you want tileset to be exported", subtype="FILE_PATH")
     tileset_tile_width: IntProperty(name="Tile Width", description="Define the desired tiles width", default=32, min=8, max=1024, update=updateTilesetGeneratorCamera, get=None, set=None)
     tileset_tile_height: IntProperty(name="Tile Height", description="Define the desired tiles height", default=32, min=8, max=1024, update=updateTilesetGeneratorCamera, get=None, set=None)
+    rootMotionStartFrame: IntProperty(name="Rootmotion Start Frame", description="Define the initial frame for rootmotion start", default=1, min=-1, max=1024, update=None, get=None, set=None)
     tileset_type: EnumProperty(name="Tileset Type", description="Choose between available tileset types", items=[('0', "Top-Down", ""),('1', "Isometric", "")], update=updateTilesetGeneratorCamera, get=None, set=None)
     actions = []
 
