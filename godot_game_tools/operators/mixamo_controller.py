@@ -12,37 +12,26 @@ class GGT_OT_INIT_CHARACTER_OT_GGT(bpy.types.Operator, ImportHelper):
     """Initializes imported model for the tool"""
     bl_idname = "wm_ggt.init_character"
     bl_label = "Initialize Character"
-    bl_description = "Used to init 'Main' Armature. Loaded character should have 'T-Pose' animation from mixamo."
+    bl_description = "Used to init 'Main' Armature. Loaded character should have 'T-Pose' animation from Mixamo."
     bl_options = {'REGISTER', 'UNDO'}
-    expected_filename = "t-pose.fbx"
     filename_ext = ".fbx"
     filter_glob = StringProperty(default="*.fbx", options={'HIDDEN'})
     files = CollectionProperty(type=bpy.types.PropertyGroup)
+    supported_extensions = ['fbx']
 
-    def import_from_folder(self, path, context):
-        extensions = ['fbx']
-        filenames = sorted(os.listdir(path))
-        valid_files = []
-        fileNamesList = []
 
-        for filename in filenames:
-            for ext in extensions:
-                if filename.lower().endswith('.{}'.format(ext)):
-                    valid_files.append(filename)
-                    break
+    def import_from_folder(self, file_path, context):        
+        extension = (os.path.splitext(file_path)[1])[1:].lower()
 
-        for name in valid_files:
-            file_path = os.path.join(path, name)
-            extension = (os.path.splitext(file_path)[1])[1:].lower()
+        if os.path.isdir(file_path):
+            return ('ERROR', 'Please select a file containing the T-Pose of your character.')
+        elif extension not in self.supported_extensions:
+            return ('ERROR', 'The extension of the selected file is not supported. Must be one of the following: ' + ','.join(self.supported_extensions))
+        elif hasattr(bpy.types, bpy.ops.import_scene.fbx.idname()):
+            bpy.ops.import_scene.fbx(filepath = file_path)
+            return ('INFO', 'Import successful')
 
-            if ext == "fbx":
-                if hasattr(bpy.types, bpy.ops.import_scene.fbx.idname()):
-                    actionName, actionExtension = os.path.splitext(name)
-                    if actionName == "T-Pose":
-                        # Local Variable
-                        fileNamesList.append(actionName)
-                        bpy.ops.import_scene.fbx(filepath = file_path)
-
+            
     def execute(self, context):
         scene = context.scene
         tool = scene.godot_game_tools
@@ -52,10 +41,19 @@ class GGT_OT_INIT_CHARACTER_OT_GGT(bpy.types.Operator, ImportHelper):
           bpy.context.scene.collection.children.link(characterCollection)
         self.report({'INFO'}, 'Loading Character T-Pose')
         filePathWithName = bpy.path.abspath(self.properties.filepath)
-        path = os.path.dirname(filePathWithName)
-        self.import_from_folder(path, context)
+        import_result = self.import_from_folder(filePathWithName, context)
+        if import_result[0] != 'INFO':
+            self.report({import_result[0]}, import_result[1])
+            return {'CANCELLED'}
+
         if bpy.data.collections.get(characterCollectionName) is not None:
             characterArmature = bpy.context.view_layer.objects.active
+            if characterArmature == None or characterArmature.type != "ARMATURE":
+                self.report({'ERROR'}, 'Imported character does not have a root armature.')
+                bpy.ops.collection.objects_remove_all()
+                return {'CANCELLED'}
+
+            characterArmature.name = "Armature" 
             if len(characterArmature.children) > 0:
                 for mesh in characterArmature.children:
                     bpy.context.scene.collection.children[0].objects.unlink(mesh)
