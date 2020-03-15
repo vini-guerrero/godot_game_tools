@@ -13,26 +13,17 @@ class GGT_OT_NLA_TRACKS_OT_GGT(Operator):
         animation = tool.animations
         target_armature = tool.target_object
         bpy.ops.screen.animation_cancel()
+        if (target_armature is None): target_armature = bpy.context.view_layer.objects.active
         bpy.context.view_layer.objects.active = target_armature
-        # if len(bpy.data.actions) > 0:
-        #     for action in bpy.data.actions:
-        #         animation = action.name
-        #         animationToPlay = [anim for anim in bpy.data.actions.keys() if anim in (animation)]
-        #         animationIndex = bpy.data.actions.keys().index(animation)
-        #         target_armature.animation_data.action = bpy.data.actions.values()[animationIndex]
-        #         bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
-        #         bpy.context.area.ui_type = 'DOPESHEET'
-        #         bpy.context.space_data.ui_mode = 'ACTION'
-        #         bpy.ops.action.push_down()
-        #         bpy.ops.object.mode_set(mode='OBJECT')
-        # bpy.ops.object.mode_set(mode='OBJECT')
         if len(bpy.data.actions) > 0:
-            for action in bpy.data.actions:
-                if target_armature.animation_data is not None:
-                    if action is not None:
-                        # bpy.context.scene.frame_start = 0
-                        track = target_armature.animation_data.nla_tracks.new()
-                        track.strips.new(action.name, bpy.context.scene.frame_start, action)
-                        track.name = action.name
-        self.report({'INFO'}, 'NLA Tracks Generated')
+            if hasattr(target_armature, 'animation_data'):
+                for action in bpy.data.actions:
+                    if target_armature.animation_data is not None:
+                        if action is not None:
+                            track = target_armature.animation_data.nla_tracks.new()
+                            track.strips.new(action.name, bpy.context.scene.frame_start, action)
+                            track.name = action.name
+                self.report({'INFO'}, 'NLA Tracks Generated')
+            else:
+                self.report({'INFO'}, 'Select A Valid Armature With Animation Data')
         return {'FINISHED'}
