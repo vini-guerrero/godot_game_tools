@@ -91,4 +91,5 @@ class GGT_PT_ANIMATIONS_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
         # box.operator("wm_ggt.rename_animation", icon="ARMATURE_DATA")
         box.operator("wm_ggt.add_animation_loop", icon="COPYDOWN")
         box.operator("wm_ggt.push_nlas", icon="ANIM_DATA")
+        # box.operator("wm_ggt.character_export", icon="EXPORT")
         box.separator()

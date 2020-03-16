@@ -109,7 +109,8 @@ class GGT_ActionProperties_GGT(bpy.types.PropertyGroup):
 #    Operators
 # ------------------------------------------------------------------------
 from .operators.nla_tracks_controller import (
-    GGT_OT_NLA_TRACKS_OT_GGT
+    GGT_OT_NLA_TRACKS_OT_GGT,
+    GGT_OT_CHARACTER_EXPORT_GGT
 )
 from .operators.animation_controller import (
     GGT_OT_ANIMATION_PLAYER_OT_GGT,
@@ -206,6 +207,7 @@ classes = (
     GGT_OT_ADD_ANIMATION_LOOP_OT_GGT,
     # NLA Tracks Controller
     GGT_OT_NLA_TRACKS_OT_GGT,
+    GGT_OT_CHARACTER_EXPORT_GGT,
     # RootMotion Controller
     GGT_OT_ADD_ROOTBONE_OT_GGT,
     GGT_OT_ADD_ROOTMOTION_OT_GGT,
