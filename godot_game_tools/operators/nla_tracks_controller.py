@@ -12,18 +12,29 @@ class GGT_OT_NLA_TRACKS_OT_GGT(Operator):
         scene = context.scene
         tool = scene.godot_game_tools
         animation = tool.animations
+        export_t_pose = tool.export_t_pose
         target_armature = tool.target_object
         bpy.ops.screen.animation_cancel()
         if (target_armature is None): target_armature = bpy.context.view_layer.objects.active
         bpy.context.view_layer.objects.active = target_armature
         if len(bpy.data.actions) > 0:
             if hasattr(target_armature, 'animation_data'):
-                for action in bpy.data.actions:
+                animations = bpy.data.actions
+                for action in animations:
                     if target_armature.animation_data is not None:
                         if action is not None:
-                            track = target_armature.animation_data.nla_tracks.new()
-                            track.strips.new(action.name, bpy.context.scene.frame_start, action)
-                            track.name = action.name
+                            if export_t_pose:
+                                track = target_armature.animation_data.nla_tracks.new()
+                                track.strips.new(action.name, bpy.context.scene.frame_start, action)
+                                track.name = action.name
+                            else:
+                                skip = False
+                                if action.name == "T-Pose": skip = True
+                                elif action.name == "T-Pose-loop": skip = True
+                                if not skip:
+                                    track = target_armature.animation_data.nla_tracks.new()
+                                    track.strips.new(action.name, bpy.context.scene.frame_start, action)
+                                    track.name = action.name
                 self.report({'INFO'}, 'NLA Tracks Generated')
             else:
                 self.report({'INFO'}, 'Select A Valid Armature With Animation Data')

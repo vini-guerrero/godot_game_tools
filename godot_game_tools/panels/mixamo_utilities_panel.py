@@ -105,9 +105,9 @@ class GGT_PT_EXPORT_CHARACTER_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
         ob = tool.target_object
         if ob:
             box = layout.box()
+            box.prop(tool, "character_export_path")
+            box.prop(tool, "export_t_pose")
             box.operator("wm_ggt.add_animation_loop", icon="COPYDOWN")
             box.operator("wm_ggt.push_nlas", icon="ANIM_DATA")
-            box = layout.box()
-            box.prop(tool, "character_export_path")
             box.operator("wm_ggt.character_export", icon="EXPORT")
             box.separator()
