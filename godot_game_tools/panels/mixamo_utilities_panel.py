@@ -89,7 +89,25 @@ class GGT_PT_ANIMATIONS_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
         box.operator("wm_ggt.animation_stop", icon="PAUSE")
         # box.prop(tool, "action_name")
         # box.operator("wm_ggt.rename_animation", icon="ARMATURE_DATA")
-        box.operator("wm_ggt.add_animation_loop", icon="COPYDOWN")
-        box.operator("wm_ggt.push_nlas", icon="ANIM_DATA")
-        # box.operator("wm_ggt.character_export", icon="EXPORT")
-        box.separator()
+
+class GGT_PT_EXPORT_CHARACTER_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
+    bl_idname = "obj_ggt.export_character_panel"
+    bl_label = "Export Character"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_context = "objectmode"
+    bl_parent_id = "obj_ggt.mixamo_utilities_panel"
+    bl_options = {"DEFAULT_CLOSED"}
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        tool = scene.godot_game_tools
+        ob = tool.target_object
+        if ob:
+            box = layout.box()
+            box.operator("wm_ggt.add_animation_loop", icon="COPYDOWN")
+            box.operator("wm_ggt.push_nlas", icon="ANIM_DATA")
+            box = layout.box()
+            box.prop(tool, "character_export_path")
+            box.operator("wm_ggt.character_export", icon="EXPORT")
+            box.separator()

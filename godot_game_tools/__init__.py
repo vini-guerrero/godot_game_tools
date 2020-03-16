@@ -87,6 +87,7 @@ class GGT_AddonProperties_GGT(PropertyGroup):
     tileset_tile_height: IntProperty(name="Tile Height", description="Define the desired tiles height", default=32, min=8, max=1024, update=updateTilesetGeneratorCamera, get=None, set=None)
     rootMotionStartFrame: IntProperty(name="Rootmotion Start Frame", description="Define the initial frame for rootmotion start", default=1, min=-1, max=1024, update=None, get=None, set=None)
     tileset_type: EnumProperty(name="Tileset Type", description="Choose between available tileset types", items=[('0', "Top-Down", ""),('1', "Isometric", "")], update=updateTilesetGeneratorCamera, get=None, set=None)
+    character_export_path: StringProperty(name="Export Path", description="Select the desired path to export character", subtype="DIR_PATH")
     actions = []
 
 # ------------------------------------------------------------------------ #
@@ -156,10 +157,22 @@ from .operators.tileset_controller import (
 # ------------------------------------------------------------------------
 #    Panels
 # ------------------------------------------------------------------------
-from .panels.bvh_utilities_panel import (GGT_PT_BVH_UTILITIES_PT_GGT)
-from .panels.texture_controls_panel import (GGT_PT_TEXTURE_CONTROLS_PT_GGT)
-from .panels.mixamo_utilities_panel import (GGT_PT_MIXAMO_UTILITIES_PT_GGT, GGT_PT_ARMATURE_UTILITIES_PT_GGT, ACTION_UL_list, GGT_PT_ROOT_MOTION_PT_GGT, GGT_PT_ANIMATIONS_PT_GGT)
-from .panels.tileset_generator_panel import (GGT_PT_TILESET_GENERATOR_PT_GGT)
+from .panels.bvh_utilities_panel import (
+    GGT_PT_BVH_UTILITIES_PT_GGT
+)
+from .panels.texture_controls_panel import (
+    GGT_PT_TEXTURE_CONTROLS_PT_GGT
+)
+from .panels.mixamo_utilities_panel import (
+    GGT_PT_MIXAMO_UTILITIES_PT_GGT,
+    GGT_PT_ARMATURE_UTILITIES_PT_GGT,
+    ACTION_UL_list, GGT_PT_ROOT_MOTION_PT_GGT,
+    GGT_PT_ANIMATIONS_PT_GGT,
+    GGT_PT_EXPORT_CHARACTER_PT_GGT
+)
+from .panels.tileset_generator_panel import (
+    GGT_PT_TILESET_GENERATOR_PT_GGT
+)
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
@@ -192,6 +205,7 @@ classes = (
     GGT_PT_ARMATURE_UTILITIES_PT_GGT,
     GGT_PT_ROOT_MOTION_PT_GGT,
     GGT_PT_ANIMATIONS_PT_GGT,
+    GGT_PT_EXPORT_CHARACTER_PT_GGT,
     GGT_PT_TILESET_GENERATOR_PT_GGT,
     ACTION_UL_list,
     # Mixamo Controller

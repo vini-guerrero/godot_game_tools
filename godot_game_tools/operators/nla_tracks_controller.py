@@ -1,4 +1,5 @@
 import bpy
+import os
 
 from bpy.types import (Operator)
 
@@ -42,13 +43,14 @@ class GGT_OT_CHARACTER_EXPORT_GGT(Operator):
         tool = scene.godot_game_tools
         animation = tool.animations
         target_armature = tool.target_object
-        bpy.ops.screen.animation_cancel()
         if (target_armature is None): target_armature = bpy.context.view_layer.objects.active
         bpy.context.view_layer.objects.active = target_armature
-        bpy.context.area.ui_type = 'NLA_EDITOR'
+        character_export_path = tool.character_export_path
+        fileName = os.path.join(bpy.path.abspath(character_export_path), target_armature.name)
+        # bpy.context.area.ui_type = 'NLA_EDITOR'
         # bpy.ops.anim.channels_select_all(action='SELECT')
         # bpy.ops.nla.select_all(action='SELECT')
         # bpy.ops.object.select_all(action='SELECT')
-        # export_scene.gltf(filepath=".", export_format="GLB", export_tangents=False, export_image_format="JPEG", export_cameras=False, export_lights=False)
-        bpy.context.area.ui_type = 'VIEW_3D'
+        # bpy.context.area.ui_type = 'VIEW_3D'
+        bpy.ops.export_scene.gltf(filepath=fileName, export_format="GLB", export_tangents=False, export_image_format="JPEG", export_cameras=False, export_lights=False)
         return {'FINISHED'}
