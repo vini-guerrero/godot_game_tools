@@ -25,7 +25,8 @@ class GGT_OT_NLA_TRACKS_OT_GGT(Operator):
                         if action is not None:
                             if export_t_pose:
                                 track = target_armature.animation_data.nla_tracks.new()
-                                track.strips.new(action.name, bpy.context.scene.frame_start, action)
+                                start = action.frame_range[0]
+                                track.strips.new(action.name, start, action)
                                 track.name = action.name
                             else:
                                 skip = False
@@ -33,8 +34,10 @@ class GGT_OT_NLA_TRACKS_OT_GGT(Operator):
                                 elif action.name == "T-Pose-loop": skip = True
                                 if not skip:
                                     track = target_armature.animation_data.nla_tracks.new()
-                                    track.strips.new(action.name, bpy.context.scene.frame_start, action)
+                                    start = action.frame_range[0]
+                                    track.strips.new(action.name, start, action)
                                     track.name = action.name
+                # target_armature.animation_data.action = None
                 self.report({'INFO'}, 'NLA Tracks Generated')
             else:
                 self.report({'INFO'}, 'Select A Valid Armature With Animation Data')
@@ -46,7 +49,7 @@ class GGT_OT_NLA_TRACKS_OT_GGT(Operator):
 
 class GGT_OT_CHARACTER_EXPORT_GGT(Operator):
     bl_idname = "wm_ggt.character_export"
-    bl_label = "Export Character"
+    bl_label = "Export Character as GLTF"
     bl_description = "Exports character to Godot Engine"
 
     def execute(self, context):
@@ -58,10 +61,5 @@ class GGT_OT_CHARACTER_EXPORT_GGT(Operator):
         bpy.context.view_layer.objects.active = target_armature
         character_export_path = tool.character_export_path
         fileName = os.path.join(bpy.path.abspath(character_export_path), target_armature.name)
-        # bpy.context.area.ui_type = 'NLA_EDITOR'
-        # bpy.ops.anim.channels_select_all(action='SELECT')
-        # bpy.ops.nla.select_all(action='SELECT')
-        # bpy.ops.object.select_all(action='SELECT')
-        # bpy.context.area.ui_type = 'VIEW_3D'
-        bpy.ops.export_scene.gltf(filepath=fileName, export_format="GLB", export_tangents=False, export_image_format="JPEG", export_cameras=False, export_lights=False)
+        bpy.ops.export_scene.gltf(filepath=fileName, export_format="GLB", export_frame_range=False, export_force_sampling=False, export_tangents=False, export_image_format="JPEG", export_cameras=False, export_lights=False)
         return {'FINISHED'}
