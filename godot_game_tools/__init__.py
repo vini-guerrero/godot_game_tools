@@ -88,7 +88,6 @@ class GGT_AddonProperties_GGT(PropertyGroup):
     rootMotionStartFrame: IntProperty(name="Rootmotion Start Frame", description="Define the initial frame for rootmotion start", default=1, min=-1, max=1024, update=None, get=None, set=None)
     tileset_type: EnumProperty(name="Tileset Type", description="Choose between available tileset types", items=[('0', "Top-Down", ""),('1', "Isometric", "")], update=updateTilesetGeneratorCamera, get=None, set=None)
     character_export_path: StringProperty(name="Export Path", description="Select the desired path to export character", subtype="DIR_PATH")
-    export_t_pose: BoolProperty(name="Export T-Pose", description="Include or not T-Pose in export animations", default=False, get=None, set=None, update=None)
     actions = []
 
 # ------------------------------------------------------------------------ #
