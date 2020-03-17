@@ -53,6 +53,9 @@ class GGT_OT_INIT_CHARACTER_OT_GGT(bpy.types.Operator, ImportHelper):
                 bpy.ops.collection.objects_remove_all()
                 return {'CANCELLED'}
 
+            # Store armature bones
+            tool.rootmotion_hip_bone = "Hips" if "mixamorig:Hips" in [bone.name for bone in characterArmature.data.bones] else ""
+
             characterArmature.name = "Armature" 
             if len(characterArmature.children) > 0:
                 for mesh in characterArmature.children:

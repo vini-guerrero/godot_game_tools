@@ -58,7 +58,10 @@ class GGT_PT_ROOT_MOTION_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
             box.prop(ob.animation_data.action.ggt_props, "use_root_motion")
             box.prop(ob.animation_data.action.ggt_props, "use_root_motion_z")
             box.operator("wm_ggt.add_rootmotion", icon="BONE_DATA")
-            box.operator("wm_ggt.add_rootmotion_legacy", icon="BONE_DATA")
+            # box.operator("wm_ggt.add_rootmotion_legacy", icon="BONE_DATA")
+
+            box.label(text="Bones", icon='ARMATURE_DATA')
+            box.prop_search(tool, "rootmotion_hip_bone", ob.data, "bones", text="Root Bone")
         box.separator()
 
 class ACTION_UL_list(UIList):
