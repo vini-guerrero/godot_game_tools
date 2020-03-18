@@ -54,7 +54,7 @@ class GGT_OT_INIT_CHARACTER_OT_GGT(bpy.types.Operator, ImportHelper):
                 return {'CANCELLED'}
 
             # Store armature bones
-            tool.rootmotion_hip_bone = "Hips" if "mixamorig:Hips" in [bone.name for bone in characterArmature.data.bones] else ""
+            tool.rootmotion_hip_bone = "Hips" if "Hips" in [bone.name.replace('mixamorig:', '') for bone in characterArmature.data.bones] else ""
 
             characterArmature.name = "Armature" 
             if len(characterArmature.children) > 0:
