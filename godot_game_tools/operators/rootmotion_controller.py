@@ -57,7 +57,7 @@ class GGT_OT_ADD_ROOTBONE_OT_GGT(Operator):
 
 class GGT_OT_ADD_ROOTMOTION_LEGACY_OT_GGT(Operator):
     bl_idname = "wm_ggt.add_rootmotion_legacy"
-    bl_label = "Add Root Motion"
+    bl_label = "Add Legacy Root Motion"
     bl_description = "Adds Root Motion Bone To Animation"
 
     def get_fcurve(self, armature, bone_name):
