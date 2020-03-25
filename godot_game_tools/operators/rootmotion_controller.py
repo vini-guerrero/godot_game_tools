@@ -14,8 +14,17 @@ class GGT_OT_ADD_ROOTBONE_OT_GGT(Operator):
         target_armature = tool.target_object
         rootMotionBoneName = tool.rootmotion_name
         rootmotionStartFrame = tool.rootMotionStartFrame
+        hips = tool.rootmotion_hip_bone
+
         if not target_armature:
             self.report({'INFO'}, 'Please select a valid armature')
+
+        # Bones
+        if hips == '' or hips is None:
+            self.report({'ERROR'}, 'Please select a root motion bone, e.g. the hips of your character')
+            return {'CANCELLED'}
+
+
         if target_armature.type == 'ARMATURE':
             # Validates Required Bone Exists In Armature
             createRootMotionBone = True
@@ -37,7 +46,7 @@ class GGT_OT_ADD_ROOTBONE_OT_GGT(Operator):
                     bpy.ops.object.mode_set(mode='OBJECT')
                     bpy.ops.object.select_all(action='DESELECT')
                     bpy.ops.object.mode_set(mode='EDIT')
-                    hipsBone = target_armature.data.edit_bones["Hips"]
+                    hipsBone = target_armature.data.edit_bones[hips]
                     rootMotionBone = target_armature.data.edit_bones[rootMotionBoneName]
                     target_armature.data.edit_bones.active = rootMotionBone
                     rootMotionBone.select = False
@@ -140,7 +149,13 @@ class GGT_OT_ADD_ROOTMOTION_OT_GGT(Operator):
             for action in bpy.data.actions: animationsForRootMotion.append(action)
         else:
             animationsForRootMotion.append(bpy.context.object.animation_data.action)
-        bpy.ops.wm_ggt.add_rootbone('EXEC_DEFAULT')
+        
+        try:
+            bpy.ops.wm_ggt.add_rootbone('EXEC_DEFAULT')
+        except RuntimeError:
+            self.report({'ERROR'}, 'Could not add root motion, please check your root motion bone.')
+            return {'CANCELLED'}
+        
         if len(bpy.data.actions) > 0:
             for action in animationsForRootMotion:
                 animation = action.name

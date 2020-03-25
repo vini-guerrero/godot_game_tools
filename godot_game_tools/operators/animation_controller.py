@@ -72,12 +72,14 @@ class GGT_OT_PROCESS_ACTIONS_OT_GGT(Operator):
     bl_description = "Run to process all actions in the scene. ( Rename and scale bones etc..)"
 
     def execute(self, context):
+        scene = context.scene
+        tool = scene.godot_game_tools
         actions = bpy.data.actions
         for action in actions:
             action.groups[0].name = action.name
             if action.ggt_props.hips_scale == 1.0:
                 for f in action.fcurves:
-                    if f.data_path == 'pose.bones["Hips"].location':
+                   if f.data_path == 'pose.bones[\"{}\"].location'.format(tool.rootmotion_hip_bone):
                         for keyframe in f.keyframe_points:
                             keyframe.co[1] *= .01
                 # print("Action {} hips are scaled to 0.01.".format(action.name))

@@ -76,6 +76,7 @@ class GGT_AddonProperties_GGT(PropertyGroup):
     animations: EnumProperty(name="Animations", description="Available armature animations", items=populateAnimations, default=None, options={'ANIMATABLE'}, update=None, get=None, set=None)
     visible_armature: BoolProperty(name="Show Armature Bones", description="Hides / Show armature bones once animations are loaded", default=True, update=toggleArmatureVisibility)
     rootmotion_all: BoolProperty(name="Apply Rootmotion To All Animations", description="Choose to apply rootmotion to all animations or current only", default=True, update=None)
+    rootmotion_hip_bone: StringProperty(name="Root Bone", description="Bone which will serve as the basis for the root motion of the character. Usually hips or pelvis")
     bake_texture_size: IntProperty(name="Bake Texture Size", description="Define here the size of textures images to bake", default = 1024, min = 8, max = 4096)
     bake_texture_name: StringProperty(name="Bake Name", description="Select the texture name to be saved", maxlen=1024)
     bake_texture_path: StringProperty(name="Texture Path", description="Select the path destination folder you want textures to be saved", subtype="FILE_PATH")
@@ -87,7 +88,13 @@ class GGT_AddonProperties_GGT(PropertyGroup):
     tileset_tile_height: IntProperty(name="Tile Height", description="Define the desired tiles height", default=32, min=8, max=1024, update=updateTilesetGeneratorCamera, get=None, set=None)
     rootMotionStartFrame: IntProperty(name="Rootmotion Start Frame", description="Define the initial frame for rootmotion start", default=1, min=-1, max=1024, update=None, get=None, set=None)
     tileset_type: EnumProperty(name="Tileset Type", description="Choose between available tileset types", items=[('0', "Top-Down", ""),('1', "Isometric", "")], update=updateTilesetGeneratorCamera, get=None, set=None)
-    character_export_path: StringProperty(name="Export Path", description="Select the desired path to export character", subtype="DIR_PATH")
+    character_project_path: StringProperty(name="Project Path", description="Select the root path of your Godot project", subtype="DIR_PATH")    
+    character_export_path: StringProperty(name="Export Path", description="Select the desired path to export character", subtype="DIR_PATH")    
+    character_export_character_name: StringProperty(name="Character Name", description="The name of the character, used as name of the export")
+    character_export_create_animation_tree: BoolProperty(name="Create Animation Tree", description="Whether or not an animation tree is created when exporting as a Godot scene")
+    character_export_idle_animation: StringProperty(name="Idle Animation", description="Idle animation of the character")
+    character_export_walking_animation: StringProperty(name="Walking Animation", description="Walking animation of the character")
+    character_export_running_animation: StringProperty(name="Running Animation", description="Running animation of the character")
     actions = []
 
 # ------------------------------------------------------------------------ #
