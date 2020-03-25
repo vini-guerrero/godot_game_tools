@@ -20,7 +20,7 @@ class GGT_OT_ADD_ROOTBONE_OT_GGT(Operator):
             self.report({'INFO'}, 'Please select a valid armature')
 
         # Bones
-        if hips == '' or hips == None:
+        if hips == '' or hips is None:
             self.report({'ERROR'}, 'Please select a root motion bone, e.g. the hips of your character')
             return {'CANCELLED'}
 

@@ -1,5 +1,6 @@
 import bpy
 import os
+import json
 
 from bpy.types import (Operator)
 
@@ -54,10 +55,26 @@ class GGT_OT_CHARACTER_EXPORT_GGT(Operator):
         tool = scene.godot_game_tools
         animation = tool.animations
         target_armature = tool.target_object
+        character_name = tool.character_export_character_name if tool.character_export_character_name is not None else target_armature.name
         bpy.ops.wm_ggt.push_nlas('EXEC_DEFAULT')
         if (target_armature is None): target_armature = bpy.context.view_layer.objects.active
         bpy.context.view_layer.objects.active = target_armature
         character_export_path = tool.character_export_path
-        fileName = os.path.join(bpy.path.abspath(character_export_path), target_armature.name)
+        fileName = os.path.join(bpy.path.abspath(character_export_path), character_name)
         bpy.ops.export_scene.gltf(filepath=fileName, export_format="GLB", export_frame_range=False, export_force_sampling=False, export_tangents=False, export_image_format="JPEG", export_cameras=False, export_lights=False)
+        
+        # Create Character
+        character_data = {
+            "characterName": character_name,
+            "meshFileName": character_name + ".glb",
+            "animations": {
+                "idle": tool.character_export_idle_animation,
+                "walking": tool.character_export_walking_animation,
+                "running": tool.character_export_running_animation
+            }
+        }
+        character_json = json.dumps(character_data, sort_keys=True, indent=4)
+        character_file = open(fileName + '.char', 'w+')
+        character_file.write(character_json)
+        character_file.close()
         return {'FINISHED'}

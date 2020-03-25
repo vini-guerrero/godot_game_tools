@@ -88,7 +88,13 @@ class GGT_AddonProperties_GGT(PropertyGroup):
     tileset_tile_height: IntProperty(name="Tile Height", description="Define the desired tiles height", default=32, min=8, max=1024, update=updateTilesetGeneratorCamera, get=None, set=None)
     rootMotionStartFrame: IntProperty(name="Rootmotion Start Frame", description="Define the initial frame for rootmotion start", default=1, min=-1, max=1024, update=None, get=None, set=None)
     tileset_type: EnumProperty(name="Tileset Type", description="Choose between available tileset types", items=[('0', "Top-Down", ""),('1', "Isometric", "")], update=updateTilesetGeneratorCamera, get=None, set=None)
-    character_export_path: StringProperty(name="Export Path", description="Select the desired path to export character", subtype="DIR_PATH")
+    character_project_path: StringProperty(name="Project Path", description="Select the root path of your Godot project", subtype="DIR_PATH")    
+    character_export_path: StringProperty(name="Export Path", description="Select the desired path to export character", subtype="DIR_PATH")    
+    character_export_character_name: StringProperty(name="Character Name", description="The name of the character, used as name of the export")
+    character_export_create_animation_tree: BoolProperty(name="Create Animation Tree", description="Whether or not an animation tree is created when exporting as a Godot scene")
+    character_export_idle_animation: StringProperty(name="Idle Animation", description="Idle animation of the character")
+    character_export_walking_animation: StringProperty(name="Walking Animation", description="Walking animation of the character")
+    character_export_running_animation: StringProperty(name="Running Animation", description="Running animation of the character")
     actions = []
 
 # ------------------------------------------------------------------------ #
