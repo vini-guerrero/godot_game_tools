@@ -39,3 +39,7 @@ class GGT_PT_TILESET_GENERATOR_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
         box.label(text="Godot Export", icon='FILEBROWSER')
         box.prop(tool, "tileset_generate_path")
         box.operator("wm_ggt.tileset_export_godot_tileset", icon="EXPORT")
+
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #

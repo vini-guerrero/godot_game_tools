@@ -45,7 +45,6 @@ class GGT_OT_STOP_ANIMATION_OT_GGT(Operator):
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 
-
 class GGT_OT_RENAME_ANIMATION_OT_GGT(Operator):
     bl_idname = "wm_ggt.rename_animation"
     bl_label = "Rename Current Animation"
@@ -107,3 +106,7 @@ class GGT_OT_ADD_ANIMATION_LOOP_OT_GGT(Operator):
                 action.name += "-loop"
         self.report({'INFO'}, 'Animation Loops Added')
         return {'FINISHED'}
+
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #

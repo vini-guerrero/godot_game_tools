@@ -20,7 +20,7 @@ class GGT_OT_INIT_CHARACTER_OT_GGT(bpy.types.Operator, ImportHelper):
     supported_extensions = ['fbx']
 
 
-    def import_from_folder(self, file_path, context):        
+    def import_from_folder(self, file_path, context):
         extension = (os.path.splitext(file_path)[1])[1:].lower()
 
         if os.path.isdir(file_path):
@@ -31,7 +31,7 @@ class GGT_OT_INIT_CHARACTER_OT_GGT(bpy.types.Operator, ImportHelper):
             bpy.ops.import_scene.fbx(filepath = file_path)
             return ('INFO', 'Import successful')
 
-            
+
     def execute(self, context):
         scene = context.scene
         tool = scene.godot_game_tools
@@ -56,7 +56,7 @@ class GGT_OT_INIT_CHARACTER_OT_GGT(bpy.types.Operator, ImportHelper):
             # Store armature bones
             tool.rootmotion_hip_bone = "Hips" if "Hips" in [bone.name.replace('mixamorig:', '') for bone in characterArmature.data.bones] else ""
 
-            characterArmature.name = "Armature" 
+            characterArmature.name = "Armature"
             if len(characterArmature.children) > 0:
                 for mesh in characterArmature.children:
                     bpy.context.scene.collection.children[0].objects.unlink(mesh)
@@ -89,7 +89,7 @@ class GGT_OT_JOIN_ANIMATIONS_OT_GGT(Operator, ImportHelper):
         else:
             path = os.path.dirname(selected_file_or_path)
             files = [os.path.join(path, file.name) for file in self.properties.files ]
-        
+
         for file in files:
             if not os.path.exists(file):
                 self.report({'ERROR'}, 'Animation file {} does not exist, skipped import.'.format(file))
@@ -180,7 +180,6 @@ class GGT_OT_JOIN_ANIMATIONS_OT_GGT(Operator, ImportHelper):
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 
-
 class GGT_OT_RENAME_RIG_OT_GGT(Operator):
     bl_idname = "wm_ggt.rename_mixamo_rig"
     bl_label = "Rename Rig Bones"
@@ -218,7 +217,6 @@ class GGT_OT_RENAME_RIG_OT_GGT(Operator):
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
-
 
 class GGT_OT_PREPARE_RIG_OT_GGT(Operator):
     bl_idname = "wm_ggt.prepare_mixamo_rig"
@@ -258,7 +256,6 @@ class GGT_OT_PREPARE_RIG_OT_GGT(Operator):
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 
-
 class GGT_OT_RENAME_MIXAMORIG_OT_GGT(Operator):
     bl_idname = "wm_ggt.rename_mixamo_rig"
     bl_label = "Rename Rig Bones"
@@ -296,3 +293,7 @@ class GGT_OT_RENAME_MIXAMORIG_OT_GGT(Operator):
                 bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
             self.report({'INFO'}, 'Character Bones Successfully Renamed')
         return {'FINISHED'}
+
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #

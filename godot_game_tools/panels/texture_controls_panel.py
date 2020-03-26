@@ -26,3 +26,7 @@ class GGT_PT_TEXTURE_CONTROLS_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
         box.operator("wm_ggt.bake_texture", icon="ANIM_DATA")
         box.prop(tool, "bake_texture_path")
         box.operator("wm_ggt.save_bake_textures", icon="ANIM_DATA")
+
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #

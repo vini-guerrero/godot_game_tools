@@ -3,9 +3,9 @@ import bpy
 from bl_ui.properties_object import ObjectButtonsPanel, OBJECT_PT_transform
 from bpy.types import (Panel, Menu, UIList)
 
-class GGT_PT_MIXAMO_UTILITIES_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
-    bl_idname = "obj_ggt.mixamo_utilities_panel"
-    bl_label = "Mixamo Utilies"
+class GGT_PT_CHARACTER_UTILITIES_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
+    bl_idname = "obj_ggt.character_utilities_panel"
+    bl_label = "Character Utilies"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_context = "objectmode"
@@ -14,13 +14,17 @@ class GGT_PT_MIXAMO_UTILITIES_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
     def draw(self, context):
         pass
 
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+
 class GGT_PT_ARMATURE_UTILITIES_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
     bl_idname = "obj_ggt.armature_panel"
     bl_label = "Armature"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_context = "objectmode"
-    bl_parent_id = "obj_ggt.mixamo_utilities_panel"
+    bl_parent_id = "obj_ggt.character_utilities_panel"
     bl_options = {"DEFAULT_CLOSED"}
     def draw(self, context):
         layout = self.layout
@@ -29,11 +33,13 @@ class GGT_PT_ARMATURE_UTILITIES_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
         tool = scene.godot_game_tools
         box = layout.box()
         box.label(text="Armature Setup", icon='ARMATURE_DATA')
-        # box.prop(tool, "target_name")
         box.operator("wm_ggt.init_character", icon="IMPORT")
         box.operator("wm_ggt.join_animations", icon="ASSET_MANAGER")
-        # box.operator("wm_ggt.prepare_mixamo_rig", icon="ASSET_MANAGER")
         box.separator()
+
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
 
 class GGT_PT_ROOT_MOTION_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
     bl_idname = "obj_ggt.rootmotion_panel"
@@ -41,7 +47,7 @@ class GGT_PT_ROOT_MOTION_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_context = "objectmode"
-    bl_parent_id = "obj_ggt.mixamo_utilities_panel"
+    bl_parent_id = "obj_ggt.character_utilities_panel"
     bl_options = {"DEFAULT_CLOSED"}
     def draw(self, context):
         layout = self.layout
@@ -58,11 +64,14 @@ class GGT_PT_ROOT_MOTION_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
             box.prop(ob.animation_data.action.ggt_props, "use_root_motion")
             box.prop(ob.animation_data.action.ggt_props, "use_root_motion_z")
             box.operator("wm_ggt.add_rootmotion", icon="BONE_DATA")
-            # box.operator("wm_ggt.add_rootmotion_legacy", icon="BONE_DATA")
-
+            box.operator("wm_ggt.add_rootmotion_legacy", icon="BONE_DATA")
             box.label(text="Bones", icon='ARMATURE_DATA')
             box.prop_search(tool, "rootmotion_hip_bone", ob.data, "bones", text="Root Bone")
         box.separator()
+
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
 
 class ACTION_UL_list(UIList):
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
@@ -73,13 +82,17 @@ class ACTION_UL_list(UIList):
         elif self.layout_type in {'GRID'}:
             pass
 
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+
 class GGT_PT_ANIMATIONS_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
     bl_idname = "obj_ggt.animations_panel"
     bl_label = "Animations"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_context = "objectmode"
-    bl_parent_id = "obj_ggt.mixamo_utilities_panel"
+    bl_parent_id = "obj_ggt.character_utilities_panel"
     bl_options = {"DEFAULT_CLOSED"}
     def draw(self, context):
         layout = self.layout
@@ -90,8 +103,10 @@ class GGT_PT_ANIMATIONS_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
         box = layout.box()
         box.operator("wm_ggt.animation_player", icon="PLAY")
         box.operator("wm_ggt.animation_stop", icon="PAUSE")
-        # box.prop(tool, "action_name")
-        # box.operator("wm_ggt.rename_animation", icon="ARMATURE_DATA")
+
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
 
 class GGT_PT_EXPORT_CHARACTER_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
     bl_idname = "obj_ggt.export_character_panel"
@@ -99,7 +114,7 @@ class GGT_PT_EXPORT_CHARACTER_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_context = "objectmode"
-    bl_parent_id = "obj_ggt.mixamo_utilities_panel"
+    bl_parent_id = "obj_ggt.character_utilities_panel"
     bl_options = {"DEFAULT_CLOSED"}
     def draw(self, context):
         layout = self.layout
@@ -112,14 +127,15 @@ class GGT_PT_EXPORT_CHARACTER_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
             box.prop(tool, "character_project_path")
             box.prop(tool, "character_export_path")
             box.operator("wm_ggt.add_animation_loop", icon="COPYDOWN")
-            # box.operator("wm_ggt.push_nlas", icon="ANIM_DATA")
             if tool.character_export_path:
                 box.operator("wm_ggt.character_export", icon="EXPORT")
-            
-
             box.prop(tool, "character_export_create_animation_tree")
             if tool.character_export_create_animation_tree:
                 box.label(text="Character Animations", icon='ANIM_DATA')
                 box.prop_search(tool, "character_export_idle_animation", bpy.data, "actions", text="Idle")
                 box.prop_search(tool, "character_export_walking_animation", bpy.data, "actions", text="Walking")
                 box.prop_search(tool, "character_export_running_animation", bpy.data, "actions", text="Running")
+
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #

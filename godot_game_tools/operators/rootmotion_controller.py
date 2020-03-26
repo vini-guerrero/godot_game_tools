@@ -149,7 +149,6 @@ class GGT_OT_ADD_ROOTMOTION_OT_GGT(Operator):
             for action in bpy.data.actions: animationsForRootMotion.append(action)
         else:
             animationsForRootMotion.append(bpy.context.object.animation_data.action)
-        
         try:
             bpy.ops.wm_ggt.add_rootbone('EXEC_DEFAULT')
         except RuntimeError:
