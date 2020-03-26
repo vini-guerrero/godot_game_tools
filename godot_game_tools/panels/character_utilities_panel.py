@@ -126,10 +126,10 @@ class GGT_PT_EXPORT_CHARACTER_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
             box.prop(tool, "character_export_character_name")
             box.prop(tool, "character_project_path")
             box.prop(tool, "character_export_path")
+            box.prop(tool, "character_export_create_animation_tree")
             box.operator("wm_ggt.add_animation_loop", icon="COPYDOWN")
             if tool.character_export_path:
                 box.operator("wm_ggt.character_export", icon="EXPORT")
-            box.prop(tool, "character_export_create_animation_tree")
             if tool.character_export_create_animation_tree:
                 box.label(text="Character Animations", icon='ANIM_DATA')
                 box.prop_search(tool, "character_export_idle_animation", bpy.data, "actions", text="Idle")
