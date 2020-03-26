@@ -1,6 +1,7 @@
 import bpy
 import glob
 import os
+import sys
 
 from bl_ui.properties_object import ObjectButtonsPanel, OBJECT_PT_transform
 from bpy.props import (IntProperty, StringProperty, PointerProperty, CollectionProperty, EnumProperty, BoolProperty, FloatProperty)
@@ -66,6 +67,17 @@ def toggle_use_root_motion_z(self, context):
     bpy.ops.wm_ggt.animation_stop('EXEC_DEFAULT')
     bpy.ops.wm_ggt.update_rootmotion('EXEC_DEFAULT')
 
+def validateBetterColladaExporter(self):
+    exporterModule = "Better Collada Exporter"
+    exporterDetected = False
+    modules = []
+    for mod_name in bpy.context.preferences.addons.keys():
+        mod = sys.modules[mod_name]
+        moduleName = mod.bl_info.get('name')
+        modules.append(moduleName)
+    if exporterModule in modules: exporterDetected = True
+    return exporterDetected
+
 # ------------------------------------------------------------------------
 #    Addon Tool Properties
 # ------------------------------------------------------------------------
@@ -95,6 +107,7 @@ class GGT_AddonProperties_GGT(PropertyGroup):
     character_export_idle_animation: StringProperty(name="Idle Animation", description="Idle animation of the character")
     character_export_walking_animation: StringProperty(name="Walking Animation", description="Walking animation of the character")
     character_export_running_animation: StringProperty(name="Running Animation", description="Running animation of the character")
+    better_collada_available: BoolProperty(name="Better Collada Exporter", description="Validates if better collada exporter is available", default=False, get=validateBetterColladaExporter)
     actions = []
 
 # ------------------------------------------------------------------------ #
@@ -116,9 +129,10 @@ class GGT_ActionProperties_GGT(bpy.types.PropertyGroup):
 # ------------------------------------------------------------------------
 #    Operators
 # ------------------------------------------------------------------------
-from .operators.nla_tracks_controller import (
+from .operators.export_character_controller import (
     GGT_OT_NLA_TRACKS_OT_GGT,
-    GGT_OT_CHARACTER_EXPORT_GGT
+    GGT_OT_CHARACTER_GLTF_EXPORT_GGT,
+    GGT_OT_CHARACTER_BETTER_COLLADA_EXPORT_GGT
 )
 from .operators.animation_controller import (
     GGT_OT_ANIMATION_PLAYER_OT_GGT,
@@ -228,7 +242,8 @@ classes = (
     GGT_OT_ADD_ANIMATION_LOOP_OT_GGT,
     # NLA Tracks Controller
     GGT_OT_NLA_TRACKS_OT_GGT,
-    GGT_OT_CHARACTER_EXPORT_GGT,
+    GGT_OT_CHARACTER_GLTF_EXPORT_GGT,
+    GGT_OT_CHARACTER_BETTER_COLLADA_EXPORT_GGT,
     # RootMotion Controller
     GGT_OT_ADD_ROOTBONE_OT_GGT,
     GGT_OT_ADD_ROOTMOTION_OT_GGT,

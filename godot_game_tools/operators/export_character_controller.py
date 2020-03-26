@@ -45,8 +45,8 @@ class GGT_OT_NLA_TRACKS_OT_GGT(Operator):
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 
-class GGT_OT_CHARACTER_EXPORT_GGT(Operator):
-    bl_idname = "wm_ggt.character_export"
+class GGT_OT_CHARACTER_GLTF_EXPORT_GGT(Operator):
+    bl_idname = "wm_ggt.character_gltf_export"
     bl_label = "Export Character as GLTF"
     bl_description = "Exports character to Godot Engine"
 
@@ -79,4 +79,29 @@ class GGT_OT_CHARACTER_EXPORT_GGT(Operator):
             character_file = open(fileName + '.char', 'w+')
             character_file.write(character_json)
             character_file.close()
+        self.report({'INFO'}, 'Character File Exported')
         return {'FINISHED'}
+
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+
+class GGT_OT_CHARACTER_BETTER_COLLADA_EXPORT_GGT(Operator):
+    bl_idname = "wm_ggt.character_better_collada_export"
+    bl_label = "Export Character as Better Collada"
+    bl_description = "Exports character to Godot Engine"
+
+    def execute(self, context):
+        scene = context.scene
+        tool = scene.godot_game_tools
+        character_export_path = tool.character_export_path
+        character_name = tool.character_export_character_name if tool.character_export_character_name is not None else target_armature.name
+        character_name += ".dae"
+        fileName = os.path.join(bpy.path.abspath(character_export_path), character_name)
+        bpy.ops.export_scene.dae(check_existing=True, filepath=fileName, filter_glob="*.dae", use_mesh_modifiers=True, use_active_layers=True, use_anim=True, use_anim_action_all=True, use_anim_skip_noexp=True, use_anim_optimize=True, use_copy_images=True)
+        self.report({'INFO'}, 'Character File Exported')
+        return {'FINISHED'}
+
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
