@@ -127,16 +127,15 @@ class GGT_PT_EXPORT_CHARACTER_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
             box.prop(tool, "character_project_path")
             box.prop(tool, "character_export_path")
             box.prop(tool, "character_export_create_animation_tree")
+            box.prop(tool, "character_export_format")
             box.operator("wm_ggt.add_animation_loop", icon="COPYDOWN")
-            if tool.character_export_path:
-                box.operator("wm_ggt.character_gltf_export", icon="EXPORT")
-            if tool.better_collada_available is True and tool.character_export_path is not None:
-                box.operator("wm_ggt.character_better_collada_export", icon="EXPORT")
             if tool.character_export_create_animation_tree:
                 box.label(text="Character Animations", icon='ANIM_DATA')
                 box.prop_search(tool, "character_export_idle_animation", bpy.data, "actions", text="Idle")
                 box.prop_search(tool, "character_export_walking_animation", bpy.data, "actions", text="Walking")
                 box.prop_search(tool, "character_export_running_animation", bpy.data, "actions", text="Running")
+            if tool.character_export_path:
+                box.operator("wm_ggt.character_export", icon="EXPORT")
 
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
