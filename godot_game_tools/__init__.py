@@ -84,7 +84,8 @@ def populateExporters(self, context):
     tool = scene.godot_game_tools
     if tool.better_collada_available: exporters.append(("0", "Better Collada", ""))
     exporters.append(("1", "GLTF", ""))
-    # exporters.append(("2", "FBX", ""))
+    exporters.append(("2", "GLB", ""))
+    # exporters.append(("3", "FBX", ""))
     return exporters
 
 # ------------------------------------------------------------------------
