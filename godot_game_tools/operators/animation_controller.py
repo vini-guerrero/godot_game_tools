@@ -110,3 +110,76 @@ class GGT_OT_ADD_ANIMATION_LOOP_OT_GGT(Operator):
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
+
+class GGT_OT_TRIM_ANIMATION_OT_GGT(Operator):
+    bl_idname = "wm_ggt.trim_animation"
+    bl_label = "Trim Animation"
+    bl_description = "Trim Selected Animation Into A New One"
+
+    def copyKeyFramePoints(self, fcurveList, targetAction, targetActionName):
+        for curveSrc in fcurveList:
+            newFcurve = targetAction.fcurves.new(data_path=curveSrc.data_path, index=curveSrc.array_index, action_group=targetActionName)
+            keyframePoints = curveSrc.keyframe_points
+            totalFrames = len(keyframePoints)
+            newFcurve.keyframe_points.add(totalFrames)
+            for i, keyframe_point in enumerate(keyframePoints):
+                newFcurve.keyframe_points[i].co = keyframe_point.co
+
+    def trimAnimation(self, targetAction, fromFrame, toFrame, character):
+        for group in targetAction.groups:
+            if not group.select: continue
+            channels = group.channels
+            for channel in channels:
+                keyframePoints = channel.keyframe_points
+                if not channel.select: continue
+                deleteFrameList = []
+                newIndex = 1
+                for i in range(0, len(keyframePoints)):
+                    frame = keyframePoints[i].co[0]
+                    if frame >= fromFrame and frame <= toFrame:
+                        keyframePoints[i].co[0] = float(newIndex)
+                        newIndex += 1
+                    else:
+                        deleteFrameList.append(frame)
+                for deleteFrame in deleteFrameList:
+                    character.keyframe_delete(channel.data_path, frame=deleteFrame, index=channel.array_index)
+                bpy.context.scene.frame_start = 0
+                bpy.context.scene.frame_end = newIndex - 1
+
+    def filterCurve(self, obj, curveType):
+        fCurves = []
+        if obj.type in ['MESH','ARMATURE'] and obj.animation_data:
+            fCurves = [fc for fc in obj.animation_data.action.fcurves for type in curveType if fc.data_path.endswith(type)]
+        return fCurves
+
+    def execute(self, context):
+        scene = context.scene
+        tool = scene.godot_game_tools
+        character = tool.target_object
+        newActionName = tool.trim_animation_name
+        fromFrame = tool.trim_animation_from
+        toFrame = tool.trim_animation_to
+        selectedAction = character.animation_data.action
+        animFramesSize = int(selectedAction.frame_range[-1])
+
+        if fromFrame < animFramesSize and toFrame < animFramesSize:
+            # Available Curves ("location", "rotation", "scale")
+            fcurveList = self.filterCurve(character, ("location"))
+            bpy.data.actions.new(newActionName)
+            newAnimation = [anim for anim in bpy.data.actions.keys() if anim in (newActionName)]
+            newAnimationIndex = bpy.data.actions.keys().index(newActionName)
+            character.animation_data.action = bpy.data.actions.values()[newAnimationIndex]
+            targetAction = character.animation_data.action
+            # Copy Animation Keyframes
+            self.copyKeyFramePoints(fcurveList, targetAction, newActionName)
+            # Trim Animation Frames Choosen By User
+            self.trimAnimation(targetAction, fromFrame, toFrame, character)
+
+            self.report({'INFO'}, 'New Animation Added')
+        else:
+            self.report({'INFO'}, 'Choose Valid Animation Frames')
+        return {'FINISHED'}
+
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #

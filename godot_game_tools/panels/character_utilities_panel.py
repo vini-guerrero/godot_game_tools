@@ -103,6 +103,12 @@ class GGT_PT_ANIMATIONS_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
         box = layout.box()
         box.operator("wm_ggt.animation_player", icon="PLAY")
         box.operator("wm_ggt.animation_stop", icon="PAUSE")
+        trimAnimationBox = layout.box()
+        trimAnimationBox.prop(tool, "trim_animation_name")
+        trimAnimationRow = trimAnimationBox.row()
+        trimAnimationRow.prop(tool, "trim_animation_from")
+        trimAnimationRow.prop(tool, "trim_animation_to")
+        trimAnimationBox.operator("wm_ggt.trim_animation", icon="SELECT_SET")
 
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #

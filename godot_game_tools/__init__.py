@@ -118,6 +118,9 @@ class GGT_AddonProperties_GGT(PropertyGroup):
     character_export_running_animation: StringProperty(name="Running Animation", description="Running animation of the character")
     better_collada_available: BoolProperty(name="Better Collada Exporter", description="Validates if better collada exporter is available", default=False, get=validateBetterColladaExporter)
     character_export_format: EnumProperty(name="Export Format", description="Choose between the best options for quick export to Godot Engine", items=populateExporters, default=None, options={'ANIMATABLE'}, update=None, get=None, set=None)
+    trim_animation_name: StringProperty(name="New Animation", description="Choose the new animation name you want for your trim action in the dopesheet", maxlen=1024)
+    trim_animation_from: IntProperty(name="From Frame", description="Define the desired start trim frame", default=1, min=0, max=1024, update=None, get=None, set=None)
+    trim_animation_to: IntProperty(name="To Frame", description="Define the desired last trim frame", default=1, min=0, max=1024, update=None, get=None, set=None)
     actions = []
 
 # ------------------------------------------------------------------------ #
@@ -148,7 +151,8 @@ from .operators.animation_controller import (
     GGT_OT_STOP_ANIMATION_OT_GGT,
     GGT_OT_RENAME_ANIMATION_OT_GGT,
     GGT_OT_PROCESS_ACTIONS_OT_GGT,
-    GGT_OT_ADD_ANIMATION_LOOP_OT_GGT
+    GGT_OT_ADD_ANIMATION_LOOP_OT_GGT,
+    GGT_OT_TRIM_ANIMATION_OT_GGT
 )
 from .operators.rootmotion_controller import (
     GGT_OT_ADD_ROOTBONE_OT_GGT,
@@ -249,6 +253,7 @@ classes = (
     GGT_OT_RENAME_ANIMATION_OT_GGT,
     GGT_OT_PROCESS_ACTIONS_OT_GGT,
     GGT_OT_ADD_ANIMATION_LOOP_OT_GGT,
+    GGT_OT_TRIM_ANIMATION_OT_GGT,
     # NLA Tracks Controller
     GGT_OT_NLA_TRACKS_OT_GGT,
     GGT_OT_CHARACTER_EXPORT_GGT,
