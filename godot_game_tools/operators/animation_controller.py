@@ -160,22 +160,27 @@ class GGT_OT_TRIM_ANIMATION_OT_GGT(Operator):
         selectedAction = character.animation_data.action
         animFramesSize = int(selectedAction.frame_range[-1])
 
-        if fromFrame < animFramesSize and toFrame < animFramesSize:
-            # Available Curves ("location", "rotation", "scale")
-            fcurveList = self.filterCurve(character, ("location"))
-            bpy.data.actions.new(newActionName)
-            newAnimation = [anim for anim in bpy.data.actions.keys() if anim in (newActionName)]
-            newAnimationIndex = bpy.data.actions.keys().index(newActionName)
-            character.animation_data.action = bpy.data.actions.values()[newAnimationIndex]
-            targetAction = character.animation_data.action
-            # Copy Animation Keyframes
-            self.copyKeyFramePoints(fcurveList, targetAction, newActionName)
-            # Trim Animation Frames Choosen By User
-            self.trimAnimation(targetAction, fromFrame, toFrame, character)
+        if character.type in ['ARMATURE'] and character.animation_data and newActionName:
 
-            self.report({'INFO'}, 'New Animation Added')
+            if fromFrame < animFramesSize and toFrame < animFramesSize:
+                # Available Curves ("location", "rotation", "scale")
+                fcurveList = self.filterCurve(character, ("location"))
+                bpy.data.actions.new(newActionName)
+                newAnimation = [anim for anim in bpy.data.actions.keys() if anim in (newActionName)]
+                newAnimationIndex = bpy.data.actions.keys().index(newActionName)
+                character.animation_data.action = bpy.data.actions.values()[newAnimationIndex]
+                targetAction = character.animation_data.action
+                # Copy Animation Keyframes
+                self.copyKeyFramePoints(fcurveList, targetAction, newActionName)
+                # Trim Animation Frames Choosen By User
+                self.trimAnimation(targetAction, fromFrame, toFrame, character)
+
+                self.report({'INFO'}, 'New Animation Added')
+            else:
+                self.report({'INFO'}, 'Choose Valid Animation Frames')
         else:
-            self.report({'INFO'}, 'Choose Valid Animation Frames')
+            self.report({'INFO'}, 'Choose Valid Animation Trim Settings')
+            
         return {'FINISHED'}
 
 # ------------------------------------------------------------------------ #
