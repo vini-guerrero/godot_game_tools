@@ -97,7 +97,7 @@ class GGT_AddonProperties_GGT(PropertyGroup):
     target_object: PointerProperty(name="Target", description="Select the target armature you want the animations to be merged into", type=bpy.types.Object)
     animations: EnumProperty(name="Animations", description="Available armature animations", items=populateAnimations, default=None, options={'ANIMATABLE'}, update=None, get=None, set=None)
     visible_armature: BoolProperty(name="Show Armature Bones", description="Hides / Show armature bones once animations are loaded", default=True, update=toggleArmatureVisibility)
-    rootmotion_all: BoolProperty(name="Apply Rootmotion To All Animations", description="Choose to apply rootmotion to all animations or current only", default=True, update=None)
+    rootmotion_all: BoolProperty(name="Apply Rootmotion To All", description="Choose to apply rootmotion to all animations or current only", default=True, update=None)
     rootmotion_hip_bone: StringProperty(name="Root Bone", description="Bone which will serve as the basis for the root motion of the character. Usually hips or pelvis")
     bake_texture_size: IntProperty(name="Bake Texture Size", description="Define here the size of textures images to bake", default = 1024, min = 8, max = 4096)
     bake_texture_name: StringProperty(name="Bake Name", description="Select the texture name to be saved", maxlen=1024)

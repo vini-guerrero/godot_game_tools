@@ -57,16 +57,16 @@ class GGT_PT_ROOT_MOTION_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
         ob = tool.target_object
         box = layout.box()
         box.label(text="Root Motion Setup", icon='ANIM_DATA')
-        box.prop(tool, "visible_armature")
-        box.prop(tool, "rootmotion_all")
+        rootmotionRow = box.row()
+        rootmotionRow.prop(tool, "visible_armature")
+        rootmotionRow.prop(tool, "rootmotion_all")
+        box.prop_search(tool, "rootmotion_hip_bone", ob.data, "bones", text="Root Bone")
         # box.prop(tool, "rootMotionStartFrame")
         if ob is not None:
-            box.prop(ob.animation_data.action.ggt_props, "use_root_motion")
-            box.prop(ob.animation_data.action.ggt_props, "use_root_motion_z")
-            box.operator("wm_ggt.add_rootmotion", icon="BONE_DATA")
+            # box.prop(ob.animation_data.action.ggt_props, "use_root_motion")
+            # box.prop(ob.animation_data.action.ggt_props, "use_root_motion_z")
+            # box.operator("wm_ggt.add_rootmotion", icon="BONE_DATA")
             box.operator("wm_ggt.add_rootmotion_legacy", icon="BONE_DATA")
-            box.label(text="Bones", icon='ARMATURE_DATA')
-            box.prop_search(tool, "rootmotion_hip_bone", ob.data, "bones", text="Root Bone")
         box.separator()
 
 # ------------------------------------------------------------------------ #
@@ -104,11 +104,13 @@ class GGT_PT_ANIMATIONS_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
         box.operator("wm_ggt.animation_player", icon="PLAY")
         box.operator("wm_ggt.animation_stop", icon="PAUSE")
         trimAnimationBox = layout.box()
+        trimAnimationBox.label(text="Trim Animations", icon='DOCUMENTS')
         trimAnimationBox.prop(tool, "trim_animation_name")
         trimAnimationRow = trimAnimationBox.row()
         trimAnimationRow.prop(tool, "trim_animation_from")
         trimAnimationRow.prop(tool, "trim_animation_to")
         trimAnimationBox.operator("wm_ggt.trim_animation", icon="SELECT_SET")
+        trimAnimationBox.operator("wm_ggt.add_animation_loop", icon="COPYDOWN")
 
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
@@ -134,7 +136,6 @@ class GGT_PT_EXPORT_CHARACTER_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
             box.prop(tool, "character_export_path")
             box.prop(tool, "character_export_create_animation_tree")
             box.prop(tool, "character_export_format")
-            box.operator("wm_ggt.add_animation_loop", icon="COPYDOWN")
             if tool.character_export_create_animation_tree:
                 box.label(text="Character Animations", icon='ANIM_DATA')
                 box.prop_search(tool, "character_export_idle_animation", bpy.data, "actions", text="Idle")

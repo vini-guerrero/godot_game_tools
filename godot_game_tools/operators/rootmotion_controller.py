@@ -66,8 +66,8 @@ class GGT_OT_ADD_ROOTBONE_OT_GGT(Operator):
 
 class GGT_OT_ADD_ROOTMOTION_LEGACY_OT_GGT(Operator):
     bl_idname = "wm_ggt.add_rootmotion_legacy"
-    bl_label = "Add Legacy Root Motion"
-    bl_description = "Adds Root Motion Bone To Animation"
+    bl_label = "Add Root Motion"
+    bl_description = "Adds Root Motion Bone To Animations"
 
     def get_fcurve(self, armature, bone_name):
       result = None
@@ -154,7 +154,7 @@ class GGT_OT_ADD_ROOTMOTION_OT_GGT(Operator):
         except RuntimeError:
             self.report({'ERROR'}, 'Could not add root motion, please check your root motion bone.')
             return {'CANCELLED'}
-        
+
         if len(bpy.data.actions) > 0:
             for action in animationsForRootMotion:
                 animation = action.name
