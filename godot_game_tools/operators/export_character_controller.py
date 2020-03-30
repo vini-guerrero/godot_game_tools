@@ -21,6 +21,7 @@ class GGT_OT_NLA_TRACKS_OT_GGT(Operator):
         scene = context.scene
         tool = scene.godot_game_tools
         animation = tool.animations
+        character_export_animation_loops = tool.character_export_animation_loops
         target_armature = tool.target_object
         bpy.ops.screen.animation_cancel()
         if (target_armature is None): target_armature = bpy.context.view_layer.objects.active
@@ -36,6 +37,7 @@ class GGT_OT_NLA_TRACKS_OT_GGT(Operator):
                             start = action.frame_range[0]
                             track.strips.new(action.name, start, action)
                             track.name = action.name
+                            if character_export_animation_loops: track.name += "-loop"
                 self.report({'INFO'}, 'NLA Tracks Generated')
             else:
                 self.report({'INFO'}, 'Select A Valid Armature With Animation Data')

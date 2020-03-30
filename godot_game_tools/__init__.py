@@ -122,6 +122,7 @@ class GGT_AddonProperties_GGT(PropertyGroup):
     trim_animation_name: StringProperty(name="New Animation", description="Choose the new animation name you want for your trim action in the dopesheet", maxlen=1024)
     trim_animation_from: IntProperty(name="From Frame", description="Define the desired start trim frame", default=1, min=0, max=1024, update=None, get=None, set=None)
     trim_animation_to: IntProperty(name="To Frame", description="Define the desired last trim frame", default=1, min=0, max=1024, update=None, get=None, set=None)
+    character_export_animation_loops: BoolProperty(name="Add Godot Animation Loops", description="Adds Godot Loop Rename To Exported Animations", default=True, get=None)
     actions = []
 
 # ------------------------------------------------------------------------ #

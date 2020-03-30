@@ -180,7 +180,7 @@ class GGT_OT_TRIM_ANIMATION_OT_GGT(Operator):
                 self.report({'INFO'}, 'Choose Valid Animation Frames')
         else:
             self.report({'INFO'}, 'Choose Valid Animation Trim Settings')
-            
+
         return {'FINISHED'}
 
 # ------------------------------------------------------------------------ #

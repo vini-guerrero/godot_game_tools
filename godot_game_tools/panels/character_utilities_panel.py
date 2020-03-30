@@ -110,7 +110,7 @@ class GGT_PT_ANIMATIONS_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
         trimAnimationRow.prop(tool, "trim_animation_from")
         trimAnimationRow.prop(tool, "trim_animation_to")
         trimAnimationBox.operator("wm_ggt.trim_animation", icon="SELECT_SET")
-        trimAnimationBox.operator("wm_ggt.add_animation_loop", icon="COPYDOWN")
+        # trimAnimationBox.operator("wm_ggt.add_animation_loop", icon="COPYDOWN")
 
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
@@ -135,6 +135,7 @@ class GGT_PT_EXPORT_CHARACTER_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
             box.prop(tool, "character_project_path")
             box.prop(tool, "character_export_path")
             box.prop(tool, "character_export_create_animation_tree")
+            box.prop(tool, "character_export_animation_loops")
             box.prop(tool, "character_export_format")
             if tool.character_export_create_animation_tree:
                 box.label(text="Character Animations", icon='ANIM_DATA')
