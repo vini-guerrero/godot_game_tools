@@ -5,7 +5,7 @@ from bpy.types import (Panel, Menu, UIList)
 
 class GGT_PT_CHARACTER_UTILITIES_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
     bl_idname = "obj_ggt.character_utilities_panel"
-    bl_label = "Character Utilies"
+    bl_label = "Character Utilities"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_context = "objectmode"
@@ -103,6 +103,7 @@ class GGT_PT_ANIMATIONS_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
         box = layout.box()
         box.operator("wm_ggt.animation_player", icon="PLAY")
         box.operator("wm_ggt.animation_stop", icon="PAUSE")
+        box.operator("wm_ggt.delete_animation", icon="TRASH")
         trimAnimationBox = layout.box()
         trimAnimationBox.label(text="Trim Animations", icon='DOCUMENTS')
         trimAnimationBox.prop(tool, "trim_animation_name")

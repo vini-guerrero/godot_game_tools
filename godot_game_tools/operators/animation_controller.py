@@ -100,8 +100,8 @@ class GGT_OT_ADD_ANIMATION_LOOP_OT_GGT(Operator):
         bpy.ops.screen.animation_cancel()
         bpy.context.view_layer.objects.active = target_armature
         if len(bpy.data.actions) > 0:
-            for action in bpy.data.actions:
-                action.name += "-loop"
+                for action in bpy.data.actions:
+                    action.name += "-loop"
         self.report({'INFO'}, 'Animation Loops Added')
         return {'FINISHED'}
 
@@ -159,6 +159,7 @@ class GGT_OT_TRIM_ANIMATION_OT_GGT(Operator):
         toFrame = tool.trim_animation_to
         selectedAction = character.animation_data.action
         animFramesSize = int(selectedAction.frame_range[-1])
+        if (character is None): character = bpy.context.view_layer.objects.active
 
         if character.type in ['ARMATURE'] and character.animation_data and newActionName:
 
@@ -181,6 +182,29 @@ class GGT_OT_TRIM_ANIMATION_OT_GGT(Operator):
         else:
             self.report({'INFO'}, 'Choose Valid Animation Trim Settings')
 
+        return {'FINISHED'}
+
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+
+class GGT_OT_DELETE_ANIMATION_OT_GGT(Operator):
+    bl_idname = "wm_ggt.delete_animation"
+    bl_label = "Delete Current Animation"
+    bl_description = "Deletes Current Selected Animation"
+
+    def execute(self, context):
+        scene = context.scene
+        tool = scene.godot_game_tools
+        character = tool.target_object
+        animation = tool.animations
+        selectedAction = character.animation_data.action
+        if (character is None): character = bpy.context.view_layer.objects.active
+        if len(bpy.data.actions) > 0 and selectedAction:
+            bpy.data.actions.remove(selectedAction)
+            self.report({'INFO'}, 'Animation Deleted')
+        else:
+            self.report({'INFO'}, 'Select Animation to Delete')
         return {'FINISHED'}
 
 # ------------------------------------------------------------------------ #
