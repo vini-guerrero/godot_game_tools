@@ -116,6 +116,24 @@ class GGT_PT_ANIMATIONS_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
         box.operator("wm_ggt.animation_player", icon="PLAY")
         box.operator("wm_ggt.animation_stop", icon="PAUSE")
         box.operator("wm_ggt.delete_animation", icon="TRASH")
+
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+
+class GGT_PT_ANIMATION_UTILITIES_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
+    bl_idname = "obj_ggt.animation_utilities"
+    bl_label = "Trim Animations"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_context = "objectmode"
+    bl_parent_id = "obj_ggt.animations_panel"
+    bl_options = {"DEFAULT_CLOSED"}
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        obj = context.object
+        tool = scene.godot_game_tools
         trimAnimationBox = layout.box()
         trimAnimationBox.label(text="Trim Animations", icon='DOCUMENTS')
         trimAnimationBox.prop(tool, "trim_animation_name")
@@ -123,7 +141,6 @@ class GGT_PT_ANIMATIONS_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
         trimAnimationRow.prop(tool, "trim_animation_from")
         trimAnimationRow.prop(tool, "trim_animation_to")
         trimAnimationBox.operator("wm_ggt.trim_animation", icon="SELECT_SET")
-        # trimAnimationBox.operator("wm_ggt.add_animation_loop", icon="COPYDOWN")
 
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
