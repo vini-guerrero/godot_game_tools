@@ -93,12 +93,9 @@ def populateExporters(self, context):
 # ------------------------------------------------------------------------
 class GGT_AddonProperties_GGT(PropertyGroup):
     action_name: StringProperty(name="New Name", description="Choose the action name you want to rename your animation in the dopesheet", maxlen=1024)
-    rootmotion_name: StringProperty(name="Rootmotion Name", description="Choose name you want for the RootMotion Bone", maxlen=1024, default="RootMotion")
     target_object: PointerProperty(name="Target", description="Select the target armature you want the animations to be merged into", type=bpy.types.Object)
     animations: EnumProperty(name="Animations", description="Available armature animations", items=populateAnimations, default=None, options={'ANIMATABLE'}, update=None, get=None, set=None)
     visible_armature: BoolProperty(name="Show Armature Bones", description="Hides / Show armature bones once animations are loaded", default=True, update=toggleArmatureVisibility)
-    rootmotion_all: BoolProperty(name="Apply Rootmotion To All", description="Choose to apply rootmotion to all animations or current only", default=True, update=None)
-    rootmotion_hip_bone: StringProperty(name="Root Bone", description="Bone which will serve as the basis for the root motion of the character. Usually hips or pelvis")
     bake_texture_size: IntProperty(name="Bake Texture Size", description="Define here the size of textures images to bake", default = 1024, min = 8, max = 4096)
     bake_texture_name: StringProperty(name="Bake Name", description="Select the texture name to be saved", maxlen=1024)
     bake_texture_path: StringProperty(name="Texture Path", description="Select the path destination folder you want textures to be saved", subtype="FILE_PATH")
@@ -108,7 +105,6 @@ class GGT_AddonProperties_GGT(PropertyGroup):
     tileset_generate_path: StringProperty(name="Tileset Path", description="Select the path destination folder where you want tileset to be exported", subtype="FILE_PATH")
     tileset_tile_width: IntProperty(name="Tile Width", description="Define the desired tiles width", default=32, min=8, max=1024, update=updateTilesetGeneratorCamera, get=None, set=None)
     tileset_tile_height: IntProperty(name="Tile Height", description="Define the desired tiles height", default=32, min=8, max=1024, update=updateTilesetGeneratorCamera, get=None, set=None)
-    rootMotionStartFrame: IntProperty(name="Rootmotion Start Frame", description="Define the initial frame for rootmotion start", default=1, min=-1, max=1024, update=None, get=None, set=None)
     tileset_type: EnumProperty(name="Tileset Type", description="Choose between available tileset types", items=[('0', "Top-Down", ""),('1', "Isometric", "")], update=updateTilesetGeneratorCamera, get=None, set=None)
     character_project_path: StringProperty(name="Project Path", description="Select the root path of your Godot project", subtype="DIR_PATH")
     character_export_path: StringProperty(name="Export Path", description="Select the desired path to export character", subtype="DIR_PATH")
@@ -123,6 +119,18 @@ class GGT_AddonProperties_GGT(PropertyGroup):
     trim_animation_from: IntProperty(name="From Frame", description="Define the desired start trim frame", default=1, min=0, max=1024, update=None, get=None, set=None)
     trim_animation_to: IntProperty(name="To Frame", description="Define the desired last trim frame", default=1, min=0, max=1024, update=None, get=None, set=None)
     character_export_animation_loops: BoolProperty(name="Add Godot Animation Loops", description="Adds Godot Loop Rename To Exported Animations", default=True, get=None)
+    # RootMotion Variables
+    rootmotion_name: StringProperty(name="Bone Name", description="Choose name you want for the RootMotion Bone", maxlen=1024, default="RootMotion")
+    rootmotion_all: BoolProperty(name="Apply Rootmotion To All", description="Choose to apply rootmotion to all animations or current only", default=True, update=None)
+    rootmotion_hip_bone: StringProperty(name="Root Bone", description="Bone which will serve as the basis for the root motion of the character. Usually hips or pelvis")
+    rootMotionStartFrame: IntProperty(name="Rootmotion Start Frame", description="Define the initial frame for rootmotion start", default=1, min=-1, max=1024, update=None, get=None, set=None)
+    root_motion_hips_x_channel: BoolProperty(name="Hips X", description="Toggles On/Off Hips X Channel For RootMotion Exported Animations", default=True, get=None)
+    root_motion_hips_y_channel: BoolProperty(name="Hips Y", description="Toggles On/Off Hips X Channel For RootMotion Exported Animations", default=True, get=None)
+    root_motion_hips_z_channel: BoolProperty(name="Hips Z", description="Toggles On/Off Hips X Channel For RootMotion Exported Animations", default=False, get=None)
+    root_motion_rootmotion_x_channel: BoolProperty(name="RootMotion X", description="Toggles On/Off RootMotion X Channel For RootMotion Exported Animations", default=False, get=None)
+    root_motion_rootmotion_y_channel: BoolProperty(name="RootMotion Y", description="Toggles On/Off RootMotion X Channel For RootMotion Exported Animations", default=False, get=None)
+    root_motion_rootmotion_z_channel: BoolProperty(name="RootMotion Z", description="Toggles On/Off RootMotion X Channel For RootMotion Exported Animations", default=True, get=None)
+    # Animation Actions
     actions = []
 
 # ------------------------------------------------------------------------ #
@@ -161,7 +169,8 @@ from .operators.rootmotion_controller import (
     GGT_OT_ADD_ROOTBONE_OT_GGT,
     GGT_OT_ADD_ROOTMOTION_OT_GGT,
     GGT_OT_UPDATE_ROOTMOTION_OT_GGT,
-    GGT_OT_ADD_ROOTMOTION_LEGACY_OT_GGT
+    GGT_OT_ADD_ROOTMOTION_LEGACY_OT_GGT,
+    GGT_OT_ADD_ROOTMOTION_TOGGLE_OT_GGT
 )
 from .operators.character_controller import (
     GGT_OT_INIT_CHARACTER_OT_GGT,
@@ -266,6 +275,7 @@ classes = (
     GGT_OT_ADD_ROOTMOTION_OT_GGT,
     GGT_OT_UPDATE_ROOTMOTION_OT_GGT,
     GGT_OT_ADD_ROOTMOTION_LEGACY_OT_GGT,
+    GGT_OT_ADD_ROOTMOTION_TOGGLE_OT_GGT,
     # Texture Controller
     GGT_OT_BAKE_TEXTURE_OT_GGT,
     GGT_OT_CREATE_BAKE_TEXTURES_OT_GGT,

@@ -60,13 +60,25 @@ class GGT_PT_ROOT_MOTION_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
         rootmotionRow = box.row()
         rootmotionRow.prop(tool, "visible_armature")
         rootmotionRow.prop(tool, "rootmotion_all")
+        rootmotionRow2 = box.row()
+        rootmotionRow2.prop(tool, "rootmotion_name")
+        rootmotionRow3 = box.row()
+        rootmotionRow3.prop(tool, "rootMotionStartFrame")
         box.prop_search(tool, "rootmotion_hip_bone", ob.data, "bones", text="Root Bone")
-        # box.prop(tool, "rootMotionStartFrame")
-        if ob is not None:
+        rootmotionToggles = box.row()
+        rootmotionToggles.prop(tool, "root_motion_hips_x_channel")
+        rootmotionToggles.prop(tool, "root_motion_hips_y_channel")
+        rootmotionToggles.prop(tool, "root_motion_hips_z_channel")
+        rootmotionToggles2 = box.row()
+        rootmotionToggles2.prop(tool, "root_motion_rootmotion_x_channel")
+        rootmotionToggles2.prop(tool, "root_motion_rootmotion_y_channel")
+        rootmotionToggles2.prop(tool, "root_motion_rootmotion_z_channel")
+        if ob is not None and tool.rootmotion_hip_bone:
             # box.prop(ob.animation_data.action.ggt_props, "use_root_motion")
             # box.prop(ob.animation_data.action.ggt_props, "use_root_motion_z")
             # box.operator("wm_ggt.add_rootmotion", icon="BONE_DATA")
-            box.operator("wm_ggt.add_rootmotion_legacy", icon="BONE_DATA")
+            # box.operator("wm_ggt.add_rootmotion_legacy", icon="BONE_DATA")
+            box.operator("wm_ggt.add_rootmotion_toggle", icon="BONE_DATA")
         box.separator()
 
 # ------------------------------------------------------------------------ #
