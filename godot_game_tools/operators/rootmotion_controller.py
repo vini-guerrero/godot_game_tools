@@ -16,8 +16,8 @@ class GGT_OT_ADD_ROOTBONE_OT_GGT(Operator):
         rootmotionStartFrame = tool.rootMotionStartFrame
         hips = tool.rootmotion_hip_bone
         armatureVisible = target_armature.hide_viewport
-        target_armature.hide_viewport = False
-        bpy.context.object.show_in_front = False
+        # target_armature.hide_viewport = False
+        # bpy.context.object.show_in_front = False
 
         if not target_armature:
             self.report({'INFO'}, 'Please select a valid armature')
@@ -32,8 +32,7 @@ class GGT_OT_ADD_ROOTBONE_OT_GGT(Operator):
             createRootMotionBone = True
             if len(target_armature.data.bones) > 0:
                 for bone in target_armature.data.bones:
-                    if bone.name == rootMotionBoneName:
-                        createRootMotionBone = False
+                    if bone.name == rootMotionBoneName: createRootMotionBone = False
                 if createRootMotionBone:
                     bpy.ops.object.select_all(action='DESELECT')
                     bpy.ops.object.mode_set(mode='EDIT')
@@ -42,8 +41,8 @@ class GGT_OT_ADD_ROOTBONE_OT_GGT(Operator):
                     # Insert Location on RootMotion Bone
                     bpy.ops.object.mode_set(mode="POSE")
                     bpy.context.view_layer.objects.active.data.bones[rootMotionBoneName].select = True
-                    # scene.frame_set(rootmotionStartFrame)
-                    # bpy.ops.anim.keyframe_insert_menu(type='Location')
+                    scene.frame_set(rootmotionStartFrame)
+                    bpy.ops.anim.keyframe_insert_menu(type='Location')
                     # Parent Bone
                     bpy.ops.object.mode_set(mode='OBJECT')
                     bpy.ops.object.select_all(action='DESELECT')
@@ -54,10 +53,10 @@ class GGT_OT_ADD_ROOTBONE_OT_GGT(Operator):
                     rootMotionBone.select = False
                     hipsBone.select = True
                     rootMotionBone.select = True
-                    bpy.ops.armature.parent_set(type='OFFSET')
+                    bpy.ops.object.parent_set(type='ARMATURE')
                     bpy.ops.object.mode_set(mode='OBJECT')
-                    target_armature.hide_viewport = not armatureVisible
-                    bpy.context.object.show_in_front = not armatureVisible
+                    # target_armature.hide_viewport = not armatureVisible
+                    # bpy.context.object.show_in_front = not armatureVisible
         else:
             self.report({'INFO'}, 'Please select the armature')
         self.report({'INFO'}, 'Root Bone Added')
@@ -262,7 +261,7 @@ def add_root_curves(action: bpy.types.Action):
 
 class GGT_OT_ADD_ROOTMOTION_TOGGLE_OT_GGT(Operator):
     bl_idname = "wm_ggt.add_rootmotion_toggle"
-    bl_label = "Update Root Motion"
+    bl_label = "Add Root Motion"
     bl_description = "Adds Root Motion Bone To Animations"
 
     def getCurve(self, obj, bone):
@@ -280,98 +279,45 @@ class GGT_OT_ADD_ROOTMOTION_TOGGLE_OT_GGT(Operator):
         rootmotion_all = tool.rootmotion_all
         rootmotionStartFrame = tool.rootMotionStartFrame
         animationsForRootMotion = []
-        muteCurvesHips = []
-        muteCurvesRootMotion = []
-
-        # Toggles
-        # Hips
-        root_motion_hips_x_channel = tool.root_motion_hips_x_channel
-        root_motion_hips_y_channel = tool.root_motion_hips_y_channel
-        root_motion_hips_z_channel = tool.root_motion_hips_z_channel
-        # RootMotion
-        root_motion_rootmotion_x_channel = tool.root_motion_rootmotion_x_channel
-        root_motion_rootmotion_y_channel = tool.root_motion_rootmotion_y_channel
-        root_motion_rootmotion_z_channel = tool.root_motion_rootmotion_z_channel
-
         if rootmotion_all:
             for action in bpy.data.actions: animationsForRootMotion.append(action)
         else:
-            animationsForRootMotion.append(target_armature.animation_data.action)
+            animationsForRootMotion.append(bpy.context.object.animation_data.action)
 
-        if not root_motion_hips_x_channel: muteCurvesHips.append(0)
-        if not root_motion_hips_y_channel: muteCurvesHips.append(1)
-        if not root_motion_hips_z_channel: muteCurvesHips.append(2)
-
-        if not root_motion_rootmotion_x_channel: muteCurvesRootMotion.append(0)
-        if not root_motion_rootmotion_y_channel: muteCurvesRootMotion.append(1)
-        if not root_motion_rootmotion_z_channel: muteCurvesRootMotion.append(2)
-
-        # Validations
         boneExists = rootMotionBoneName in target_armature.pose.bones.keys()
         rootMotionBoneName = tool.rootmotion_name
         hips = tool.rootmotion_hip_bone
         anim_hip_bone = target_armature.pose.bones[hips]
+        action = bpy.context.object.animation_data.action
         rootmotionStartFrame = tool.rootMotionStartFrame
+        actionName = action.name
 
-        if len(bpy.data.actions) > 0:
-            for action in animationsForRootMotion:
-                animation = action.name
-                animationToPlay = [anim for anim in bpy.data.actions.keys() if anim in (animation)]
-                animationIndex = bpy.data.actions.keys().index(animation)
-                target_armature.animation_data.action = bpy.data.actions.values()[animationIndex]
-                bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
+        if not boneExists: bpy.ops.wm_ggt.add_rootbone()
 
-                action = bpy.context.object.animation_data.action
-                actionName = animation
+        anim_root_bone = target_armature.pose.bones[rootMotionBoneName]
+        scene.frame_set(rootmotionStartFrame)
+        rootMotionAxis = [0,1,2]
 
-                if not boneExists: bpy.ops.wm_ggt.add_rootbone()
-                scene.frame_set(rootmotionStartFrame)
+        for group in action.groups:
+            if not group.select: continue
+            channels = group.channels
+            for channel in channels:
 
-                checkRootMotionCurves = self.getCurve(target_armature, rootMotionBoneName)
-                if len(checkRootMotionCurves) < 1:
+                keyframePointsRootMotion = []
+                fCurveBone = channel.data_path.split('"')[1]
+                locationFilter = channel.data_path.split('"')[2]
+                curveIndex = channel.array_index
 
-                        prefix = 'pose.bones["{}"].'.format(rootMotionBoneName)
-                        fCurves = action.fcurves
-                        xCurve = fCurves.new(prefix + 'location', index=0, action_group=actionName)
-                        yCurve = fCurves.new(prefix + 'location', index=1, action_group=actionName)
-                        zCurve = fCurves.new(prefix + 'location', index=2, action_group=actionName)
+                if fCurveBone == hips and curveIndex in rootMotionAxis and locationFilter == "].location":
 
-                        anim_root_bone = target_armature.pose.bones[rootMotionBoneName]
-                        rootMotionAxis = [1, 2, 3]
+                    frames = []
+                    for point in channel.keyframe_points[1:]: frames.append(point.co[0])
 
-                        for group in action.groups:
-                            if not group.select: continue
-                            channels = group.channels
-                            for channel in channels:
-
-                                keyframePointsRootMotion = []
-                                fCurveBone = channel.data_path.split('"')[1]
-                                locationFilter = channel.data_path.split('"')[2]
-                                curveIndex = channel.array_index
-
-                                if fCurveBone == hips and curveIndex in rootMotionAxis and locationFilter == "].location":
-                                    keyframePoints = channel.keyframe_points
-                                    for i in range(0, len(keyframePoints)):
-                                        keyframePointsRootMotion.append(keyframePoints[i])
-                                else:
-
-                                    if fCurveBone == rootMotionBoneName and curveIndex in rootMotionAxis and locationFilter == "].location":
-                                        totalFrames = len(keyframePoints)
-                                        channel.keyframe_points.add(totalFrames)
-                                        for frame in keyframePoints:
-                                            index = int(frame.co[0]) - 1
-                                            channel.keyframe_points[index].co[0] = frame.co[0]
-                                            channel.keyframe_points[index].co[1] = frame.co[1]
-
-                filterHipsCurves = self.getCurve(target_armature, hips)
-                for curve in filterHipsCurves:
-                    if curve.array_index in muteCurvesHips: curve.mute = True
-                    else: curve.mute = False
-
-                filterRootMotionCurves = self.getCurve(target_armature, rootMotionBoneName)
-                for curve in filterRootMotionCurves:
-                    if curve.array_index in muteCurvesRootMotion: curve.mute = True
-                    else: curve.mute = False
+                    for index in frames:
+                          scene.frame_set(index)
+                          anim_root_bone.location = anim_hip_bone.location
+                          anim_root_bone.keyframe_insert(data_path='location')
+                          anim_hip_bone.keyframe_delete(data_path='location')
 
         self.report({'INFO'}, 'Root Motion Updated')
         return {'FINISHED'}

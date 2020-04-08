@@ -65,14 +65,6 @@ class GGT_PT_ROOT_MOTION_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
         rootmotionRow3 = box.row()
         rootmotionRow3.prop(tool, "rootMotionStartFrame")
         box.prop_search(tool, "rootmotion_hip_bone", ob.data, "bones", text="Root Bone")
-        rootmotionToggles = box.row()
-        rootmotionToggles.prop(tool, "root_motion_hips_x_channel")
-        rootmotionToggles.prop(tool, "root_motion_hips_y_channel")
-        rootmotionToggles.prop(tool, "root_motion_hips_z_channel")
-        rootmotionToggles2 = box.row()
-        rootmotionToggles2.prop(tool, "root_motion_rootmotion_x_channel")
-        rootmotionToggles2.prop(tool, "root_motion_rootmotion_y_channel")
-        rootmotionToggles2.prop(tool, "root_motion_rootmotion_z_channel")
         if ob is not None and tool.rootmotion_hip_bone:
             # box.prop(ob.animation_data.action.ggt_props, "use_root_motion")
             # box.prop(ob.animation_data.action.ggt_props, "use_root_motion_z")
@@ -162,7 +154,7 @@ class GGT_PT_EXPORT_CHARACTER_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
         if ob:
             box = layout.box()
             box.prop(tool, "character_export_character_name")
-            box.prop(tool, "character_project_path")
+            # box.prop(tool, "character_project_path")
             box.prop(tool, "character_export_path")
             box.prop(tool, "character_export_create_animation_tree")
             box.prop(tool, "character_export_animation_loops")
