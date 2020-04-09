@@ -58,6 +58,7 @@ class GGT_OT_CHARACTER_EXPORT_GGT(Operator):
         character_export_create_animation_tree = tool.character_export_create_animation_tree
         animation = tool.animations
         target_armature = tool.target_object
+        rootMotionBoneName = tool.rootmotion_name
         character_export_format = int(tool.character_export_format)
         character_export_animation_loops = tool.character_export_animation_loops
         character_name = tool.character_export_character_name if tool.character_export_character_name is not None else target_armature.name
@@ -100,6 +101,7 @@ class GGT_OT_CHARACTER_EXPORT_GGT(Operator):
 
         if (character_export_create_animation_tree):
             character_data = {
+                "rootMotionBone": rootMotionBoneName,
                 "nodeName": "StateMachine",
                 "states": [
                     { "name": idleAnim, "positionX": 200, "positionY": 100, },

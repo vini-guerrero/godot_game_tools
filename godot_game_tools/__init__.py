@@ -121,9 +121,11 @@ class GGT_AddonProperties_GGT(PropertyGroup):
     character_export_animation_loops: BoolProperty(name="Add Godot Animation Loops", description="Adds Godot Loop Rename To Exported Animations", default=True, get=None)
     # RootMotion Variables
     rootmotion_name: StringProperty(name="Bone Name", description="Choose name you want for the RootMotion Bone", maxlen=1024, default="RootMotion")
-    rootmotion_all: BoolProperty(name="Apply Rootmotion To All", description="Choose to apply rootmotion to all animations or current only", default=True, update=None)
+    rootmotion_all: BoolProperty(name="Apply RootMotion To All", description="Choose to apply rootmotion to all animations or current only", default=True, update=None)
     rootmotion_hip_bone: StringProperty(name="Root Bone", description="Bone which will serve as the basis for the root motion of the character. Usually hips or pelvis")
     rootMotionStartFrame: IntProperty(name="Rootmotion Start Frame", description="Define the initial frame for rootmotion start", default=1, min=-1, max=1024, update=None, get=None, set=None)
+    rootmotion_force_on_ground: BoolProperty(name="Force On Ground", description="Choose to force character keyframes to be on ground to the current animation when using RootMotion", default=False, update=None)
+    rootmotion_hips_fix: BoolProperty(name="Rootmotion Hip Offset", description="Choose to apply an offset to the current animation when using RootMotion", default=False, update=None)
     # Animation Actions
     actions = []
 
