@@ -123,7 +123,7 @@ class GGT_AddonProperties_GGT(PropertyGroup):
     rootmotion_name: StringProperty(name="Bone Name", description="Choose name you want for the RootMotion Bone", maxlen=1024, default="RootMotion")
     rootmotion_all: BoolProperty(name="Apply Rootmotion To All", description="Choose to apply rootmotion to all animations or current only", default=True, update=None)
     rootmotion_hip_bone: StringProperty(name="Root Bone", description="Bone which will serve as the basis for the root motion of the character. Usually hips or pelvis")
-    rootMotionStartFrame: IntProperty(name="Rootmotion Start Frame", description="Define the initial frame for rootmotion start", default=1, min=-1, max=1024, update=None, get=None, set=None)    
+    rootMotionStartFrame: IntProperty(name="Rootmotion Start Frame", description="Define the initial frame for rootmotion start", default=1, min=-1, max=1024, update=None, get=None, set=None)
     # Animation Actions
     actions = []
 

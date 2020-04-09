@@ -38,6 +38,11 @@ class GGT_OT_ADD_ROOTBONE_OT_GGT(Operator):
                     bpy.ops.object.mode_set(mode='EDIT')
                     bpy.ops.armature.bone_primitive_add(name=rootMotionBoneName)
                     rootMotionBone = target_armature.data.edit_bones[rootMotionBoneName]
+                    # Bone Setup
+                    # rootMotionBone.tail = hipsBone.tail
+                    # rootMotionBone.head = hipsBone.head
+                    rootMotionBone.tail.z = 0.2
+                    # rootMotionBone.head.y = -0.5
                     # Insert Location on RootMotion Bone
                     bpy.ops.object.mode_set(mode="POSE")
                     bpy.context.view_layer.objects.active.data.bones[rootMotionBoneName].select = True
@@ -53,10 +58,8 @@ class GGT_OT_ADD_ROOTBONE_OT_GGT(Operator):
                     rootMotionBone.select = False
                     hipsBone.select = True
                     rootMotionBone.select = True
-                    bpy.ops.object.parent_set(type='ARMATURE')
+                    bpy.ops.armature.parent_set(type='OFFSET')
                     bpy.ops.object.mode_set(mode='OBJECT')
-                    # target_armature.hide_viewport = not armatureVisible
-                    # bpy.context.object.show_in_front = not armatureVisible
         else:
             self.report({'INFO'}, 'Please select the armature')
         self.report({'INFO'}, 'Root Bone Added')
@@ -278,6 +281,7 @@ class GGT_OT_ADD_ROOTMOTION_TOGGLE_OT_GGT(Operator):
         rootMotionBoneName = tool.rootmotion_name
         rootmotion_all = tool.rootmotion_all
         rootmotionStartFrame = tool.rootMotionStartFrame
+        # rootmotion_ground_rootbone = tool.rootmotion_ground_rootbone
         animationsForRootMotion = []
         if rootmotion_all:
             for action in bpy.data.actions: animationsForRootMotion.append(action)
@@ -316,6 +320,8 @@ class GGT_OT_ADD_ROOTMOTION_TOGGLE_OT_GGT(Operator):
                     for index in frames:
                           scene.frame_set(index)
                           anim_root_bone.location = anim_hip_bone.location
+                          # if rootmotion_ground_rootbone:
+                          #     if anim_root_bone.location.y < 0: anim_root_bone.location.y = 0
                           anim_root_bone.keyframe_insert(data_path='location')
                           anim_hip_bone.keyframe_delete(data_path='location')
 
