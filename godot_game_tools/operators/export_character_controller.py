@@ -93,11 +93,13 @@ class GGT_OT_CHARACTER_EXPORT_GGT(Operator):
         idleAnim = tool.character_export_idle_animation
         walkAnim = tool.character_export_walking_animation
         runAnim = tool.character_export_running_animation
+        jumpAnim = tool.character_export_jumping_animation
 
         if character_export_animation_loops:
             idleAnim += "-loop"
             walkAnim += "-loop"
             runAnim += "-loop"
+            jumpAnim += "-loop"
 
         if (character_export_create_animation_tree):
             character_data = {
@@ -106,7 +108,8 @@ class GGT_OT_CHARACTER_EXPORT_GGT(Operator):
                 "states": [
                     { "name": idleAnim, "positionX": 200, "positionY": 100, },
                     { "name": walkAnim, "positionX": 400, "positionY": 100, },
-                    { "name": runAnim, "positionX": 600, "positionY": 100, }
+                    { "name": runAnim, "positionX": 600, "positionY": 100, },
+                    { "name": jumpAnim, "positionX": 400, "positionY": 200, }
                 ],
                 "stateTransitions": [
                     { "from": idleAnim, "to": walkAnim, "xFadeTime": 0.3, "switchMode": 1 },

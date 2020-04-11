@@ -101,11 +101,13 @@ class GGT_AddonProperties_GGT(PropertyGroup):
     bake_texture_path: StringProperty(name="Texture Path", description="Select the path destination folder you want textures to be saved", subtype="FILE_PATH")
     bake_filter: EnumProperty(name="Bake Map", description="Choose between available bake maps", items=[('GLOSSY', "GLOSSY", ""),('DIFFUSE', "DIFFUSE", "")], update=None, get=None, set=None)
     character_collection_name: bpy.props.StringProperty(name="Armature Collection Name", default="CharacterCollection")
+    # Tileset
     tile_collection_name: bpy.props.StringProperty(name="Tile Collection Name", default="TileCollection")
     tileset_generate_path: StringProperty(name="Tileset Path", description="Select the path destination folder where you want tileset to be exported", subtype="FILE_PATH")
     tileset_tile_width: IntProperty(name="Tile Width", description="Define the desired tiles width", default=32, min=8, max=1024, update=updateTilesetGeneratorCamera, get=None, set=None)
     tileset_tile_height: IntProperty(name="Tile Height", description="Define the desired tiles height", default=32, min=8, max=1024, update=updateTilesetGeneratorCamera, get=None, set=None)
     tileset_type: EnumProperty(name="Tileset Type", description="Choose between available tileset types", items=[('0', "Top-Down", ""),('1', "Isometric", "")], update=updateTilesetGeneratorCamera, get=None, set=None)
+    # Godot Project
     character_project_path: StringProperty(name="Project Path", description="Select the root path of your Godot project", subtype="DIR_PATH")
     character_export_path: StringProperty(name="Export Path", description="Select the desired path to export character", subtype="DIR_PATH")
     character_export_character_name: StringProperty(name="Character Name", description="The name of the character, used as name of the export")
@@ -113,6 +115,8 @@ class GGT_AddonProperties_GGT(PropertyGroup):
     character_export_idle_animation: StringProperty(name="Idle Animation", description="Idle animation of the character")
     character_export_walking_animation: StringProperty(name="Walking Animation", description="Walking animation of the character")
     character_export_running_animation: StringProperty(name="Running Animation", description="Running animation of the character")
+    character_export_jumping_animation: StringProperty(name="Jumping Animation", description="Jumping animation of the character")
+    # Exporters
     better_collada_available: BoolProperty(name="Better Collada Exporter", description="Validates if better collada exporter is available", default=False, get=validateBetterColladaExporter)
     character_export_format: EnumProperty(name="Export Format", description="Choose between the best options for quick export to Godot Engine", items=populateExporters, default=None, options={'ANIMATABLE'}, update=None, get=None, set=None)
     trim_animation_name: StringProperty(name="New Animation", description="Choose the new animation name you want for your trim action in the dopesheet", maxlen=1024)
@@ -123,9 +127,8 @@ class GGT_AddonProperties_GGT(PropertyGroup):
     rootmotion_name: StringProperty(name="Bone Name", description="Choose name you want for the RootMotion Bone", maxlen=1024, default="RootMotion")
     rootmotion_all: BoolProperty(name="Apply RootMotion To All", description="Choose to apply rootmotion to all animations or current only", default=True, update=None)
     rootmotion_hip_bone: StringProperty(name="Root Bone", description="Bone which will serve as the basis for the root motion of the character. Usually hips or pelvis")
-    rootMotionStartFrame: IntProperty(name="Rootmotion Start Frame", description="Define the initial frame for rootmotion start", default=1, min=-1, max=1024, update=None, get=None, set=None)
-    rootmotion_force_on_ground: BoolProperty(name="Force On Ground", description="Choose to force character keyframes to be on ground to the current animation when using RootMotion", default=False, update=None)
-    rootmotion_hips_fix: BoolProperty(name="Rootmotion Hip Offset", description="Choose to apply an offset to the current animation when using RootMotion", default=False, update=None)
+    rootMotion_start_frame: IntProperty(name="Rootmotion Start Frame", description="Define the initial frame for rootmotion start", default=1, min=-1, max=1024, update=None, get=None, set=None)
+    rootmotion_animation_air_fix: BoolProperty(name="In Air Fix", description="Optional workaround to fix animations that start with character in-air", default=False, update=None)
     # Animation Actions
     actions = []
 

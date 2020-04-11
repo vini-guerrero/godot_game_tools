@@ -13,7 +13,7 @@ class GGT_OT_ADD_ROOTBONE_OT_GGT(Operator):
         animation = tool.animations
         target_armature = tool.target_object
         rootMotionBoneName = tool.rootmotion_name
-        rootmotionStartFrame = tool.rootMotionStartFrame
+        rootmotionStartFrame = tool.rootMotion_start_frame
         rootMotionBoneOffset = 1
         hips = tool.rootmotion_hip_bone
         armatureVisible = target_armature.hide_viewport
@@ -79,7 +79,7 @@ class GGT_OT_ADD_ROOTMOTION_LEGACY_OT_GGT(Operator):
         target_armature = tool.target_object
         rootMotionBoneName = tool.rootmotion_name
         rootmotion_all = tool.rootmotion_all
-        rootmotionStartFrame = tool.rootMotionStartFrame
+        rootmotionStartFrame = tool.rootMotion_start_frame
         # Call Operator From Outside Class
         animationsForRootMotion = []
         if rootmotion_all:
@@ -284,9 +284,8 @@ class GGT_OT_ADD_ROOTMOTION_TOGGLE_OT_GGT(Operator):
         target_armature = tool.target_object
         rootMotionBoneName = tool.rootmotion_name
         rootmotion_all = tool.rootmotion_all
-        rootmotionStartFrame = tool.rootMotionStartFrame
-        rootmotion_force_on_ground = tool.rootmotion_force_on_ground
-        rootmotion_hips_fix = tool.rootmotion_hips_fix
+        rootmotionStartFrame = tool.rootMotion_start_frame
+        rootmotion_animation_air_fix = tool.rootmotion_animation_air_fix
         animationsForRootMotion = []
         if rootmotion_all:
             for action in bpy.data.actions: animationsForRootMotion.append(action)
@@ -294,11 +293,9 @@ class GGT_OT_ADD_ROOTMOTION_TOGGLE_OT_GGT(Operator):
             animationsForRootMotion.append(bpy.context.object.animation_data.action)
 
         boneExists = rootMotionBoneName in target_armature.pose.bones.keys()
-        rootMotionBoneName = tool.rootmotion_name
         hips = tool.rootmotion_hip_bone
         anim_hip_bone = target_armature.pose.bones[hips]
         action = bpy.context.object.animation_data.action
-        rootmotionStartFrame = tool.rootMotionStartFrame
         actionName = action.name
 
         if not boneExists: bpy.ops.wm_ggt.add_rootbone()
@@ -328,19 +325,19 @@ class GGT_OT_ADD_ROOTMOTION_TOGGLE_OT_GGT(Operator):
 
                         if fCurveBone == hips and curveIndex in rootMotionAxis and locationFilter == "].location":
 
+                            if rootmotion_animation_air_fix:
+                                scene.frame_set(rootmotionStartFrame)
+                                anim_hip_bone.location.y = 0
+                                anim_hip_bone.keyframe_insert(data_path='location')
+
                             frames = []
                             for point in channel.keyframe_points[1:]: frames.append(point.co[0])
 
                             for index in frames:
-                                  scene.frame_set(index)
-                                  if rootmotion_hips_fix:
-                                      anim_root_bone.location = anim_hip_bone.location + offsetHipsLocation
-                                  else:
-                                      anim_root_bone.location = anim_hip_bone.location
-                                  if rootmotion_force_on_ground and anim_root_bone.location.y < 0:
-                                      anim_root_bone.location.y = 0
-                                  anim_root_bone.keyframe_insert(data_path='location')
-                                  anim_hip_bone.keyframe_delete(data_path='location')
+                                scene.frame_set(index)
+                                anim_root_bone.location = anim_hip_bone.location
+                                anim_root_bone.keyframe_insert(data_path='location')
+                                anim_hip_bone.keyframe_delete(data_path='location')
 
         self.report({'INFO'}, 'Root Motion Updated')
         return {'FINISHED'}

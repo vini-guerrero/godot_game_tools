@@ -61,8 +61,8 @@ class GGT_PT_ROOT_MOTION_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
         rootmotionRow.prop(tool, "visible_armature")
         rootmotionRow.prop(tool, "rootmotion_all")
         rootmotionRow2 = box.row()
-        rootmotionRow2.prop(tool, "rootmotion_force_on_ground")
-        rootmotionRow2.prop(tool, "rootmotion_hips_fix")
+        rootmotionRow2.prop(tool, "rootmotion_animation_air_fix")
+        rootmotionRow2.prop(tool, "rootMotion_start_frame")
         rootmotionRow3 = box.row()
         rootmotionRow3.prop(tool, "rootmotion_name")
         rootmotionRow4 = box.row()
@@ -166,6 +166,7 @@ class GGT_PT_EXPORT_CHARACTER_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
                 box.prop_search(tool, "character_export_idle_animation", bpy.data, "actions", text="Idle")
                 box.prop_search(tool, "character_export_walking_animation", bpy.data, "actions", text="Walking")
                 box.prop_search(tool, "character_export_running_animation", bpy.data, "actions", text="Running")
+                box.prop_search(tool, "character_export_jumping_animation", bpy.data, "actions", text="Jumping")
             if tool.character_export_path:
                 box.operator("wm_ggt.character_export", icon="EXPORT")
 
