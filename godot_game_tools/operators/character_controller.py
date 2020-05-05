@@ -57,6 +57,7 @@ class GGT_OT_INIT_CHARACTER_OT_GGT(bpy.types.Operator, ImportHelper):
             tool.rootmotion_hip_bone = "Hips" if "Hips" in [bone.name.replace('mixamorig:', '') for bone in characterArmature.data.bones] else ""
 
             characterArmature.name = "Armature"
+            characterCollection = bpy.data.collections.get(characterCollectionName)
             if len(characterArmature.children) > 0:
                 for mesh in characterArmature.children:
                     bpy.context.scene.collection.children[0].objects.unlink(mesh)
@@ -96,6 +97,35 @@ class GGT_OT_JOIN_ANIMATIONS_OT_GGT(Operator, ImportHelper):
                 files.remove(file)
         return files
 
+    def prepareCharacterCollection(self, context):
+        scene = context.scene
+        tool = scene.godot_game_tools
+        characterArmature = bpy.context.view_layer.objects.active
+        characterCollectionName = tool.character_collection_name
+        characterCollection = bpy.data.collections.get(characterCollectionName)
+        joinMeshes = True
+
+        currentCollections = characterArmature.users_collection
+        for collection in currentCollections:
+            collection.objects.unlink(characterArmature)
+        characterCollection.objects.link(characterArmature)
+
+        for mesh in characterArmature.children:
+            bpy.context.scene.collection.children[0].objects.unlink(mesh)
+            characterCollection.objects.link(mesh)
+
+        if joinMeshes:
+            meshToJoin = None
+            for mesh in characterArmature.children:
+                mesh.select_set(True)
+                meshToJoin = mesh
+            if meshToJoin:
+                bpy.context.view_layer.objects.active = meshToJoin
+                bpy.ops.object.join()
+                bodyMesh = bpy.context.view_layer.objects.active
+                bodyMesh.name = "Mesh"
+
+
     def importModels(self, file_names, target_armature, context):
         scene = context.scene
         tool = scene.godot_game_tools
@@ -124,19 +154,12 @@ class GGT_OT_JOIN_ANIMATIONS_OT_GGT(Operator, ImportHelper):
                             # Local Variable
                             file_names_list.append(actionName)
                             bpy.ops.import_scene.fbx(filepath = file_path)
-                            characterArmature = bpy.context.view_layer.objects.active
-                            if len(characterArmature.children) > 0:
-                                for mesh in characterArmature.children:
-                                    bpy.context.scene.collection.children[0].objects.unlink(mesh)
-                                    characterCollection.objects.link(mesh)
-                            bpy.context.scene.collection.children[0].objects.unlink(characterArmature)
-                            characterCollection.objects.link(characterArmature)
+                            self.prepareCharacterCollection(context)
 
             if len(characterCollection.objects) > 0:
                 index = 0
                 for obj in characterCollection.objects:
                     if obj.type == "ARMATURE" and obj is not target_armature:
-                        # print("Importing animation from file {}".format(obj.name))
                         obj.animation_data.action.name = file_names_list[index]
                         # Rename the bones
                         for bone in obj.pose.bones:
@@ -292,6 +315,32 @@ class GGT_OT_RENAME_MIXAMORIG_OT_GGT(Operator):
             if bpy.data.actions:
                 bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
             self.report({'INFO'}, 'Character Bones Successfully Renamed')
+        return {'FINISHED'}
+
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+
+class GGT_OT_ARMATURE_JOIN_MESH_GGT(Operator):
+    bl_idname = "wm_ggt.armature_join_mesh"
+    bl_label = "Join Armature Meshes"
+    bl_description = "Join every children mesh of armature into single object"
+
+    def execute(self, context):
+        scene = context.scene
+        tool = scene.godot_game_tools
+        visible_armature = tool.visible_armature
+        target_armature = tool.target_object
+        meshToJoin = None
+        for mesh in target_armature.children:
+            mesh.select_set(True)
+            meshToJoin = mesh
+        if meshToJoin:
+            bpy.context.view_layer.objects.active = meshToJoin
+            bpy.ops.object.join()
+            bodyMesh = bpy.context.view_layer.objects.active
+            bodyMesh.name = "Mesh"
+            self.report({'INFO'}, 'Armature Meshes Joined')
         return {'FINISHED'}
 
 # ------------------------------------------------------------------------ #

@@ -35,6 +35,7 @@ class GGT_PT_ARMATURE_UTILITIES_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
         box.label(text="Armature Setup", icon='ARMATURE_DATA')
         box.operator("wm_ggt.init_character", icon="IMPORT")
         box.operator("wm_ggt.join_animations", icon="ASSET_MANAGER")
+        if tool.target_object: box.operator("wm_ggt.armature_join_mesh", icon="GROUP_BONE")
         box.separator()
 
 # ------------------------------------------------------------------------ #

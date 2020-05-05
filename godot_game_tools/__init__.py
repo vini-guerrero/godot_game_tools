@@ -175,7 +175,8 @@ from .operators.character_controller import (
     GGT_OT_INIT_CHARACTER_OT_GGT,
     GGT_OT_JOIN_ANIMATIONS_OT_GGT,
     GGT_OT_PREPARE_RIG_OT_GGT,
-    GGT_OT_RENAME_RIG_OT_GGT
+    GGT_OT_RENAME_RIG_OT_GGT,
+    GGT_OT_ARMATURE_JOIN_MESH_GGT
 )
 from .operators.texture_controller import (
     GGT_OT_BAKE_TEXTURE_OT_GGT,
@@ -260,6 +261,7 @@ classes = (
     GGT_OT_JOIN_ANIMATIONS_OT_GGT,
     GGT_OT_RENAME_RIG_OT_GGT,
     GGT_OT_PREPARE_RIG_OT_GGT,
+    GGT_OT_ARMATURE_JOIN_MESH_GGT,
     # Animation Controller
     GGT_OT_ANIMATION_PLAYER_OT_GGT,
     GGT_OT_STOP_ANIMATION_OT_GGT,
