@@ -1,0 +1,134 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://addons/godot_game_tools/scripts/main_view.gd" type="Script" id=1]
+
+[node name="GGT" type="ScrollContainer"]
+anchor_top = 0.000877228
+anchor_right = 0.0341797
+anchor_bottom = 1.00088
+margin_right = 365.0
+scroll_horizontal_enabled = false
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+margin_right = 400.0
+margin_bottom = 177.0
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
+margin_right = 400.0
+margin_bottom = 177.0
+rect_min_size = Vector2( 400, 140 )
+size_flags_horizontal = 3
+
+[node name="VSeparator" type="VSeparator" parent="HBoxContainer/VBoxContainer"]
+margin_right = 400.0
+margin_bottom = 3.0
+
+[node name="HeaderLabel" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
+margin_top = 7.0
+margin_right = 400.0
+margin_bottom = 21.0
+hint_tooltip = "Audio bus for background musics"
+alignment = 1
+
+[node name="Label" type="Label" parent="HBoxContainer/VBoxContainer/HeaderLabel"]
+margin_left = 116.0
+margin_right = 283.0
+margin_bottom = 14.0
+rect_min_size = Vector2( 100, 14 )
+text = "Character Controller - GGT"
+align = 1
+
+[node name="CharFilePath" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
+margin_top = 25.0
+margin_right = 400.0
+margin_bottom = 49.0
+hint_tooltip = "Audio bus for background musics"
+
+[node name="Label" type="Label" parent="HBoxContainer/VBoxContainer/CharFilePath"]
+margin_top = 5.0
+margin_right = 119.0
+margin_bottom = 19.0
+rect_min_size = Vector2( 100, 14 )
+text = "Character File Path"
+
+[node name="PathField" type="LineEdit" parent="HBoxContainer/VBoxContainer/CharFilePath"]
+margin_left = 123.0
+margin_right = 400.0
+margin_bottom = 24.0
+rect_min_size = Vector2( 260, 0 )
+size_flags_horizontal = 3
+editable = false
+placeholder_text = "res://"
+
+[node name="LoadFileDialog" type="FileDialog" parent="HBoxContainer/VBoxContainer/CharFilePath"]
+margin_right = 416.0
+margin_bottom = 184.0
+rect_min_size = Vector2( 400, 140 )
+window_title = "Open a File"
+mode = 0
+access = 2
+current_dir = "/Users/vinny-guerrero/Desktop/Godot/godot_hub/3.2/PluginCreator"
+current_path = "/Users/vinny-guerrero/Desktop/Godot/godot_hub/3.2/PluginCreator/"
+
+[node name="SelectCharFileBtn" type="Button" parent="HBoxContainer/VBoxContainer"]
+margin_top = 53.0
+margin_right = 400.0
+margin_bottom = 73.0
+hint_tooltip = "Add a new empty entry in the dictionary"
+focus_mode = 0
+enabled_focus_mode = 0
+text = "Select Character File"
+
+[node name="HSeparator2" type="HSeparator" parent="HBoxContainer/VBoxContainer"]
+margin_top = 77.0
+margin_right = 400.0
+margin_bottom = 87.0
+custom_constants/separation = 10
+
+[node name="ArmatureSettings" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
+margin_top = 91.0
+margin_right = 400.0
+margin_bottom = 115.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CollisionShapeToggle" type="CheckBox" parent="HBoxContainer/VBoxContainer/ArmatureSettings"]
+margin_right = 154.0
+margin_bottom = 24.0
+text = "Add Collision Shape"
+
+[node name="RootMotionToggle" type="CheckBox" parent="HBoxContainer/VBoxContainer/ArmatureSettings"]
+margin_left = 158.0
+margin_right = 327.0
+margin_bottom = 24.0
+text = "Add Root Motion View"
+
+[node name="ArmatureSetupBtn" type="Button" parent="HBoxContainer/VBoxContainer"]
+margin_top = 119.0
+margin_right = 400.0
+margin_bottom = 139.0
+hint_tooltip = "Add a new empty entry in the dictionary"
+focus_mode = 0
+enabled_focus_mode = 0
+text = "Create Armature Setup"
+
+[node name="HSeparator3" type="HSeparator" parent="HBoxContainer/VBoxContainer"]
+margin_top = 143.0
+margin_right = 400.0
+margin_bottom = 153.0
+custom_constants/separation = 10
+
+[node name="StateMachineSetupBtn" type="Button" parent="HBoxContainer/VBoxContainer"]
+margin_top = 157.0
+margin_right = 400.0
+margin_bottom = 177.0
+hint_tooltip = "Add a new empty entry in the dictionary"
+focus_mode = 0
+enabled_focus_mode = 0
+text = "Create State Machine"
