@@ -19,7 +19,6 @@ class GGT_OT_INIT_CHARACTER_OT_GGT(bpy.types.Operator, ImportHelper):
     files = CollectionProperty(type=bpy.types.PropertyGroup)
     supported_extensions = ['fbx']
 
-
     def import_from_folder(self, file_path, context):
         extension = (os.path.splitext(file_path)[1])[1:].lower()
 

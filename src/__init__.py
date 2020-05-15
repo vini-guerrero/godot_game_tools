@@ -44,6 +44,17 @@ def toggleArmatureVisibility(self, context):
     target_armature.hide_viewport = not visible_armature
     bpy.context.object.show_in_front = not visible_armature
 
+def updateAnimationTreePreset(self, context):
+    scene = context.scene
+    tool = scene.godot_game_tools
+    target_armature = tool.target_object
+    selected_preset = int(tool.character_animation_tree_presets)
+    if selected_preset == 0:
+        target_armature["Idle"] = "IdleAnimationName"
+        target_armature["Walk"] = "WalkAnimationName"
+        target_armature["Run"] = "RunAnimationName"
+        target_armature["Jump"] = "JumpAnimationName"
+
 def updateTilesetGeneratorCamera(self, context):
     scene = context.scene
     tool = scene.godot_game_tools
@@ -82,9 +93,9 @@ def populateExporters(self, context):
     exporters = []
     scene = context.scene
     tool = scene.godot_game_tools
-    if tool.better_collada_available: exporters.append(("0", "Better Collada", ""))
-    exporters.append(("1", "GLTF", ""))
-    exporters.append(("2", "GLB", ""))
+    exporters.append(("0", "GLTF", ""))
+    exporters.append(("1", "GLB", ""))
+    if tool.better_collada_available: exporters.append(("2", "Better Collada", ""))
     # exporters.append(("3", "FBX", ""))
     return exporters
 
@@ -117,7 +128,7 @@ class GGT_AddonProperties_GGT(PropertyGroup):
     trim_animation_name: StringProperty(name="New Animation", description="Choose the new animation name you want for your trim action in the dopesheet", maxlen=1024)
     trim_animation_from: IntProperty(name="From Frame", description="Define the desired start trim frame", default=1, min=0, max=1024, update=None, get=None, set=None)
     trim_animation_to: IntProperty(name="To Frame", description="Define the desired last trim frame", default=1, min=0, max=1024, update=None, get=None, set=None)
-    character_export_animation_loops: BoolProperty(name="Add Godot Animation Loops", description="Adds Godot Loop Rename To Exported Animations", default=True, get=None)
+    character_export_animation_loops: BoolProperty(name="Add Animation Loops", description="Adds Godot Loop Rename To Exported Animations", default=True, get=None)
     # RootMotion Variables
     rootmotion_name: StringProperty(name="Bone Name", description="Choose name you want for the RootMotion Bone", maxlen=1024, default="RootMotion")
     rootmotion_all: BoolProperty(name="Apply RootMotion To All", description="Choose to apply rootmotion to all animations or current only", default=True, update=None)
@@ -126,6 +137,10 @@ class GGT_AddonProperties_GGT(PropertyGroup):
     rootmotion_animation_air_fix: BoolProperty(name="In Air Fix", description="Optional workaround to fix animations that start with character in-air", default=False, update=None)
     # Animation Actions
     character_export_create_animation_tree: BoolProperty(name="Create Animation Tree", description="Whether or not an animation tree is created when exporting as a Godot scene")
+    character_animation_tree_presets: EnumProperty(name="Animation Tree Presets", description="Choose between available character animation tree presets", items=[
+        ('0', "Endless Runner", ""),
+        ('1', "Standard", "")
+    ], update=updateAnimationTreePreset, get=None, set=None)
     actions = []
 
 # ------------------------------------------------------------------------ #

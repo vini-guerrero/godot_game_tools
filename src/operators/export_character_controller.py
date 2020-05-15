@@ -71,20 +71,20 @@ class GGT_OT_CHARACTER_EXPORT_GGT(Operator):
         character_export_path = tool.character_export_path
 
         # Generate Filename To Export
-        if (character_export_format == 0): character_name += ".dae"
+        if (character_export_format == 2): character_name += ".dae"
         fileName = os.path.join(bpy.path.abspath(character_export_path), character_name)
 
-        # Better Collada
-        if (character_export_format == 0):
-            bpy.ops.export_scene.dae(check_existing=True, filepath=fileName, filter_glob="*.dae", use_mesh_modifiers=True, use_active_layers=True, use_anim=True, use_anim_action_all=True, use_anim_skip_noexp=True, use_anim_optimize=True, use_copy_images=True)
-
         # GLTF
-        if (character_export_format == 1):
+        if (character_export_format == 0):
             bpy.ops.export_scene.gltf(filepath=fileName, export_format="GLTF_EMBEDDED", export_frame_range=False, export_force_sampling=False, export_tangents=False, export_image_format="JPEG", export_cameras=False, export_lights=False)
 
         # GLB
-        if (character_export_format == 2):
+        if (character_export_format == 1):
             bpy.ops.export_scene.gltf(filepath=fileName, export_format="GLB", export_frame_range=False, export_force_sampling=False, export_tangents=False, export_image_format="JPEG", export_cameras=False, export_lights=False)
+
+        # Better Collada
+        if (character_export_format == 2):
+            bpy.ops.export_scene.dae(check_existing=True, filepath=fileName, filter_glob="*.dae", use_mesh_modifiers=True, use_active_layers=True, use_anim=True, use_anim_action_all=True, use_anim_skip_noexp=True, use_anim_optimize=True, use_copy_images=True)
 
         self.report({'INFO'}, 'Character File Exported')
         return {'FINISHED'}
