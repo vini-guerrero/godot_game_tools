@@ -1,6 +1,7 @@
 import bpy
 import os
 import json
+import ast
 import glob
 
 from bpy.props import (StringProperty, FloatProperty, PointerProperty, CollectionProperty)
@@ -74,6 +75,11 @@ class GGT_OT_CHARACTER_EXPORT_GGT(Operator):
         if (character_export_format == 2): character_name += ".dae"
         fileName = os.path.join(bpy.path.abspath(character_export_path), character_name)
 
+        exportFormat = ""
+        if (character_export_format == 0): exportFormat = ".gltf"
+        if (character_export_format == 1): exportFormat = ".glb"
+        if (character_export_format == 2): exportFormat = ".dae"
+
         # GLTF
         if (character_export_format == 0):
             bpy.ops.export_scene.gltf(filepath=fileName, export_format="GLTF_EMBEDDED", export_frame_range=False, export_force_sampling=False, export_tangents=False, export_image_format="JPEG", export_cameras=False, export_lights=False)
@@ -85,6 +91,36 @@ class GGT_OT_CHARACTER_EXPORT_GGT(Operator):
         # Better Collada
         if (character_export_format == 2):
             bpy.ops.export_scene.dae(check_existing=True, filepath=fileName, filter_glob="*.dae", use_mesh_modifiers=True, use_active_layers=True, use_anim=True, use_anim_action_all=True, use_anim_skip_noexp=True, use_anim_optimize=True, use_copy_images=True)
+
+        # Update Export Character Preset File
+        if target_armature["animation_tree_preset"]:
+            animation_tree_preset = ast.literal_eval(target_armature["animation_tree_preset"])
+            animations = animation_tree_preset["animations"]
+            transitions = animation_tree_preset["stateTransitions"]
+            states = animation_tree_preset["states"]
+            for state in states:
+                for transition in transitions:
+                    for animation in animations.keys():
+                        preset_value = animation
+                        animations[animation] = target_armature[animation]
+                        updated_value = target_armature[animation]
+                        if state["name"] == preset_value: state["name"] = updated_value
+                        if transition["from"] == preset_value: transition["from"] = updated_value
+                        if transition["to"] == preset_value: transition["to"] = updated_value
+
+            character_data = animation_tree_preset
+
+            # Character Settings
+            character_data["characterName"] = character_name
+            character_data["meshFileName"] = character_name + exportFormat
+            character_data["nodeName"] = "StateMachine"
+            character_data["rootMotionBone"] = rootMotionBoneName
+
+            customFileFormat = "json"
+            character_json = json.dumps(character_data, sort_keys=True, indent=4)
+            character_file = open(fileName + '.' + customFileFormat, 'w+')
+            character_file.write(character_json)
+            character_file.close()
 
         self.report({'INFO'}, 'Character File Exported')
         return {'FINISHED'}
@@ -108,10 +144,11 @@ class GGT_OT_LOAD_ANIMATION_TREE_PRESET_OT_GGT(bpy.types.Operator, ImportHelper)
             # Remove Previous Properties
             for custom_prop in target_armature.keys(): del target_armature[custom_prop]
             animation_tree_preset = json.load(f)
-            target_armature["animation_tree_preset"] = animation_tree_preset
-            animations = target_armature["animation_tree_preset"]["animations"]
+            target_armature["animation_tree_preset"] = str(animation_tree_preset)
+            animation_tree_preset = ast.literal_eval(target_armature["animation_tree_preset"])
+            animations = animation_tree_preset["animations"]
             for animation in animations.keys():
-                target_armature[animation] = target_armature["animation_tree_preset"]["animations"][animation]
+                target_armature[animation] = animation_tree_preset["animations"][animation]
         return {'FINISHED'}
 
 # ------------------------------------------------------------------------ #

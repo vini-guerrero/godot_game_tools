@@ -4,57 +4,54 @@
   "preset_version": "1.0",
   "animations": {
     "Idle": "Idle-loop",
+    "Walking": "Walking-loop",
     "Running": "Running-loop",
-    "Walking": "Walking-loop"
+    "Jumping": "Jumping-loop"
   },
-  "characterName": "BaseCharacter",
-  "meshFileName": "BaseCharacter.gltf",
-  "nodeName": "StateMachine",
-  "rootMotionBone": "RootMotion",
   "stateTransitions": [
     {
-      "from": "Idle-loop",
+      "from": "Idle",
       "switchMode": 1,
-      "to": "Walking-loop",
+      "to": "Walking",
       "xFadeTime": 0.3
     },
     {
-      "from": "Walking-loop",
+      "from": "Walking",
       "switchMode": 1,
-      "to": "Running-loop",
+      "to": "Running",
       "xFadeTime": 0.3
     },
     {
-      "from": "Running-loop",
+      "from": "Running",
       "switchMode": 1,
-      "to": "Walking-loop",
+      "to": "Walking",
       "xFadeTime": 0.3
     },
     {
-      "from": "Walking-loop",
+      "from": "Walking",
       "switchMode": 1,
-      "to": "Idle-loop",
+      "to": "Idle",
       "xFadeTime": 0.3
     }
   ],
   "states": [
     {
-      "name": "Idle-loop",
+      "name": "Idle",
       "positionX": 200,
       "positionY": 100
     },
     {
-      "name": "Walking-loop",
+      "name": "Walking",
       "positionX": 400,
       "positionY": 100
     },
     {
-      "name": "Running-loop",
+      "name": "Running",
       "positionX": 600,
       "positionY": 100
     },
     {
-      "name": "Jump-loop",
+      "name": "Jumping",
       "positionX": 400,
       "positionY": 200
     }

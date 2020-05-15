@@ -1,4 +1,6 @@
 import bpy
+import json
+import ast
 
 from bpy.props import (StringProperty, FloatProperty, PointerProperty, CollectionProperty)
 from bl_ui.properties_object import ObjectButtonsPanel, OBJECT_PT_transform
@@ -166,10 +168,11 @@ class GGT_PT_EXPORT_CHARACTER_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
             animationRow.prop(tool, "character_export_create_animation_tree")
             box.operator("wm_ggt.load_animation_tree_preset", icon="EXPORT")
             if tool.character_export_create_animation_tree:
-                if target_armature["animation_tree_preset"]["animations"]:
-                    animations = target_armature["animation_tree_preset"]["animations"]
+                if target_armature["animation_tree_preset"]:
+                    animation_tree_preset = ast.literal_eval(target_armature["animation_tree_preset"])
+                    animations = animation_tree_preset["animations"]
                     for animation in animations.keys():
-                        box.prop(target_armature, '["' + animation + '"]')
+                        box.prop_search(target_armature, '["' + animation + '"]', bpy.data, "actions", text=animation)
             if tool.character_export_path and tool.character_export_character_name:
                 box.operator("wm_ggt.character_export", icon="EXPORT")
 
