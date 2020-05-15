@@ -44,17 +44,6 @@ def toggleArmatureVisibility(self, context):
     target_armature.hide_viewport = not visible_armature
     bpy.context.object.show_in_front = not visible_armature
 
-def updateAnimationTreePreset(self, context):
-    scene = context.scene
-    tool = scene.godot_game_tools
-    target_armature = tool.target_object
-    selected_preset = int(tool.character_animation_tree_presets)
-    if selected_preset == 0:
-        target_armature["Idle"] = "IdleAnimationName"
-        target_armature["Walk"] = "WalkAnimationName"
-        target_armature["Run"] = "RunAnimationName"
-        target_armature["Jump"] = "JumpAnimationName"
-
 def updateTilesetGeneratorCamera(self, context):
     scene = context.scene
     tool = scene.godot_game_tools
@@ -137,10 +126,6 @@ class GGT_AddonProperties_GGT(PropertyGroup):
     rootmotion_animation_air_fix: BoolProperty(name="In Air Fix", description="Optional workaround to fix animations that start with character in-air", default=False, update=None)
     # Animation Actions
     character_export_create_animation_tree: BoolProperty(name="Create Animation Tree", description="Whether or not an animation tree is created when exporting as a Godot scene")
-    character_animation_tree_presets: EnumProperty(name="Animation Tree Presets", description="Choose between available character animation tree presets", items=[
-        ('0', "Endless Runner", ""),
-        ('1', "Standard", "")
-    ], update=updateAnimationTreePreset, get=None, set=None)
     actions = []
 
 # ------------------------------------------------------------------------ #
@@ -164,7 +149,8 @@ class GGT_ActionProperties_GGT(bpy.types.PropertyGroup):
 # ------------------------------------------------------------------------
 from .operators.export_character_controller import (
     GGT_OT_NLA_TRACKS_OT_GGT,
-    GGT_OT_CHARACTER_EXPORT_GGT
+    GGT_OT_CHARACTER_EXPORT_GGT,
+    GGT_OT_LOAD_ANIMATION_TREE_PRESET_OT_GGT
 )
 from .operators.animation_controller import (
     GGT_OT_ANIMATION_PLAYER_OT_GGT,
@@ -284,6 +270,7 @@ classes = (
     # NLA Tracks Controller
     GGT_OT_NLA_TRACKS_OT_GGT,
     GGT_OT_CHARACTER_EXPORT_GGT,
+    GGT_OT_LOAD_ANIMATION_TREE_PRESET_OT_GGT,
     # RootMotion Controller
     GGT_OT_ADD_ROOTBONE_OT_GGT,
     GGT_OT_ADD_ROOTMOTION_OT_GGT,

@@ -92,3 +92,28 @@ class GGT_OT_CHARACTER_EXPORT_GGT(Operator):
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
+
+class GGT_OT_LOAD_ANIMATION_TREE_PRESET_OT_GGT(bpy.types.Operator, ImportHelper):
+    bl_idname = "wm_ggt.load_animation_tree_preset"
+    bl_label = "Load Animation Tree Preset"
+    bl_description = "Select a custom animation tree preset file to export to Godot"
+    bl_options = {'REGISTER', 'UNDO'}
+    filter_glob: bpy.props.StringProperty(default="*.json", options={'HIDDEN'})
+
+    def execute(self, context):
+        scene = context.scene
+        tool = scene.godot_game_tools
+        target_armature = tool.target_object
+        with open(self.filepath, 'r+') as f:
+            # Remove Previous Properties
+            for custom_prop in target_armature.keys(): del target_armature[custom_prop]
+            animation_tree_preset = json.load(f)
+            target_armature["animation_tree_preset"] = animation_tree_preset
+            animations = target_armature["animation_tree_preset"]["animations"]
+            for animation in animations.keys():
+                target_armature[animation] = target_armature["animation_tree_preset"]["animations"][animation]
+        return {'FINISHED'}
+
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #

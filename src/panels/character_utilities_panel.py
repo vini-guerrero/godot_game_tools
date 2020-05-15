@@ -155,8 +155,8 @@ class GGT_PT_EXPORT_CHARACTER_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
         layout = self.layout
         scene = context.scene
         tool = scene.godot_game_tools
-        ob = tool.target_object
-        if ob:
+        target_armature = tool.target_object
+        if target_armature:
             box = layout.box()
             box.prop(tool, "character_export_character_name")
             box.prop(tool, "character_export_path")
@@ -164,13 +164,12 @@ class GGT_PT_EXPORT_CHARACTER_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
             animationRow = box.row()
             animationRow.prop(tool, "character_export_animation_loops")
             animationRow.prop(tool, "character_export_create_animation_tree")
+            box.operator("wm_ggt.load_animation_tree_preset", icon="EXPORT")
             if tool.character_export_create_animation_tree:
-                box.prop(tool, "character_animation_tree_presets")
-            if tool.character_animation_tree_presets:
-                if ob["Idle"]: box.prop(ob, '["Idle"]')
-                if ob["Walk"]: box.prop(ob, '["Walk"]')
-                if ob["Run"]: box.prop(ob, '["Run"]')
-                if ob["Jump"]: box.prop(ob, '["Jump"]')
+                if target_armature["animation_tree_preset"]["animations"]:
+                    animations = target_armature["animation_tree_preset"]["animations"]
+                    for animation in animations.keys():
+                        box.prop(target_armature, '["' + animation + '"]')
             if tool.character_export_path and tool.character_export_character_name:
                 box.operator("wm_ggt.character_export", icon="EXPORT")
 

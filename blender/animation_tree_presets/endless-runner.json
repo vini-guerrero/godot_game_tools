@@ -3,9 +3,9 @@
   "preset_creator": "Vinicius Guerrero",
   "preset_version": "1.0",
   "animations": {
-    "idle": "Idle-loop",
-    "running": "Running-loop",
-    "walking": "Walking-loop"
+    "Idle": "Idle-loop",
+    "Running": "Running-loop",
+    "Walking": "Walking-loop"
   },
   "characterName": "BaseCharacter",
   "meshFileName": "BaseCharacter.gltf",
