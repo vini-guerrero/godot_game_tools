@@ -1,8 +1,11 @@
 import bpy
 import os
 import json
+import glob
 
-from bpy.types import (Operator)
+from bpy.props import (StringProperty, FloatProperty, PointerProperty, CollectionProperty)
+from bpy.types import (Operator, PropertyGroup)
+from bpy_extras.io_utils import ImportHelper
 
 class GGT_OT_NLA_TRACKS_OT_GGT(Operator):
     bl_idname = "wm_ggt.push_nlas"
@@ -82,53 +85,6 @@ class GGT_OT_CHARACTER_EXPORT_GGT(Operator):
         # GLB
         if (character_export_format == 2):
             bpy.ops.export_scene.gltf(filepath=fileName, export_format="GLB", export_frame_range=False, export_force_sampling=False, export_tangents=False, export_image_format="JPEG", export_cameras=False, export_lights=False)
-
-        # Create Character CHAR File
-        customFileFormat = "json"
-        exportFormat = ""
-        if (character_export_format == 0): exportFormat = ".dae"
-        if (character_export_format == 1): exportFormat = ".gltf"
-        if (character_export_format == 2): exportFormat = ".glb"
-
-        idleAnim = tool.character_export_idle_animation
-        walkAnim = tool.character_export_walking_animation
-        runAnim = tool.character_export_running_animation
-        jumpAnim = tool.character_export_jumping_animation
-
-        if character_export_animation_loops:
-            idleAnim += "-loop"
-            walkAnim += "-loop"
-            runAnim += "-loop"
-            jumpAnim += "-loop"
-
-        if (character_export_create_animation_tree):
-            character_data = {
-                "rootMotionBone": rootMotionBoneName,
-                "nodeName": "StateMachine",
-                "states": [
-                    { "name": idleAnim, "positionX": 200, "positionY": 100, },
-                    { "name": walkAnim, "positionX": 400, "positionY": 100, },
-                    { "name": runAnim, "positionX": 600, "positionY": 100, },
-                    { "name": jumpAnim, "positionX": 400, "positionY": 200, }
-                ],
-                "stateTransitions": [
-                    { "from": idleAnim, "to": walkAnim, "xFadeTime": 0.3, "switchMode": 1 },
-                    { "from": walkAnim, "to": runAnim, "xFadeTime": 0.3, "switchMode": 1 },
-                    { "from": runAnim, "to": walkAnim, "xFadeTime": 0.3, "switchMode": 1 },
-                    { "from": walkAnim, "to": idleAnim, "xFadeTime": 0.3, "switchMode": 1 }
-                ],
-                "characterName": character_name,
-                "meshFileName": character_name + exportFormat,
-                "animations": {
-                    "idle": idleAnim,
-                    "walking": walkAnim,
-                    "running": runAnim
-                }
-            }
-            character_json = json.dumps(character_data, sort_keys=True, indent=4)
-            character_file = open(fileName + '.' + customFileFormat, 'w+')
-            character_file.write(character_json)
-            character_file.close()
 
         self.report({'INFO'}, 'Character File Exported')
         return {'FINISHED'}

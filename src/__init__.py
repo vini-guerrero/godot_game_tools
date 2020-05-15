@@ -111,11 +111,6 @@ class GGT_AddonProperties_GGT(PropertyGroup):
     character_project_path: StringProperty(name="Project Path", description="Select the root path of your Godot project", subtype="DIR_PATH")
     character_export_path: StringProperty(name="Export Path", description="Select the desired path to export character", subtype="DIR_PATH")
     character_export_character_name: StringProperty(name="Character Name", description="The name of the character, used as name of the export")
-    character_export_create_animation_tree: BoolProperty(name="Create Animation Tree", description="Whether or not an animation tree is created when exporting as a Godot scene")
-    character_export_idle_animation: StringProperty(name="Idle Animation", description="Idle animation of the character")
-    character_export_walking_animation: StringProperty(name="Walking Animation", description="Walking animation of the character")
-    character_export_running_animation: StringProperty(name="Running Animation", description="Running animation of the character")
-    character_export_jumping_animation: StringProperty(name="Jumping Animation", description="Jumping animation of the character")
     # Exporters
     better_collada_available: BoolProperty(name="Better Collada Exporter", description="Validates if better collada exporter is available", default=False, get=validateBetterColladaExporter)
     character_export_format: EnumProperty(name="Export Format", description="Choose between the best options for quick export to Godot Engine", items=populateExporters, default=None, options={'ANIMATABLE'}, update=None, get=None, set=None)
@@ -130,6 +125,7 @@ class GGT_AddonProperties_GGT(PropertyGroup):
     rootMotion_start_frame: IntProperty(name="Rootmotion Start Frame", description="Define the initial frame for rootmotion start", default=1, min=-1, max=1024, update=None, get=None, set=None)
     rootmotion_animation_air_fix: BoolProperty(name="In Air Fix", description="Optional workaround to fix animations that start with character in-air", default=False, update=None)
     # Animation Actions
+    character_export_create_animation_tree: BoolProperty(name="Create Animation Tree", description="Whether or not an animation tree is created when exporting as a Godot scene")
     actions = []
 
 # ------------------------------------------------------------------------ #

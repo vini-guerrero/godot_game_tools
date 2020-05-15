@@ -1,0 +1,62 @@
+{
+  "preset_name": "Endless Runner",
+  "preset_creator": "Vinicius Guerrero",
+  "preset_version": "1.0",
+  "animations": {
+    "idle": "Idle-loop",
+    "running": "Running-loop",
+    "walking": "Walking-loop"
+  },
+  "characterName": "BaseCharacter",
+  "meshFileName": "BaseCharacter.gltf",
+  "nodeName": "StateMachine",
+  "rootMotionBone": "RootMotion",
+  "stateTransitions": [
+    {
+      "from": "Idle-loop",
+      "switchMode": 1,
+      "to": "Walking-loop",
+      "xFadeTime": 0.3
+    },
+    {
+      "from": "Walking-loop",
+      "switchMode": 1,
+      "to": "Running-loop",
+      "xFadeTime": 0.3
+    },
+    {
+      "from": "Running-loop",
+      "switchMode": 1,
+      "to": "Walking-loop",
+      "xFadeTime": 0.3
+    },
+    {
+      "from": "Walking-loop",
+      "switchMode": 1,
+      "to": "Idle-loop",
+      "xFadeTime": 0.3
+    }
+  ],
+  "states": [
+    {
+      "name": "Idle-loop",
+      "positionX": 200,
+      "positionY": 100
+    },
+    {
+      "name": "Walking-loop",
+      "positionX": 400,
+      "positionY": 100
+    },
+    {
+      "name": "Running-loop",
+      "positionX": 600,
+      "positionY": 100
+    },
+    {
+      "name": "Jump-loop",
+      "positionX": 400,
+      "positionY": 200
+    }
+  ]
+}
