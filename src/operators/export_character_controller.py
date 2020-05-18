@@ -70,6 +70,7 @@ class GGT_OT_CHARACTER_EXPORT_GGT(Operator):
         if (target_armature is None): target_armature = bpy.context.view_layer.objects.active
         bpy.context.view_layer.objects.active = target_armature
         character_export_path = tool.character_export_path
+        character_export_animation_loops = tool.character_export_animation_loops
 
         # Generate Filename To Export
         if (character_export_format == 2): character_name += ".dae"
@@ -96,7 +97,7 @@ class GGT_OT_CHARACTER_EXPORT_GGT(Operator):
         if target_armature["animation_tree_preset"]:
             animation_tree_preset = ast.literal_eval(target_armature["animation_tree_preset"])
             animations = animation_tree_preset["animations"]
-            transitions = animation_tree_preset["stateTransitions"]
+            transitions = animation_tree_preset["states_transitions"]
             states = animation_tree_preset["states"]
             for state in states:
                 for transition in transitions:
@@ -104,9 +105,16 @@ class GGT_OT_CHARACTER_EXPORT_GGT(Operator):
                         preset_value = animation
                         animations[animation] = target_armature[animation]
                         updated_value = target_armature[animation]
+                        if character_export_animation_loops: updated_value+= "-loop"
                         if state["name"] == preset_value: state["name"] = updated_value
                         if transition["from"] == preset_value: transition["from"] = updated_value
                         if transition["to"] == preset_value: transition["to"] = updated_value
+                        if "children_nodes" in state:
+                            if len(state["children_nodes"].keys()) > 0:
+                                if "points_animations" in state["children_nodes"]:
+                                    points_animations = state["children_nodes"]["points_animations"]
+                                    for point in points_animations:
+                                        if point["animation"] == preset_value: point["animation"] = updated_value
 
             character_data = animation_tree_preset
 
