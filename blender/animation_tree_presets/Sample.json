@@ -1,6 +1,5 @@
 {
    "animations":{
-      "GangnamStyle-loop":"GangnamStyle-loop",
       "Idle":"Idle-loop",
       "Jump-loop":"Jump-loop",
       "Landing-loop":"Landing-loop",
