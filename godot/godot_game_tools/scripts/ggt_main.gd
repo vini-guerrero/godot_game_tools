@@ -225,7 +225,7 @@ func _generateAnimationTreeExport() -> void:
 	var states = data["animation_states"]
 	# Prepare Export Dictionary
 	var animation_tree_preset : Dictionary
-	animation_tree_preset["animations"] = []
+	animation_tree_preset["animations"] = {}
 	animation_tree_preset["states_transitions"] = data["states_transitions"]
 	animation_tree_preset["states"] = []
 	# Get Current Scene
@@ -259,7 +259,12 @@ func _generateAnimationTreeExport() -> void:
 						new_animation_point["position_y"] = animation_position.y
 					children_nodes["points_animations"].append(new_animation_point)
 			# Remove Unnecessary Props
-			if node is AnimationNodeAnimation: children_nodes.erase("points_animations")
+			if node is AnimationNodeAnimation: 
+				children_nodes.erase("points_animations")
+				# Export Animations
+				animation_tree_preset["animations"][state_name] = node.animation
+			elif node is AnimationNodeBlendSpace1D || node is AnimationNodeBlendSpace2D: 
+				animation_tree_preset["animations"][state_name] = "AnimationNodeBlendSpace"
 			# Export State
 			var node_position = state_machine.get_node_position(state_name)
 			var is_start_node : bool
@@ -275,8 +280,6 @@ func _generateAnimationTreeExport() -> void:
 				"children_nodes": children_nodes,
 				"type": node.get_class()
 			}
-			# Export Animations
-			animation_tree_preset["animations"].append(state_name)
 			animation_tree_preset["states"].append(new_state)
 			animation_tree_preset["transition_amount"] = transition_amount
 			animation_tree_preset["preset_name"] = str(export_file_preset.text)
