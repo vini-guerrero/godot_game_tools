@@ -29,13 +29,7 @@ var armature_collision : bool = false
 var armature_rootmotion_view : bool = false
 var animation_tree_node_name : String = "AnimationTree"
 var statemachine_name : String = "StateMachine"
-var states : Array = [
-	"Idle",
-	"Walking",
-	"Running",
-	"BlendSpace",
-	"Node1D"
-]
+
 
 func _ready() -> void:
 	armature_collision_toggle.connect("toggled", self, "_toggleArmatureCollision")
@@ -48,11 +42,12 @@ func _ready() -> void:
 	export_file.connect("dir_selected", self, "_exportPathSelected")
 	export_file_btn.connect("button_down", self, "_generateAnimationTreeExport")
 
+
 func _armatureSetup() -> void:
 	if not character_file.empty():
 		var current_scene = _getCurrentScene()
-		var root_motion_bone = character_file.rootMotionBone
-		var state_machine_name = character_file.nodeName
+		var root_motion_bone = character_file.rootmotion_bone
+		var state_machine_name = character_file.state_machine_node
 		_addArmatureBasicSetup(current_scene, root_motion_bone, state_machine_name)
 
 
@@ -60,6 +55,7 @@ func _stateMachineSetup() -> void:
 	if not character_file.empty():
 		var current_scene = _getCurrentScene()
 		_addStateMachine(current_scene, character_file)
+	else: load_file_label.text = ""
 
 
 func _fileSelected(_filePath : String) -> void:
@@ -142,32 +138,54 @@ func _addArmatureBasicSetup(current_scene, rootmotion_bone, statemachine_name) -
 			rootMotionView.set_owner(current_scene)
 
 
-func _addStateNode(stateMachine, animation, statePosition) -> void:
+func _addAnimationNode(stateMachine, animation, statePosition) -> void:
 	var newAnimation = AnimationNodeAnimation.new()
 	newAnimation.animation = animation
 	stateMachine.add_node(animation, newAnimation)
 	stateMachine.set_node_position(animation, statePosition)
 
 
+func _addBlendSpaceNode(stateMachine, stateName, stateType, statePosition, children_nodes) -> void:
+	var newState = null
+	if stateType == "AnimationNodeBlendSpace1D": newState = AnimationNodeBlendSpace1D.new()
+	if stateType == "AnimationNodeBlendSpace2D": newState = AnimationNodeBlendSpace2D.new()
+	stateMachine.add_node(stateName, newState)
+	stateMachine.set_node_position(stateName, statePosition)
+	for node in children_nodes["points_animations"]:
+		var animation_node = AnimationNodeAnimation.new()
+		animation_node.animation = node["animation"]
+		var blend_position = null
+		if stateType == "AnimationNodeBlendSpace1D": 
+			blend_position = node["position"]
+		if stateType == "AnimationNodeBlendSpace2D": 
+			blend_position = Vector2(node["position_x"], node["position_y"])
+		newState.add_blend_point(animation_node, blend_position)
+
+
 func _addStateMachine(currentScene, stateMachineData) -> void:
 	# State Machine Params
-	var stateMachineNodeName = stateMachineData.nodeName
+	var stateMachineNodeName = stateMachineData.state_machine_node
 	var states = stateMachineData.states
-	var stateTransitions = stateMachineData.stateTransitions
-
+	var stateTransitions = stateMachineData.states_transitions
+		
 	# Get Animation Tree
 	var animationTreeNode = currentScene.find_node(animation_tree_node_name, true).tree_root
 	if animationTreeNode.has_node(stateMachineNodeName):
-
+		
 		# Procedural StateMachine Generation
 		var stateMachine = animationTreeNode.get_node(stateMachineNodeName)
 		var initialAnimation
 		# Generate States
 		for state in states: 
 			var stateName = state["name"]
+			var stateType = state["type"]
 			if not initialAnimation: initialAnimation = stateName
 			var statePosition = Vector2(state["positionX"], state["positionY"])
-			_addStateNode(stateMachine, stateName, statePosition)
+			if stateType == "AnimationNodeAnimation":
+				_addAnimationNode(stateMachine, stateName, statePosition)
+			elif stateType == "AnimationNodeBlendSpace1D" || stateType == "AnimationNodeBlendSpace2D":
+				var children_nodes = state["children_nodes"]
+				_addBlendSpaceNode(stateMachine, stateName, stateType, statePosition, children_nodes)
 
 		# Connect States Transitions
 		for transition in stateTransitions:
@@ -202,10 +220,13 @@ func _addStateTransition(stateMachine, from, to, xFadeTime, switchModeIndex) -> 
 
 
 func _generateAnimationTreeExport() -> void:
+	# Get Animation States 
+	var data = _getAnimationStatesAndTransitions()
+	var states = data["animation_states"]
 	# Prepare Export Dictionary
 	var animation_tree_preset : Dictionary
 	animation_tree_preset["animations"] = []
-	animation_tree_preset["stateTransitions"] = []
+	animation_tree_preset["states_transitions"] = data["states_transitions"]
 	animation_tree_preset["states"] = []
 	# Get Current Scene
 	var current_scene = _getCurrentScene()
@@ -216,6 +237,7 @@ func _generateAnimationTreeExport() -> void:
 		var state_machine = animationTreeNode.get_node(statemachine_name)
 		var start_node = state_machine.get_start_node()
 		var end_node = state_machine.get_end_node()
+		var transition_amount = state_machine.get_transition_count()
 		for state in range(states.size()):
 			var state_name = states[state]
 			var node = state_machine.get_node(state_name)
@@ -228,24 +250,16 @@ func _generateAnimationTreeExport() -> void:
 				for point in points_count:
 					var animation_name = node.get_blend_point_node(point).animation
 					var animation_position = node.get_blend_point_position(point)
-					var new_animation_point = {
-						"index": point,
-						"animation": animation_name,
-						"position": animation_position
-					}
+					var new_animation_point = { "index": point, "animation": animation_name }
+					# Blend Position (Float) or (Vector2)
+					if node is AnimationNodeBlendSpace1D: 
+						new_animation_point["position"] = animation_position
+					if node is AnimationNodeBlendSpace2D:
+						new_animation_point["position_x"] = animation_position.x
+						new_animation_point["position_y"] = animation_position.y
 					children_nodes["points_animations"].append(new_animation_point)
 			# Remove Unnecessary Props
 			if node is AnimationNodeAnimation: children_nodes.erase("points_animations")
-			# Export State Transitions
-			var node_transition = state_machine.get_transition(state)
-			var transition_to = state_machine.get_transition_to(state)
-			var transition_from = state_machine.get_transition_from(state)
-			var new_transition = {
-				"from": transition_from,
-				"switchMode": node_transition.switch_mode,
-				"xFadeTime": node_transition.xfade_time,
-				"to": transition_to
-			}
 			# Export State
 			var node_position = state_machine.get_node_position(state_name)
 			var is_start_node : bool
@@ -264,14 +278,47 @@ func _generateAnimationTreeExport() -> void:
 			# Export Animations
 			animation_tree_preset["animations"].append(state_name)
 			animation_tree_preset["states"].append(new_state)
-			animation_tree_preset["stateTransitions"].append(new_transition)
+			animation_tree_preset["transition_amount"] = transition_amount
 			animation_tree_preset["preset_name"] = str(export_file_preset.text)
 			animation_tree_preset["preset_creator"] = str(export_file_author.text)
 			animation_tree_preset["preset_version"] = str(export_file_version.text)
+			animation_tree_preset["rootmotion_bone"] = "Rootmotion"
+			animation_tree_preset["state_machine_node"] = statemachine_name
 			animation_tree_preset["preset_creation_date"] = str(_getDatetime())
 			
 	# Save Local File
 	_exportJSONFile(animation_tree_preset)
+
+
+func _getAnimationStatesAndTransitions() -> Dictionary:
+	# Get States
+	var animation_data : Dictionary
+	animation_data["animation_states"] = []
+	animation_data["states_transitions"] = []
+	# Get Current Scene
+	var current_scene = _getCurrentScene()
+	# Get Animation Tree
+	var animationTreeNode = current_scene.find_node(animation_tree_node_name, true).tree_root
+	if animationTreeNode.has_node(statemachine_name):
+		# Procedural StateMachine Generation
+		var state_machine = animationTreeNode.get_node(statemachine_name)
+		var transition_amount = state_machine.get_transition_count()
+		for t in transition_amount:
+			var node_transition = state_machine.get_transition(t)
+			var transition_to = state_machine.get_transition_to(t)
+			var transition_from = state_machine.get_transition_from(t)
+			if not animation_data["animation_states"].has(transition_to): 
+				animation_data["animation_states"].append(transition_to)
+			if not animation_data["animation_states"].has(transition_from): 
+				animation_data["animation_states"].append(transition_from)
+			var new_transition = {
+				"from": transition_from,
+				"switchMode": node_transition.switch_mode,
+				"xFadeTime": node_transition.xfade_time,
+				"to": transition_to
+			}
+			animation_data["states_transitions"].append(new_transition)
+	return animation_data
 
 
 func _getDatetime() -> String:

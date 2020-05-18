@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=2]
 
-[ext_resource path="res://addons/godot_game_tools/scripts/main_view.gd" type="Script" id=1]
+[ext_resource path="res://addons/godot_game_tools/scripts/ggt_main.gd" type="Script" id=1]
 
 [node name="GGT" type="ScrollContainer"]
 anchor_top = 0.000877228
