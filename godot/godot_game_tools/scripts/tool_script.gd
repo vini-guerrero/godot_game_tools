@@ -43,6 +43,7 @@ func _generateAnimationTreeExport() -> Dictionary:
 					var animation_name = node.get_blend_point_node(point).animation
 					var animation_position = node.get_blend_point_position(point)
 					var new_animation_point = { "index": point, "animation": animation_name }
+					animation_tree_preset["animations"][animation_name] = animation_name
 					# Blend Position (Float) or (Vector2)
 					if node is AnimationNodeBlendSpace1D: 
 						new_animation_point["position"] = animation_position
@@ -57,8 +58,8 @@ func _generateAnimationTreeExport() -> Dictionary:
 				children_nodes.erase("points_animations")
 				# Export Animations
 				animation_tree_preset["animations"][state_name] = node.animation
-			elif node is AnimationNodeBlendSpace1D || node is AnimationNodeBlendSpace2D: 
-				animation_tree_preset["animations"][state_name] = "AnimationNodeBlendSpace"
+			elif node is AnimationNodeBlendSpace1D || node is AnimationNodeBlendSpace2D: pass
+#				animation_tree_preset["animations"][state_name] = "AnimationNodeBlendSpace"
 			# Export State
 			var node_position = state_machine.get_node_position(state_name)
 			var is_start_node : bool
