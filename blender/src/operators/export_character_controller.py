@@ -71,6 +71,7 @@ class GGT_OT_CHARACTER_EXPORT_GGT(Operator):
         bpy.context.view_layer.objects.active = target_armature
         character_export_path = tool.character_export_path
         character_export_animation_loops = tool.character_export_animation_loops
+        if not character_name: character_name = target_armature.name
 
         # Generate Filename To Export
         if (character_export_format == 2): character_name += ".dae"

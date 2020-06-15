@@ -14,8 +14,7 @@ class GGT_PT_CHARACTER_UTILITIES_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
     bl_context = "objectmode"
     bl_parent_id = "obj_ggt.main_panel"
     bl_options = {"DEFAULT_CLOSED"}
-    def draw(self, context):
-        pass
+    def draw(self, context): pass
 
 # ------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------ #
@@ -39,6 +38,7 @@ class GGT_PT_ARMATURE_UTILITIES_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
         box.operator("wm_ggt.init_character", icon="IMPORT")
         box.operator("wm_ggt.join_animations", icon="ASSET_MANAGER")
         if tool.target_object: box.operator("wm_ggt.armature_join_mesh", icon="GROUP_BONE")
+        box.prop(tool, "target_object")
         box.separator()
 
 # ------------------------------------------------------------------------ #
@@ -152,7 +152,6 @@ class GGT_PT_EXPORT_CHARACTER_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
     bl_context = "objectmode"
     bl_parent_id = "obj_ggt.character_utilities_panel"
     bl_options = {"DEFAULT_CLOSED"}
-
     def draw(self, context):
         layout = self.layout
         scene = context.scene
@@ -173,7 +172,7 @@ class GGT_PT_EXPORT_CHARACTER_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
                     animations = animation_tree_preset["animations"]
                     for animation in animations.keys():
                         box.prop_search(target_armature, '["' + animation + '"]', bpy.data, "actions", text=animation)
-            if tool.character_export_path and tool.character_export_character_name:
+            if tool.character_export_path:
                 box.operator("wm_ggt.character_export", icon="EXPORT")
 
 # ------------------------------------------------------------------------ #

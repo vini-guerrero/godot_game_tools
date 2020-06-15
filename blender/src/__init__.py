@@ -7,12 +7,14 @@ from bl_ui.properties_object import ObjectButtonsPanel, OBJECT_PT_transform
 from bpy.props import (IntProperty, StringProperty, PointerProperty, CollectionProperty, EnumProperty, BoolProperty, FloatProperty)
 from bpy.types import (Panel, Menu, Operator, PropertyGroup)
 
+addon_version = "2.0.0"
+
 bl_info = {
     "name": "Godot Game Tools",
     "description": "This Add-On provides features for better export options with Godot Game Engine",
     "author": "Vinicius Guerrero & Contributors",
     "version": (2, 0, 0),
-    "blender": (2, 82, 0),
+    "blender": (2, 83, 0),
     "location": "3D View > Tools",
     "warning": "",
     "wiki_url": "https://github.com/vini-guerrero/Godot_Game_Tools",
@@ -93,7 +95,7 @@ def populateExporters(self, context):
 # ------------------------------------------------------------------------
 class GGT_AddonProperties_GGT(PropertyGroup):
     action_name: StringProperty(name="New Name", description="Choose the action name you want to rename your animation in the dopesheet", maxlen=1024)
-    target_object: PointerProperty(name="Target", description="Select the target armature you want the animations to be merged into", type=bpy.types.Object)
+    target_object: PointerProperty(name="Armature", description="Select the target armature you want the animations to be merged into", type=bpy.types.Object)
     animations: EnumProperty(name="Animations", description="Available armature animations", items=populateAnimations, default=None, options={'ANIMATABLE'}, update=None, get=None, set=None)
     visible_armature: BoolProperty(name="Show Armature Bones", description="Hides / Show armature bones once animations are loaded", default=True, update=toggleArmatureVisibility)
     bake_texture_size: IntProperty(name="Bake Texture Size", description="Define here the size of textures images to bake", default = 1024, min = 8, max = 4096)
@@ -227,7 +229,7 @@ from .panels.tileset_generator_panel import (
 # ------------------------------------------------------------------------
 class GGT_PT_MAINPANEL_PT_(Panel):
     bl_idname = "obj_ggt.main_panel"
-    bl_label = "Godot Game Tools"
+    bl_label = "Godot Game Tools - v" + addon_version
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_category = "Godot Game Tools"
