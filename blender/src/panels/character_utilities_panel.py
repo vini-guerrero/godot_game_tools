@@ -38,7 +38,7 @@ class GGT_PT_ARMATURE_UTILITIES_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
         box.operator("wm_ggt.init_character", icon="IMPORT")
         box.operator("wm_ggt.join_animations", icon="ASSET_MANAGER")
         if tool.target_object: box.operator("wm_ggt.armature_join_mesh", icon="GROUP_BONE")
-        box.prop(tool, "target_object")
+        # if tool.target_object: box.prop(tool, "target_object")
         box.separator()
 
 # ------------------------------------------------------------------------ #
@@ -165,8 +165,8 @@ class GGT_PT_EXPORT_CHARACTER_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
             animationRow = box.row()
             animationRow.prop(tool, "character_export_animation_loops")
             animationRow.prop(tool, "character_export_create_animation_tree")
-            box.operator("wm_ggt.load_animation_tree_preset", icon="EXPORT")
             if tool.character_export_create_animation_tree:
+                box.operator("wm_ggt.load_animation_tree_preset", icon="EXPORT")
                 if target_armature["animation_tree_preset"]:
                     animation_tree_preset = ast.literal_eval(target_armature["animation_tree_preset"])
                     animations = animation_tree_preset["animations"]

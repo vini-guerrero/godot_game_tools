@@ -7,13 +7,13 @@ from bl_ui.properties_object import ObjectButtonsPanel, OBJECT_PT_transform
 from bpy.props import (IntProperty, StringProperty, PointerProperty, CollectionProperty, EnumProperty, BoolProperty, FloatProperty)
 from bpy.types import (Panel, Menu, Operator, PropertyGroup)
 
-addon_version = "2.0.0"
+addon_version = "2.0.3"
 
 bl_info = {
     "name": "Godot Game Tools",
     "description": "This Add-On provides features for better export options with Godot Game Engine",
     "author": "Vinicius Guerrero & Contributors",
-    "version": (2, 0, 0),
+    "version": (2, 0, 3),
     "blender": (2, 83, 0),
     "location": "3D View > Tools",
     "warning": "",
@@ -122,7 +122,7 @@ class GGT_AddonProperties_GGT(PropertyGroup):
     character_export_animation_loops: BoolProperty(name="Add Animation Loops", description="Adds Godot Loop Rename To Exported Animations", default=True, get=None)
     # RootMotion Variables
     rootmotion_name: StringProperty(name="Bone Name", description="Choose name you want for the RootMotion Bone", maxlen=1024, default="RootMotion")
-    rootmotion_all: BoolProperty(name="Apply RootMotion To All", description="Choose to apply rootmotion to all animations or current only", default=True, update=None)
+    rootmotion_all: BoolProperty(name="Apply Rootmotion To All", description="Choose to apply rootmotion to all animations or current only", default=False, update=None)
     rootmotion_hip_bone: StringProperty(name="Root Bone", description="Bone which will serve as the basis for the root motion of the character. Usually hips or pelvis")
     rootMotion_start_frame: IntProperty(name="Rootmotion Start Frame", description="Define the initial frame for rootmotion start", default=1, min=-1, max=1024, update=None, get=None, set=None)
     rootmotion_animation_air_fix: BoolProperty(name="In Air Fix", description="Optional workaround to fix animations that start with character in-air", default=False, update=None)
