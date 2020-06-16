@@ -175,11 +175,15 @@ func _addStateMachine(currentScene, stateMachineData) -> void:
 		# Procedural StateMachine Generation
 		var stateMachine = animationTreeNode.get_node(stateMachineNodeName)
 		var initialAnimation
+		var endAnimation
 		# Generate States
 		for state in states: 
 			var stateName = state["name"]
 			var stateType = state["type"]
-			if not initialAnimation: initialAnimation = stateName
+			var startAnim = state["start"]
+			var endAnim = state["end"]
+			if startAnim == true: initialAnimation = stateName
+			if endAnim == true: endAnimation = stateName
 			var statePosition = Vector2(state["positionX"], state["positionY"])
 			if stateType == "AnimationNodeAnimation":
 				_addAnimationNode(stateMachine, stateName, statePosition)
@@ -206,6 +210,11 @@ func _addStateMachine(currentScene, stateMachineData) -> void:
 		if initialAnimation: 
 			initialAnimation = initialAnimation.replace("-loop", "")
 			stateMachine.set_start_node(initialAnimation)
+		
+		# Setup End Animation
+		if endAnimation:
+			endAnimation = endAnimation.replace("-loop", "")
+			stateMachine.set_end_node(endAnimation)
 
 
 func _addStateTransition(stateMachine, from, to, xFadeTime, switchModeIndex) -> void:
