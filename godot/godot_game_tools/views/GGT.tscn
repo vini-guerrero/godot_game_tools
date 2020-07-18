@@ -288,6 +288,7 @@ margin_right = 400.0
 margin_bottom = 24.0
 rect_min_size = Vector2( 260, 0 )
 size_flags_horizontal = 3
+text = "1.0"
 placeholder_text = "1.0"
 
 [node name="Spacer13" type="HSeparator" parent="HBoxContainer/VBoxContainer"]

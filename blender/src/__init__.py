@@ -94,6 +94,7 @@ def populateExporters(self, context):
 #    Addon Tool Properties
 # ------------------------------------------------------------------------
 class GGT_AddonProperties_GGT(PropertyGroup):
+    hips_scale: FloatProperty(name="Hips Scale", description="Hips scale factor", default=0.01)
     action_name: StringProperty(name="New Name", description="Choose the action name you want to rename your animation in the dopesheet", maxlen=1024)
     target_object: PointerProperty(name="Armature", description="Select the target armature you want the animations to be merged into", type=bpy.types.Object)
     animations: EnumProperty(name="Animations", description="Available armature animations", items=populateAnimations, default=None, options={'ANIMATABLE'}, update=None, get=None, set=None)
@@ -138,7 +139,6 @@ class GGT_AddonProperties_GGT(PropertyGroup):
 #    Action Properties
 # ------------------------------------------------------------------------
 class GGT_ActionProperties_GGT(bpy.types.PropertyGroup):
-    hips_scale: FloatProperty(name="Hips Scale", description="Hips scale factor", default=1.0)
     use_root_motion: BoolProperty(name="Root Motion", description="Should this animation use root motion", options={'ANIMATABLE'}, default=True, update=toggle_use_root_motion)
     use_root_motion_z: BoolProperty(name="Root Motion Z", description="Use z-axis with this animation", default=False, update=toggle_use_root_motion_z)
 

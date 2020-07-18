@@ -197,7 +197,8 @@ func _addStateMachine(currentScene, stateMachineData) -> void:
 			var toT = transition["to"]
 			var xFadeTimeT = transition["xFadeTime"]
 			var switchModeIndex = transition["switchMode"]
-			_addStateTransition(stateMachine, fromT, toT, xFadeTimeT, switchModeIndex)
+			var autoAdvance = transition["autoAdvance"]
+			_addStateTransition(stateMachine, fromT, toT, xFadeTimeT, switchModeIndex, autoAdvance)
 
 		# Add Animation States
 		for state in states:
@@ -217,7 +218,7 @@ func _addStateMachine(currentScene, stateMachineData) -> void:
 			stateMachine.set_end_node(endAnimation)
 
 
-func _addStateTransition(stateMachine, from, to, xFadeTime, switchModeIndex) -> void:
+func _addStateTransition(stateMachine, from, to, xFadeTime, switchModeIndex, autoAdvance) -> void:
 	var newTransition = AnimationNodeStateMachineTransition.new()
 	newTransition.xfade_time = xFadeTime
 	var switchMode
@@ -225,6 +226,7 @@ func _addStateTransition(stateMachine, from, to, xFadeTime, switchModeIndex) -> 
 	if switchModeIndex == 1: switchMode = AnimationNodeStateMachineTransition.SWITCH_MODE_SYNC
 	if switchModeIndex == 2: switchMode = AnimationNodeStateMachineTransition.SWITCH_MODE_AT_END
 	newTransition.switch_mode = switchMode
+	newTransition.auto_advance = autoAdvance
 	stateMachine.add_transition(from, to, newTransition)
 
 
@@ -328,6 +330,7 @@ func _getAnimationStatesAndTransitions() -> Dictionary:
 				"from": transition_from,
 				"switchMode": node_transition.switch_mode,
 				"xFadeTime": node_transition.xfade_time,
+				"autoAdvance": node_transition.auto_advance,
 				"to": transition_to
 			}
 			animation_data["states_transitions"].append(new_transition)
