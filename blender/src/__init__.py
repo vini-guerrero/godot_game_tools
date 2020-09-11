@@ -7,14 +7,14 @@ from bl_ui.properties_object import ObjectButtonsPanel, OBJECT_PT_transform
 from bpy.props import (IntProperty, StringProperty, PointerProperty, CollectionProperty, EnumProperty, BoolProperty, FloatProperty)
 from bpy.types import (Panel, Menu, Operator, PropertyGroup)
 
-addon_version = "2.0.3"
+addon_version = "2.0.4"
 
 bl_info = {
     "name": "Godot Game Tools",
     "description": "This Add-On provides features for better export options with Godot Game Engine",
     "author": "Vinicius Guerrero & Contributors",
-    "version": (2, 0, 3),
-    "blender": (2, 83, 0),
+    "version": (2, 0, 4),
+    "blender": (2, 90, 0),
     "location": "3D View > Tools",
     "warning": "",
     "wiki_url": "https://github.com/vini-guerrero/Godot_Game_Tools",

@@ -55,14 +55,13 @@ class GGT_OT_INIT_CHARACTER_OT_GGT(bpy.types.Operator, ImportHelper):
             # Store armature bones
             tool.rootmotion_hip_bone = "Hips" if "Hips" in [bone.name.replace('mixamorig:', '') for bone in characterArmature.data.bones] else ""
 
-            characterArmature.name = "Armature"
             characterCollection = bpy.data.collections.get(characterCollectionName)
             if len(characterArmature.children) > 0:
                 for mesh in characterArmature.children:
-                    bpy.context.scene.collection.children[0].objects.unlink(mesh)
+                    bpy.ops.collection.objects_remove_all()
                     characterCollection.objects.link(mesh)
-            bpy.context.scene.collection.children[0].objects.unlink(characterArmature)
             characterCollection.objects.link(characterArmature)
+            characterArmature.name = "Armature"
             characterArmature.animation_data.action.name = "T-Pose"
             tool.target_object = characterArmature
         bpy.ops.wm_ggt.prepare_mixamo_rig('EXEC_DEFAULT')
@@ -96,35 +95,6 @@ class GGT_OT_JOIN_ANIMATIONS_OT_GGT(Operator, ImportHelper):
                 files.remove(file)
         return files
 
-    def prepareCharacterCollection(self, context):
-        scene = context.scene
-        tool = scene.godot_game_tools
-        characterArmature = bpy.context.view_layer.objects.active
-        characterCollectionName = tool.character_collection_name
-        characterCollection = bpy.data.collections.get(characterCollectionName)
-        joinMeshes = True
-
-        currentCollections = characterArmature.users_collection
-        for collection in currentCollections:
-            collection.objects.unlink(characterArmature)
-        characterCollection.objects.link(characterArmature)
-
-        for mesh in characterArmature.children:
-            bpy.context.scene.collection.children[0].objects.unlink(mesh)
-            characterCollection.objects.link(mesh)
-
-        if joinMeshes:
-            meshToJoin = None
-            for mesh in characterArmature.children:
-                mesh.select_set(True)
-                meshToJoin = mesh
-            if meshToJoin:
-                bpy.context.view_layer.objects.active = meshToJoin
-                bpy.ops.object.join()
-                bodyMesh = bpy.context.view_layer.objects.active
-                bodyMesh.name = "Mesh"
-
-
     def importModels(self, file_names, target_armature, context):
         scene = context.scene
         tool = scene.godot_game_tools
@@ -135,6 +105,7 @@ class GGT_OT_JOIN_ANIMATIONS_OT_GGT(Operator, ImportHelper):
         removeList = []
         # Debug
         removeImports = True
+        imported_objs = []
 
         if bpy.data.collections.get(characterCollectionName) is not None:
             characterCollection = bpy.data.collections.get(characterCollectionName)
@@ -145,6 +116,7 @@ class GGT_OT_JOIN_ANIMATIONS_OT_GGT(Operator, ImportHelper):
                         break
 
             for file_path in valid_files:
+                bpy.ops.object.select_all(action='DESELECT')
                 if ext == "fbx":
                     name = os.path.basename(file_path)
                     if hasattr(bpy.types, bpy.ops.import_scene.fbx.idname()):
@@ -153,23 +125,20 @@ class GGT_OT_JOIN_ANIMATIONS_OT_GGT(Operator, ImportHelper):
                             # Local Variable
                             file_names_list.append(actionName)
                             bpy.ops.import_scene.fbx(filepath = file_path)
-                            self.prepareCharacterCollection(context)
+                            imported_objs.append(bpy.context.view_layer.objects.active)
 
-            if len(characterCollection.objects) > 0:
+            if len(file_names_list) > 0:
                 index = 0
-                for obj in characterCollection.objects:
-                    if obj.type == "ARMATURE" and obj is not target_armature:
-                        obj.animation_data.action.name = file_names_list[index]
-                        # Rename the bones
-                        for bone in obj.pose.bones:
-                            if ':' not in bone.name:
-                                continue
-                            bone.name = bone.name.split(":")[1]
-                        removeList.append(obj)
-                        if len(obj.children) > 0:
-                            for mesh in obj.children:
-                                removeList.append(mesh)
-                        index += 1
+                for obj in imported_objs:
+                    obj.animation_data.action.name = file_names_list[index]
+                    # Rename the bones
+                    for bone in obj.pose.bones:
+                        if ':' not in bone.name: continue
+                        bone.name = bone.name.split(":")[1]
+                    removeList.append(obj)
+                    meshes = [obj for obj in obj.children]
+                    for mesh in meshes: removeList.append(mesh)
+                    index += 1
 
         # Delete Imported Armatures
         if removeImports:
