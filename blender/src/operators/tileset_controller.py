@@ -25,10 +25,14 @@ def fixTilePositions(tileCollectionName):
                     tile.location.x += tileSize + tileSpacing
                     previousTilePosition = tile.location
                 tileIndex +=1
+                
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------ #
 
 def writeToFile(variable, content, lineBreakAmount = None):
     variable += content
-    if lineBreakAmount == None:
+    if lineBreakAmount is None:
       variable += '\n'
     else:
       for index in range(0, lineBreakAmount):
