@@ -181,7 +181,7 @@ class GGT_OT_JOIN_ANIMATIONS_OT_GGT(Operator, ImportHelper):
         scene = context.scene
         tool = scene.godot_game_tools
         target_armature = tool.target_object
-        target_armature["animation_tree_preset"] = None
+        if target_armature: target_armature["animation_tree_preset"] = None
         if len(bpy.data.actions) > 0:
             for action in bpy.data.actions:
                 animation = action.name
