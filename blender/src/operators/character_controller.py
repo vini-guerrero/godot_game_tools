@@ -223,7 +223,6 @@ class GGT_OT_PREPARE_RIG_OT_GGT(Operator):
         valid = True
         # Apply transformations on selected Armature
         bpy.context.view_layer.objects.active = target_armature
-        bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
         bpy.ops.wm_ggt.rename_mixamo_rig('EXEC_DEFAULT')
 
         if valid:
