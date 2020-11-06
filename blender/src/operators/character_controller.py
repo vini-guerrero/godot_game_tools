@@ -57,8 +57,8 @@ class GGT_OT_INIT_CHARACTER_OT_GGT(bpy.types.Operator, ImportHelper):
 
             characterCollection = bpy.data.collections.get(characterCollectionName)
             if len(characterArmature.children) > 0:
+                bpy.ops.collection.objects_remove_all()
                 for mesh in characterArmature.children:
-                    bpy.ops.collection.objects_remove_all()
                     characterCollection.objects.link(mesh)
             characterCollection.objects.link(characterArmature)
             characterArmature.name = "Armature"
