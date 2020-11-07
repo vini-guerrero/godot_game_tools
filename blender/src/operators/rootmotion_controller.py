@@ -312,43 +312,37 @@ class GGT_OT_ADD_ROOTMOTION_TOGGLE_OT_GGT(Operator):
                 scene.frame_set(rootmotionStartFrame)
                 offsetHipsLocation = anim_root_bone.location - anim_hip_bone.location
 
-                for group in action.groups:
-                    if not group.select: continue
-                    channels = group.channels
-                    for channel in channels:
+                if rootmotion_animation_air_fix:
+                    scene.frame_set(rootmotionStartFrame)
+                    anim_hip_bone.location.y = 0
+                    anim_hip_bone.keyframe_insert(data_path='location')
 
-                        keyframePointsRootMotion = []
-                        fCurveBone = channel.data_path.split('"')[1]
-                        locationFilter = channel.data_path.split('"')[2]
-                        curveIndex = channel.array_index
+                hipsFCurves = self.getCurve(target_armature, hips)
+                for fcurve in hipsFCurves:
+                    frames = []
+                    for point in fcurve.keyframe_points[1:]: frames.append(point.co[0])
 
-                        if fCurveBone == hips and locationFilter == "].location":
+                    if not tool.motion_axis[fcurve.array_index]:
+                        continue
+                    for index in frames:
+                        scene.frame_set(index)
+                        anim_root_bone.location = anim_hip_bone.location + offsetHipsLocation
+                        anim_root_bone.keyframe_insert(data_path='location', index=fcurve.array_index)
+                        anim_hip_bone.keyframe_delete(data_path='location', index=fcurve.array_index)
 
-                            if rootmotion_animation_air_fix:
-                                scene.frame_set(rootmotionStartFrame)
-                                anim_hip_bone.location.y = 0
-                                anim_hip_bone.keyframe_insert(data_path='location')
+                rootMotionFCurves = self.getCurve(target_armature, tool.rootmotion_name)
 
-                            frames = []
-                            for point in channel.keyframe_points[1:]: frames.append(point.co[0])
+                for fcurve in rootMotionFCurves:
+                    frames = []
+                    for point in fcurve.keyframe_points[1:]: frames.append(point.co[0])
 
-                            for index in frames:
-                                scene.frame_set(index)
-                                if tool.motion_axis[curveIndex]:
-                                    anim_root_bone.location = anim_hip_bone.location + offsetHipsLocation
-                                    anim_root_bone.keyframe_insert(data_path='location', index=curveIndex)
-                                    anim_hip_bone.keyframe_delete(data_path='location', index=curveIndex)
-
-                        if fCurveBone == tool.rootmotion_name and locationFilter == "].location":
-                            frames = []
-                            for point in channel.keyframe_points[1:]: frames.append(point.co[0])
-
-                            for index in frames:
-                                scene.frame_set(index)
-                                if not tool.motion_axis[curveIndex]:
-                                    anim_hip_bone.location = anim_root_bone.location - offsetHipsLocation
-                                    anim_root_bone.keyframe_delete(data_path='location', index=curveIndex)
-                                    anim_hip_bone.keyframe_insert(data_path='location', index=curveIndex)
+                    if tool.motion_axis[fcurve.array_index]:
+                        continue
+                    for index in frames:
+                        scene.frame_set(index)
+                        anim_hip_bone.location = anim_root_bone.location - offsetHipsLocation
+                        anim_root_bone.keyframe_delete(data_path='location', index=fcurve.array_index)
+                        anim_hip_bone.keyframe_insert(data_path='location', index=fcurve.array_index)
 
 
         self.report({'INFO'}, 'Root Motion Updated')
