@@ -69,9 +69,11 @@ class GGT_PT_ROOT_MOTION_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
         rootmotionRow2.prop(tool, "rootmotion_animation_air_fix")
         rootmotionRow2.prop(tool, "rootMotion_start_frame")
         rootmotionRow3 = box.row()
-        rootmotionRow3.prop(tool, "rootmotion_name")
+        rootmotionRow3.prop(tool, "motion_axis")
         rootmotionRow4 = box.row()
-        rootmotionRow4.prop_search(tool, "rootmotion_hip_bone", ob.data, "bones", text="Root Bone")
+        rootmotionRow4.prop(tool, "rootmotion_name")
+        rootmotionRow5 = box.row()
+        rootmotionRow5.prop_search(tool, "rootmotion_hip_bone", ob.data, "bones", text="Root Bone")
         if ob is not None and tool.rootmotion_hip_bone:
             # box.prop(ob.animation_data.action.ggt_props, "use_root_motion")
             # box.prop(ob.animation_data.action.ggt_props, "use_root_motion_z")

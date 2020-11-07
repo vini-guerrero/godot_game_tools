@@ -310,7 +310,6 @@ class GGT_OT_ADD_ROOTMOTION_TOGGLE_OT_GGT(Operator):
 
                 anim_root_bone = target_armature.pose.bones[rootMotionBoneName]
                 scene.frame_set(rootmotionStartFrame)
-                rootMotionAxis = [0,1,2]
                 offsetHipsLocation = anim_root_bone.location - anim_hip_bone.location
 
                 for group in action.groups:
@@ -323,7 +322,7 @@ class GGT_OT_ADD_ROOTMOTION_TOGGLE_OT_GGT(Operator):
                         locationFilter = channel.data_path.split('"')[2]
                         curveIndex = channel.array_index
 
-                        if fCurveBone == hips and curveIndex in rootMotionAxis and locationFilter == "].location":
+                        if fCurveBone == hips and locationFilter == "].location":
 
                             if rootmotion_animation_air_fix:
                                 scene.frame_set(rootmotionStartFrame)
@@ -335,9 +334,22 @@ class GGT_OT_ADD_ROOTMOTION_TOGGLE_OT_GGT(Operator):
 
                             for index in frames:
                                 scene.frame_set(index)
-                                anim_root_bone.location = anim_hip_bone.location
-                                anim_root_bone.keyframe_insert(data_path='location')
-                                anim_hip_bone.keyframe_delete(data_path='location')
+                                if tool.motion_axis[curveIndex]:
+                                    anim_root_bone.location = anim_hip_bone.location + offsetHipsLocation
+                                    anim_root_bone.keyframe_insert(data_path='location', index=curveIndex)
+                                    anim_hip_bone.keyframe_delete(data_path='location', index=curveIndex)
+
+                        if fCurveBone == tool.rootmotion_name and locationFilter == "].location":
+                            frames = []
+                            for point in channel.keyframe_points[1:]: frames.append(point.co[0])
+
+                            for index in frames:
+                                scene.frame_set(index)
+                                if not tool.motion_axis[curveIndex]:
+                                    anim_hip_bone.location = anim_root_bone.location - offsetHipsLocation
+                                    anim_root_bone.keyframe_delete(data_path='location', index=curveIndex)
+                                    anim_hip_bone.keyframe_insert(data_path='location', index=curveIndex)
+
 
         self.report({'INFO'}, 'Root Motion Updated')
         return {'FINISHED'}
