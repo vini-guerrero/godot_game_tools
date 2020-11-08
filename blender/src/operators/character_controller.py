@@ -53,7 +53,7 @@ class GGT_OT_INIT_CHARACTER_OT_GGT(bpy.types.Operator, ImportHelper):
                 return {'CANCELLED'}
 
             # Store armature bones
-            tool.rootmotion_hip_bone = "Hips" if "Hips" in [bone.name.replace('mixamorig:', '') for bone in characterArmature.data.bones] else ""
+            tool.rootmotion_hip_bone = "Hips" if "Hips" in [bone.name.split(':')[1] for bone in characterArmature.data.bones] else ""
 
             characterCollection = bpy.data.collections.get(characterCollectionName)
             if len(characterArmature.children) > 0:
@@ -223,6 +223,7 @@ class GGT_OT_PREPARE_RIG_OT_GGT(Operator):
         valid = True
         # Apply transformations on selected Armature
         bpy.context.view_layer.objects.active = target_armature
+        bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
         bpy.ops.wm_ggt.rename_mixamo_rig('EXEC_DEFAULT')
 
         if valid:
