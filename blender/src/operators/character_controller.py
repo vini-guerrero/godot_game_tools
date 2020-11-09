@@ -1,6 +1,7 @@
 import bpy
 import glob
 import os
+import re
 
 from bpy.props import (StringProperty, FloatProperty, PointerProperty, CollectionProperty)
 from bpy.types import (Operator, PropertyGroup)
@@ -53,7 +54,7 @@ class GGT_OT_INIT_CHARACTER_OT_GGT(bpy.types.Operator, ImportHelper):
                 return {'CANCELLED'}
 
             # Store armature bones
-            tool.rootmotion_hip_bone = "Hips" if "Hips" in [bone.name.split(':')[1] for bone in characterArmature.data.bones] else ""
+            tool.rootmotion_hip_bone = "Hips" if "Hips" in [re.sub(".*:", "", bone.name) for bone in characterArmature.data.bones] else ""
 
             characterCollection = bpy.data.collections.get(characterCollectionName)
             if len(characterArmature.children) > 0:
