@@ -4,7 +4,7 @@ import os
 import sys
 
 from bl_ui.properties_object import ObjectButtonsPanel, OBJECT_PT_transform
-from bpy.props import (IntProperty, StringProperty, PointerProperty, CollectionProperty, EnumProperty, BoolProperty, FloatProperty)
+from bpy.props import (IntProperty, StringProperty, PointerProperty, CollectionProperty, EnumProperty, BoolProperty, BoolVectorProperty, FloatProperty)
 from bpy.types import (Panel, Menu, Operator, PropertyGroup)
 
 addon_version = "2.0.4"
@@ -127,6 +127,7 @@ class GGT_AddonProperties_GGT(PropertyGroup):
     rootmotion_hip_bone: StringProperty(name="Root Bone", description="Bone which will serve as the basis for the root motion of the character. Usually hips or pelvis")
     rootMotion_start_frame: IntProperty(name="Rootmotion Start Frame", description="Define the initial frame for rootmotion start", default=1, min=-1, max=1024, update=None, get=None, set=None)
     rootmotion_animation_air_fix: BoolProperty(name="In Air Fix", description="Optional workaround to fix animations that start with character in-air", default=False, update=None)
+    motion_axis: BoolVectorProperty(name="Motion Axis", description="Optional workaround to make root motion only in select local axis", update=None, subtype='XYZ')
     # Animation Actions
     character_export_create_animation_tree: BoolProperty(name="Create Animation Tree", description="Whether or not an animation tree is created when exporting as a Godot scene")
     actions = []
