@@ -10,7 +10,7 @@ class GGT_OT_ANIMATION_PLAYER_OT_GGT(Operator):
     def execute(self, context):
         scene = context.scene
         tool = scene.godot_game_tools
-        animation = tool.animations
+        # animation = tool.animations
         target_armature = tool.target_object
         bpy.ops.screen.animation_cancel()
         bpy.context.view_layer.objects.active = target_armature
@@ -32,8 +32,7 @@ class GGT_OT_STOP_ANIMATION_OT_GGT(Operator):
     def execute(self, context):
         scene = context.scene
         tool = scene.godot_game_tools
-        animation = tool.animations
-        target_armature = tool.target_object
+        # animation = tool.animations
         bpy.context.scene.frame_current = 0
         bpy.ops.screen.animation_cancel(0)
         self.report({'INFO'}, 'Animation Stopped')
@@ -51,7 +50,6 @@ class GGT_OT_RENAME_ANIMATION_OT_GGT(Operator):
     def execute(self, context):
         scene = context.scene
         tool = scene.godot_game_tools
-        animation = tool.animations
         target_armature = tool.target_object
         actionName = tool.action_name
         if len(bpy.data.actions) > 0:
@@ -74,13 +72,14 @@ class GGT_OT_PROCESS_ACTIONS_OT_GGT(Operator):
         hips_scale = tool.hips_scale
         actions = bpy.data.actions
         for action in actions:
-            action.groups[0].name = action.name
-            for f in action.fcurves:
-               if f.data_path == 'pose.bones[\"{}\"].location'.format(tool.rootmotion_hip_bone):
-                    for keyframe in f.keyframe_points:
-                        keyframe.co[1] *= hips_scale
-                # print("Action {} hips are scaled to 0.01.".format(action.name))
-            action.ggt_props.hips_scale = hips_scale
+            if len(action.groups) > 0:
+                action.groups[0].name = action.name
+                for f in action.fcurves:
+                    if f.data_path == 'pose.bones[\"{}\"].location'.format(tool.rootmotion_hip_bone):
+                            for keyframe in f.keyframe_points:
+                                keyframe.co[1] *= hips_scale
+                        # print("Action {} hips are scaled to 0.01.".format(action.name))
+                    action.ggt_props.hips_scale = hips_scale
         return {'FINISHED'}
 
 # ------------------------------------------------------------------------ #
@@ -96,7 +95,7 @@ class GGT_OT_ADD_ANIMATION_LOOP_OT_GGT(Operator):
         scene = context.scene
         tool = scene.godot_game_tools
         target_armature = tool.target_object
-        animation = tool.animations
+        # animation = tool.animations
         bpy.ops.screen.animation_cancel()
         bpy.context.view_layer.objects.active = target_armature
         if len(bpy.data.actions) > 0:
@@ -167,7 +166,7 @@ class GGT_OT_TRIM_ANIMATION_OT_GGT(Operator):
                 # Available Curves ("location", "rotation", "scale")
                 fcurveList = self.filterCurve(character, ("location"))
                 bpy.data.actions.new(newActionName)
-                newAnimation = [anim for anim in bpy.data.actions.keys() if anim in (newActionName)]
+                # newAnimation = [anim for anim in bpy.data.actions.keys() if anim in (newActionName)]
                 newAnimationIndex = bpy.data.actions.keys().index(newActionName)
                 character.animation_data.action = bpy.data.actions.values()[newAnimationIndex]
                 targetAction = character.animation_data.action
@@ -197,7 +196,7 @@ class GGT_OT_DELETE_ANIMATION_OT_GGT(Operator):
         scene = context.scene
         tool = scene.godot_game_tools
         character = tool.target_object
-        animation = tool.animations
+        # animation = tool.animations
         selectedAction = character.animation_data.action
         if (character is None): character = bpy.context.view_layer.objects.active
         if len(bpy.data.actions) > 0 and selectedAction:

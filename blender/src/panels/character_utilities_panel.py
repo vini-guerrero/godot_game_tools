@@ -31,7 +31,6 @@ class GGT_PT_ARMATURE_UTILITIES_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
     def draw(self, context):
         layout = self.layout
         scene = context.scene
-        obj = context.object
         tool = scene.godot_game_tools
         box = layout.box()
         box.label(text="Armature Setup", icon='ARMATURE_DATA')
@@ -57,7 +56,6 @@ class GGT_PT_ROOT_MOTION_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
     def draw(self, context):
         layout = self.layout
         scene = context.scene
-        obj = context.object
         tool = scene.godot_game_tools
         ob = tool.target_object
         box = layout.box()
@@ -108,8 +106,6 @@ class GGT_PT_ANIMATIONS_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
     def draw(self, context):
         layout = self.layout
         scene = context.scene
-        tool = scene.godot_game_tools
-        ob = tool.target_object
         layout.template_list("ACTION_UL_list", "", bpy.data, "actions", scene, "action_list_index")
         box = layout.box()
         box.operator("wm_ggt.animation_player", icon="PLAY")
@@ -131,7 +127,6 @@ class GGT_PT_ANIMATION_UTILITIES_PT_GGT(bpy.types.Panel, ObjectButtonsPanel):
     def draw(self, context):
         layout = self.layout
         scene = context.scene
-        obj = context.object
         tool = scene.godot_game_tools
         trimAnimationBox = layout.box()
         trimAnimationBox.label(text="Trim Animations", icon='DOCUMENTS')

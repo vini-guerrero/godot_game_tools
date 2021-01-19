@@ -30,14 +30,10 @@ class GGT_OT_INIT_CHARACTER_OT_GGT(bpy.types.Operator, ImportHelper):
             bpy.ops.import_scene.fbx(filepath = file_path)
             return ('INFO', 'Import successful')
 
-
     def execute(self, context):
         scene = context.scene
         tool = scene.godot_game_tools
-        characterCollectionName = tool.character_collection_name
-        if bpy.data.collections.get(characterCollectionName) is None:
-          characterCollection = bpy.data.collections.new(characterCollectionName)
-          bpy.context.scene.collection.children.link(characterCollection)
+        armature_key = "main_armature"
         self.report({'INFO'}, 'Loading Character T-Pose')
         filePathWithName = bpy.path.abspath(self.properties.filepath)
         import_result = self.import_from_folder(filePathWithName, context)
@@ -45,26 +41,29 @@ class GGT_OT_INIT_CHARACTER_OT_GGT(bpy.types.Operator, ImportHelper):
             self.report({import_result[0]}, import_result[1])
             return {'CANCELLED'}
 
-        if bpy.data.collections.get(characterCollectionName) is not None:
-            characterArmature = bpy.context.view_layer.objects.active
-            if characterArmature == None or characterArmature.type != "ARMATURE":
-                self.report({'ERROR'}, 'Imported character does not have a root armature.')
-                bpy.ops.collection.objects_remove_all()
-                return {'CANCELLED'}
-
-            # Store armature bones
-            tool.rootmotion_hip_bone = "Hips" if "Hips" in [bone.name.replace('mixamorig:', '') for bone in characterArmature.data.bones] else ""
-
-            characterCollection = bpy.data.collections.get(characterCollectionName)
+        characterArmature = bpy.context.view_layer.objects.active
+        if characterArmature != None or characterArmature.type in ["ARMATURE"]:            
+            bpy.data.objects[characterArmature.name][armature_key] = armature_key            
             if len(characterArmature.children) > 0:
-                for mesh in characterArmature.children:
-                    bpy.ops.collection.objects_remove_all()
-                    characterCollection.objects.link(mesh)
-            characterCollection.objects.link(characterArmature)
+                for mesh in characterArmature.children: 
+                    bpy.data.objects[mesh.name][armature_key] = armature_key
+            
+            tool.rootmotion_hip_bone = "Hips" if "Hips" in [bone.name.replace('mixamorig:', '') for bone in characterArmature.data.bones] else ""
             characterArmature.name = "Armature"
-            characterArmature.animation_data.action.name = "T-Pose"
-            tool.target_object = characterArmature
-        bpy.ops.wm_ggt.prepare_mixamo_rig('EXEC_DEFAULT')
+            
+            # Remove Cleared Keyframe Actions - Mixamo Fix
+            for action in bpy.data.actions:
+                if len(action.fcurves) == 0: bpy.data.actions.remove(action)                        
+
+            if len(bpy.data.actions) > 0:
+                tool.target_object = characterArmature
+                characterArmature[armature_key] = armature_key
+                for action in bpy.data.actions:
+                    action[armature_key] = armature_key
+                    tool.target_object.animation_data.action = action
+                    bpy.data.actions[action.name].name = "T-Pose"
+                bpy.ops.wm_ggt.prepare_mixamo_rig('EXEC_DEFAULT')
+
         return {'FINISHED'}
 
 # ------------------------------------------------------------------------ #
@@ -98,8 +97,8 @@ class GGT_OT_JOIN_ANIMATIONS_OT_GGT(Operator, ImportHelper):
     def importModels(self, file_names, target_armature, context):
         scene = context.scene
         tool = scene.godot_game_tools
-        characterCollectionName = tool.character_collection_name
         extensions = ['fbx']
+        armature_key = "main_armature"
         valid_files = []
         file_names_list = []
         removeList = []
@@ -107,8 +106,7 @@ class GGT_OT_JOIN_ANIMATIONS_OT_GGT(Operator, ImportHelper):
         removeImports = True
         imported_objs = []
 
-        if bpy.data.collections.get(characterCollectionName) is not None:
-            characterCollection = bpy.data.collections.get(characterCollectionName)
+        if tool.target_object is not None:
             for filename in file_names:
                 for ext in extensions:
                     if filename.lower().endswith('.{}'.format(ext)):
@@ -125,12 +123,12 @@ class GGT_OT_JOIN_ANIMATIONS_OT_GGT(Operator, ImportHelper):
                             # Local Variable
                             file_names_list.append(actionName)
                             bpy.ops.import_scene.fbx(filepath = file_path)
-                            imported_objs.append(bpy.context.view_layer.objects.active)
+                            imported_objs.append(bpy.context.view_layer.objects.active)                                              
 
             if len(file_names_list) > 0:
                 index = 0
                 for obj in imported_objs:
-                    obj.animation_data.action.name = file_names_list[index]
+                    obj.animation_data.action.name = file_names_list[index]                               
                     # Rename the bones
                     for bone in obj.pose.bones:
                         if ':' not in bone.name: continue
@@ -138,7 +136,19 @@ class GGT_OT_JOIN_ANIMATIONS_OT_GGT(Operator, ImportHelper):
                     removeList.append(obj)
                     meshes = [obj for obj in obj.children]
                     for mesh in meshes: removeList.append(mesh)
-                    index += 1
+                    index += 1   
+
+            # Remove Cleared Keyframe Actions - Mixamo Fix
+            if len(file_names_list) > 0:
+                rename_index = 0
+                for action in bpy.data.actions:
+                    if len(action.fcurves) == 0: bpy.data.actions.remove(action)   
+                    else:
+                        if action.name not in file_names_list and action.get(armature_key) is None:
+                            if file_names_list[rename_index]:
+                                action[armature_key] = armature_key
+                                bpy.data.actions[action.name].name = file_names_list[rename_index]
+                                rename_index += 1
 
         # Delete Imported Armatures
         if removeImports:
@@ -180,7 +190,6 @@ class GGT_OT_RENAME_RIG_OT_GGT(Operator):
     def execute(self, context):
         scene = context.scene
         tool = scene.godot_game_tools
-        visible_armature = tool.visible_armature
         target_armature = tool.target_object
         valid = True
         if valid:
@@ -202,7 +211,8 @@ class GGT_OT_RENAME_RIG_OT_GGT(Operator):
                             continue
                         bone.name = bone.name.split(":")[1]
             if bpy.data.actions:
-                bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
+                if len(bpy.context.object.animation_data.action.frame_range) > 0:
+                    bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
             self.report({'INFO'}, 'Character Bones Successfully Renamed')
         return {'FINISHED'}
 
@@ -219,27 +229,24 @@ class GGT_OT_PREPARE_RIG_OT_GGT(Operator):
         scene = context.scene
         tool = scene.godot_game_tools
         target_armature = tool.target_object
-        visible_armature = tool.visible_armature
-        valid = True
         # Apply transformations on selected Armature
         bpy.context.view_layer.objects.active = target_armature
         bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
         bpy.ops.wm_ggt.rename_mixamo_rig('EXEC_DEFAULT')
 
-        if valid:
-            bpy.data.objects["Armature"].select_set(True)
-            target_armature.hide_viewport = False
-            bpy.ops.object.select_all(action='SELECT')
-            if len(bpy.data.actions) > 0:
-                for anim in bpy.data.actions:
-                    animation = anim.name
-                    bpy.context.scene.frame_start = 0
-                    animationToPlay = [anim for anim in bpy.data.actions.keys() if anim in (animation)]
-                    animationIndex = bpy.data.actions.keys().index(animation)
-                    target_armature.animation_data.action = bpy.data.actions.values()[animationIndex]
-                    bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
-                    bpy.ops.scene.process_actions('EXEC_DEFAULT')
-                    tool.actions.append(anim)
+        bpy.data.objects["Armature"].select_set(True)
+        target_armature.hide_viewport = False
+        bpy.ops.object.select_all(action='SELECT')
+        if len(bpy.data.actions) > 0:
+            for anim in bpy.data.actions:
+                animation = anim.name
+                bpy.context.scene.frame_start = 0
+                # animationToPlay = [anim for anim in bpy.data.actions.keys() if anim in (animation)]
+                animationIndex = bpy.data.actions.keys().index(animation)
+                target_armature.animation_data.action = bpy.data.actions.values()[animationIndex]
+                bpy.context.scene.frame_end = bpy.context.object.animation_data.action.frame_range[-1]
+                bpy.ops.scene.process_actions('EXEC_DEFAULT')
+                tool.actions.append(anim)
 
             self.report({'INFO'}, 'Rig Armature Prepared')
         return {'FINISHED'}
@@ -256,7 +263,6 @@ class GGT_OT_RENAME_MIXAMORIG_OT_GGT(Operator):
     def execute(self, context):
         scene = context.scene
         tool = scene.godot_game_tools
-        visible_armature = tool.visible_armature
         target_armature = tool.target_object
         valid = validateArmature(self, context)
         if valid:
@@ -298,7 +304,6 @@ class GGT_OT_ARMATURE_JOIN_MESH_GGT(Operator):
     def execute(self, context):
         scene = context.scene
         tool = scene.godot_game_tools
-        visible_armature = tool.visible_armature
         target_armature = tool.target_object
         meshToJoin = None
         for mesh in target_armature.children:
