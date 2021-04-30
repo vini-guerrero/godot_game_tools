@@ -33,8 +33,9 @@ class GGT_OT_BAKE_TEXTURE_OT_GGT(bpy.types.Operator):
                 # Bake
                 bpy.context.view_layer.objects.active = mesh
                 bpy.context.scene.render.engine = 'CYCLES'
-                bake_type = context.scene.cycles.bake_type
-                bpy.ops.object.bake('INVOKE_DEFAULT', save_mode='EXTERNAL', type=bake_type, width=textureSize, height=textureSize, filepath=fileName, margin=16)
+                # For diffuse baking, only bake COLOR. Do not bake either indirect or direct lighting
+                filter = {'COLOR'}
+                bpy.ops.object.bake(type='DIFFUSE', save_mode='EXTERNAL', width=textureSize, height=textureSize, filepath=fileName, pass_filter=filter)
                 # bpy.context.scene.render.engine = currentEngine
                 self.report({'INFO'}, 'Bake Process Started')
             else:
