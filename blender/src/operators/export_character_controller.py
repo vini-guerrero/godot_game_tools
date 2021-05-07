@@ -56,6 +56,55 @@ class GGT_OT_CHARACTER_EXPORT_GGT(Operator):
     bl_label = "Export Character File"
     bl_description = "Exports character to Godot Engine"
 
+    def findGeneratedTexture(self, material, bakedTextureName):
+        # Find if we had created any baked textures in this material!
+        nodes = material.node_tree.nodes
+        generatedTextureNode = None
+        for node in nodes:
+            if node.name == "Image Texture" and node.image.name == bakedTextureName:
+                # Found it!
+                if generatedTextureNode is not None:
+                    self.report({'ERROR'}, "There are multiple diffuse textures found in material!")
+                    return
+                generatedTextureNode = node
+
+        return generatedTextureNode
+
+    def hookUpBakedTextures(self, bakedTextureName):
+        restorationList = [] # Stores (oldNode, outputName, newLink, links)
+
+        # Go through every material because there could be more than one
+        for material in bpy.data.materials:
+            if material.use_nodes == False:
+                #print(material.name + " does not use nodes")
+                continue
+            links = material.node_tree.links
+
+            generatedTextureNode = self.findGeneratedTexture(material, bakedTextureName)
+            if generatedTextureNode == None:
+                continue # It just happens that there was no generated texture in this node!
+                
+            # Find any connections to the Principled BSDF node into the Base Color input
+            targetLinks = [l for l in links if l.to_node.name == "Principled BSDF" and l.to_socket.name == "Base Color"]
+            if len(targetLinks) > 1:
+                self.report({'ERROR'}, "There are too many links to 'Base Color' in the Principled BSDF Shader")
+            elif len(targetLinks) is 1:
+                # This is the one we want!
+                link = targetLinks[0]
+                oldData = (link.from_node, link.from_socket.name, link.to_socket, links)
+                restorationList += [oldData] # We want to revert our new connection eventually!
+
+                # Create new link using the to_socket
+                links.new(generatedTextureNode.outputs.get("Color"), link.to_socket)
+
+        return restorationList
+    
+    def undoBakedTextureHookup(self, restorationList):
+        # This function is used AFTER exporting the model
+        # RestorationMap is a tuple (oldNode, oldOutputName, newLink, links)
+        for (oldNode, oldOutputName, toSocket, links) in restorationList:
+            links.new(oldNode.outputs.get(oldOutputName), toSocket)
+
     def execute(self, context):
         scene = context.scene
         tool = scene.godot_game_tools
@@ -82,6 +131,8 @@ class GGT_OT_CHARACTER_EXPORT_GGT(Operator):
         if (character_export_format == 1): exportFormat = ".glb"
         if (character_export_format == 2): exportFormat = ".dae"
 
+        restorationList = self.hookUpBakedTextures(tool.bake_texture_name + ".DIFFUSE")
+
         # GLTF
         if (character_export_format == 0):
             bpy.ops.export_scene.gltf(filepath=fileName, export_format="GLTF_EMBEDDED", export_frame_range=False, export_force_sampling=False, export_tangents=False, export_image_format="JPEG", export_cameras=False, export_lights=False)
@@ -93,6 +144,8 @@ class GGT_OT_CHARACTER_EXPORT_GGT(Operator):
         # Better Collada
         if (character_export_format == 2):
             bpy.ops.export_scene.dae(check_existing=True, filepath=fileName, filter_glob="*.dae", use_mesh_modifiers=True, use_active_layers=True, use_anim=True, use_anim_action_all=True, use_anim_skip_noexp=True, use_anim_optimize=True, use_copy_images=True)
+
+        self.undoBakedTextureHookup(restorationList)
 
         # Update Export Character Preset File
         if target_armature["animation_tree_preset"]:

@@ -17,7 +17,7 @@ class GGT_OT_BAKE_TEXTURE_OT_GGT(bpy.types.Operator):
         bake_texture_path = tool.bake_texture_path
         bake_texture_name = tool.bake_texture_name
         texturePath = bpy.path.abspath(bake_texture_path)
-        fileName = os.path.join(texturePath, bake_texture_name + ".png")
+        fileName = os.path.join(texturePath, bake_texture_name + ".DIFFUSE.png")
         currentEngine = bpy.context.scene.render.engine
         activeObj = bpy.context.view_layer.objects.active
         # Validate Mesh With Material Is Selected
@@ -57,7 +57,7 @@ class GGT_OT_CREATE_BAKE_TEXTURES_OT_GGT(Operator):
         scene = context.scene
         tool = scene.godot_game_tools
         textureSize = tool.bake_texture_size
-        bake_texture_name = tool.bake_texture_name
+        bake_texture_name = tool.bake_texture_name + ".DIFFUSE"
         activeObj = bpy.context.view_layer.objects.active
         mesh = None
         if activeObj is not None:
@@ -99,7 +99,7 @@ class GGT_OT_SAVE_BAKE_TEXTURES_OT_GGT(Operator):
         scene = context.scene
         tool = scene.godot_game_tools
         bake_texture_path = tool.bake_texture_path
-        bake_texture_name = tool.bake_texture_name
+        bake_texture_name = tool.bake_texture_name + ".DIFFUSE"
         texturePath = bpy.path.abspath(bake_texture_path)
         activeObj = bpy.context.view_layer.objects.active
         if len(activeObj.material_slots) > 0:
