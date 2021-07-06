@@ -3,8 +3,8 @@ This is a blender add-on that contains tools to ease the creation/import process
 
 [![Alphtech Studio Discord Server](https://badgen.net/discord/members/PrsJvMeVfp)](https://discord.gg/PrsJvMeVfp)
 
-[![GitHub Stars](https://img.shields.io/github/stars/vini-guerrero/Godot_Game_Tools.svg?style=social&label=Stars&maxAge=2592000)](https://github.com/vini-guerrero/godot-exporter)
-[![GitHub Contributors](https://img.shields.io/github/contributors/vini-guerrero/Godot_Game_Tools.svg?style=social&label=Contributors&maxAge=2592000)](https://github.com/vini-guerrero/godot-exporter)
+[![GitHub Stars](https://img.shields.io/github/stars/vini-guerrero/godot_game_tools.svg?style=social&label=Stars&maxAge=2592000)](https://github.com/vini-guerrero/godot-exporter)
+[![GitHub Contributors](https://img.shields.io/github/contributors/vini-guerrero/godot_game_tools.svg?style=social&label=Contributors&maxAge=2592000)](https://github.com/vini-guerrero/godot-exporter)
 
 ![Godot Game Tools](/images/cover.png "Godot Game Tools")
 <br/> <br/>
