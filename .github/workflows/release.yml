@@ -14,7 +14,7 @@ on:
 
 env:
   # RELEASE_VERSION: ${{ github.event.inputs.version }}
-  CREATE_RELEASE: true
+  CREATE_RELEASE: "true"
   ARTIFACT_VERSION: 2.x.x
 
 jobs:
@@ -35,7 +35,7 @@ jobs:
           name: Godot Game Tools - v${{ env.ARTIFACT_VERSION }}
           path: blender/godot_game_tools_v${{ env.ARTIFACT_VERSION }}.zip
       - name: Upload Artifact to Release
-        if: ${{ env.CREATE_RELEASE == true }}
+        if: ${{ env.CREATE_RELEASE == 'true' }}
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
