@@ -31,7 +31,7 @@ jobs:
           name: Godot Game Tools - v${{ env.ARTIFACT_VERSION }}
           path: blender/godot_game_tools_v${{ env.ARTIFACT_VERSION }}.zip
       - name: Upload Artifact to Release
-        if: ${{ env.CREATE_RELEASE }}
+        if: ${{ env.CREATE_RELEASE == true }}
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
