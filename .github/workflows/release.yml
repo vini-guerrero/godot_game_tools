@@ -20,10 +20,10 @@ jobs:
       - name: Install Zip
         uses: montudor/action-zip@v1
       - name: Create Zip Artifact
-        run: zip -qq -r build/godot_game_tools.zip src
+        run: zip -qq -r godot_game_tools.zip src
         working-directory: blender
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
             name: Godot Game Tools
-            path: build/godot_game_tools.zip
+            path: godot_game_tools.zip
