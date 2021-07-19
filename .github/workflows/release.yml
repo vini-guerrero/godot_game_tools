@@ -1,14 +1,21 @@
 name: "Create Release"
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: "Version"
-        required: true
-        default: "2.x.x"
+  [push]
+  # workflow_dispatch:
+  #   inputs:
+  #     version:
+  #       description: "Artifact Version"
+  #       required: true
+  #       default: "2.x.x"
+  #     create_release:
+  #       description: "Create Release"
+  #       required: true
+  #       default: "true"
 
 env:
-  RELEASE_VERSION: ${{ github.event.inputs.version }}
+  # RELEASE_VERSION: ${{ github.event.inputs.version }}
+  CREATE_RELEASE: "true"
+  ARTIFACT_VERSION: 2.x.x
 
 jobs:
   export:
@@ -20,10 +27,20 @@ jobs:
       - name: Install Zip
         uses: montudor/action-zip@v1
       - name: Create Zip Artifact
-        run: zip -qq -r godot_game_tools.zip src
+        run: zip -qq -r godot_game_tools_v${{ env.ARTIFACT_VERSION }}.zip src
         working-directory: blender
-      - name: Upload Artifact
+      - name: Generate Artifact
         uses: actions/upload-artifact@v2
         with:
-            name: Godot Game Tools
-            path: godot_game_tools.zip
+          name: Godot Game Tools - v${{ env.ARTIFACT_VERSION }}
+          path: blender/godot_game_tools_v${{ env.ARTIFACT_VERSION }}.zip
+      - name: Upload Artifact to Release
+        if: ${{ env.CREATE_RELEASE == 'true' }}
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: blender/godot_game_tools_v${{ env.ARTIFACT_VERSION }}.zip
+          asset_name: Godot Game Tools - v${{ env.ARTIFACT_VERSION }}
+          tag: v${{ env.ARTIFACT_VERSION }}
+          overwrite: true
+          body: v${{ env.ARTIFACT_VERSION }}.zip
