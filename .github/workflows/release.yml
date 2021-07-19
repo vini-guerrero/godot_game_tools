@@ -1,0 +1,29 @@
+name: "Create Release"
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version"
+        required: true
+        default: "2.x.x"
+
+env:
+  RELEASE_VERSION: ${{ github.event.inputs.version }}
+
+jobs:
+  export:
+    name: "Create Release"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Create artifact
+        uses: montudor/action-zip@v1
+          with:
+            args: zip -qq -r build/godot_game_tools.zip src
+            working-directory: blender
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+            name: Godot Game Tools
+            path: build/godot_game_tools.zip
