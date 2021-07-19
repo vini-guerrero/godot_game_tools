@@ -1,21 +1,19 @@
 name: "Create Release"
 on:
-  [push]
-  # workflow_dispatch:
-  #   inputs:
-  #     version:
-  #       description: "Artifact Version"
-  #       required: true
-  #       default: "2.x.x"
-  #     create_release:
-  #       description: "Create Release"
-  #       required: true
-  #       default: "true"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Artifact Version"
+        required: true
+        default: "2.x.x"
+      create_release:
+        description: "Create Release"
+        required: true
+        default: "true"
 
 env:
-  # RELEASE_VERSION: ${{ github.event.inputs.version }}
-  CREATE_RELEASE: "true"
-  ARTIFACT_VERSION: 2.x.x
+  ARTIFACT_VERSION: ${{ github.event.inputs.version }}
+  CREATE_RELEASE: ${{ github.event.inputs.create_release }}
 
 jobs:
   export:
