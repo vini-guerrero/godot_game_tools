@@ -23,17 +23,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Generate Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: godot_game_tools_v${{ env.ARTIFACT_VERSION }}.zip
           path: src
       - name: Upload Artifact to Release
         if: ${{ env.CREATE_RELEASE == 'true' }}
         uses: svenstaro/upload-release-action@v2
+      - name: Export Environment
+        run: ls && pwd
+        shell: bash
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: godot_game_tools_v${{ env.ARTIFACT_VERSION }}.zip
           asset_name: godot_game_tools_v${{ env.ARTIFACT_VERSION }}.zip
           tag: v${{ env.ARTIFACT_VERSION }}
-          overwrite: true
           body: v${{ env.ARTIFACT_VERSION }}.zip
+          overwrite: true
