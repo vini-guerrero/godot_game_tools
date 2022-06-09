@@ -26,7 +26,7 @@ jobs:
         uses: montudor/action-zip@v1
       - name: Create Zip Artifact
         run: zip -qq -r godot_game_tools_v${{ env.ARTIFACT_VERSION }}.zip src
-        working-directory: blender
+        working-directory: .
       - name: Generate Artifact
         uses: actions/upload-artifact@v2
         with:
