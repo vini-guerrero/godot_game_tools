@@ -25,12 +25,12 @@ jobs:
       - name: Install Zip
         uses: montudor/action-zip@v1
       - name: Create Zip Artifact
-        run: zip -qq -r src.zip src
+        run: mkdir -p build && mv src build/src && zip -qq -r src.zip src
       - name: Generate Artifact
         uses: actions/upload-artifact@v3
         with:
           name: godot_game_tools_v${{ env.ARTIFACT_VERSION }}
-          path: src/godot_game_tools_v${{ env.ARTIFACT_VERSION }}.zip
+          path: build
       - name: Upload Artifact to Release
         if: ${{ env.CREATE_RELEASE == 'true' }}
         uses: svenstaro/upload-release-action@v2
