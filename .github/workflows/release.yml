@@ -25,19 +25,21 @@ jobs:
       - name: Install Zip
         uses: montudor/action-zip@v1
       - name: Create Zip Artifact
-        run: zip -qq -r godot_game_tools_v${{ env.ARTIFACT_VERSION }}.zip src
+        run: |
+          mkdir -p build && mv src build/src && 
+          zip -qq -r godot_game_tools_v${{ env.ARTIFACT_VERSION }}.zip build
       - name: Generate Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: godot_game_tools_v${{ env.ARTIFACT_VERSION }}.zip
-          path: src
+          name: godot_game_tools_v${{ env.ARTIFACT_VERSION }}
+          path: build
       - name: Upload Artifact to Release
         if: ${{ env.CREATE_RELEASE == 'true' }}
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ github.workspace }}/godot_game_tools_v${{ env.ARTIFACT_VERSION }}.zip
-          asset_name: Godot Game Tools - v${{ env.ARTIFACT_VERSION }}
+          asset_name: godot_game_tools_v${{ env.ARTIFACT_VERSION }}
           tag: v${{ env.ARTIFACT_VERSION }}
           body: v${{ env.ARTIFACT_VERSION }}.zip
           overwrite: true
