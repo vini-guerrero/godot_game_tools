@@ -1,7 +1,6 @@
 # Godot Game Tools
-This is a blender add-on that contains tools to ease the creation/import process of assets into Godot Game Engine <br/> https://github.com/godotengine/godot
 
-[![Alphtech Studio Discord Server](https://badgen.net/discord/members/PrsJvMeVfp)](https://discord.gg/PrsJvMeVfp)
+This is a blender add-on that contains tools to ease the creation/import process of assets into Godot Game Engine <br/> https://github.com/godotengine/godot
 
 [![GitHub Stars](https://img.shields.io/github/stars/vini-guerrero/godot_game_tools.svg?style=social&label=Stars&maxAge=2592000)](https://github.com/vini-guerrero/godot-exporter)
 [![GitHub Contributors](https://img.shields.io/github/contributors/vini-guerrero/godot_game_tools.svg?style=social&label=Contributors&maxAge=2592000)](https://github.com/vini-guerrero/godot-exporter)
@@ -12,9 +11,9 @@ This is a blender add-on that contains tools to ease the creation/import process
 ### How To Use
 
 - Blender Add-On
-https://www.youtube.com/watch?v=fzKitRyqAK0&t=79s
-- Godot Plugin
-Copy the folder "godot_game_tools" located in this repository's "godot" folder to your Godot project addons folder
+  https://www.youtube.com/watch?v=fzKitRyqAK0&t=79s
+
+- Make sure you have removed any previous GGT version installed and re-open Blender before installing a newer release.
 
 #### Special Thanks To
 
