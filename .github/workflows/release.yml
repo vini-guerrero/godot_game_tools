@@ -27,7 +27,7 @@ jobs:
       - name: Create Zip Artifact
         run: |
           mkdir -p build && mv src build/src && 
-          zip -qq -r godot_game_tools_v${{ env.ARTIFACT_VERSION }}.zip build/src
+          zip -qq -r godot_game_tools_v${{ env.ARTIFACT_VERSION }}.zip build/*
       - name: Generate Artifact
         uses: actions/upload-artifact@v3
         with:
