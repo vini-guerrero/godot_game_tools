@@ -15,7 +15,7 @@ bl_info = {
     "name": "Godot Game Tools",
     "description": "This Add-On provides features for better export options with Godot Game Engine",
     "author": "Vinicius Guerrero & Contributors",
-    "version": (2, 0, 5),
+    "version": (2, 1, 0),
     "blender": (3, 2, 0),
     "location": "3D View > Tools",
     "warning": "",
