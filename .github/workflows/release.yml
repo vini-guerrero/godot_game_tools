@@ -30,7 +30,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: godot_game_tools_v${{ env.ARTIFACT_VERSION }}
-          path: ${{ github.workspace }}/src.zip
+          path: src/godot_game_tools_v${{ env.ARTIFACT_VERSION }}.zip
       - name: Upload Artifact to Release
         if: ${{ env.CREATE_RELEASE == 'true' }}
         uses: svenstaro/upload-release-action@v2
