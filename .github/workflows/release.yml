@@ -25,7 +25,7 @@ jobs:
       - name: Install Zip
         uses: montudor/action-zip@v1
       - name: Create Zip Artifact
-        run: mkdir -p build && mv src build/src && zip -qq -r src.zip src
+        run: zip -qq -r src.zip src && mkdir -p build && mv src build/src
       - name: Generate Artifact
         uses: actions/upload-artifact@v3
         with:
