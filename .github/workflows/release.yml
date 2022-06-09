@@ -35,7 +35,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ${{ github.action_path }}/godot_game_tools_v${{ env.ARTIFACT_VERSION }}.zip
+          file: ${{ env.GITHUB_PATH }}/godot_game_tools_v${{ env.ARTIFACT_VERSION }}.zip
           asset_name: godot_game_tools_v${{ env.ARTIFACT_VERSION }}.zip
           tag: v${{ env.ARTIFACT_VERSION }}
           body: v${{ env.ARTIFACT_VERSION }}.zip
