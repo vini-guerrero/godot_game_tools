@@ -27,12 +27,12 @@ jobs:
       - name: Create Zip Artifact
         run: |
           mkdir -p build && mv src build/src && 
-          zip -qq -r godot_game_tools_v${{ env.ARTIFACT_VERSION }}.zip build
+          zip -qq -r godot_game_tools_v${{ env.ARTIFACT_VERSION }}.zip build/src
       - name: Generate Artifact
         uses: actions/upload-artifact@v3
         with:
           name: godot_game_tools_v${{ env.ARTIFACT_VERSION }}
-          path: src
+          path: build
       - name: Upload Artifact to Release
         if: ${{ env.CREATE_RELEASE == 'true' }}
         uses: svenstaro/upload-release-action@v2
