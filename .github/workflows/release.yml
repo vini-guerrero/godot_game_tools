@@ -27,11 +27,11 @@ jobs:
         with:
           name: godot_game_tools_v${{ env.ARTIFACT_VERSION }}.zip
           path: src
+      - name: Check Artifact
+        run: ls && pwd
       - name: Upload Artifact to Release
         if: ${{ env.CREATE_RELEASE == 'true' }}
         uses: svenstaro/upload-release-action@v2
-      - name: Export Environment
-        run: ls && pwd
         shell: bash
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
