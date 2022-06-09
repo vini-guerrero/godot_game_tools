@@ -29,10 +29,10 @@ jobs:
           path: src
       - name: Check Artifact
         run: ls && pwd
+        shell: bash
       - name: Upload Artifact to Release
         if: ${{ env.CREATE_RELEASE == 'true' }}
         uses: svenstaro/upload-release-action@v2
-        shell: bash
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: godot_game_tools_v${{ env.ARTIFACT_VERSION }}.zip
