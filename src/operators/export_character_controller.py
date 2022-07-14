@@ -38,7 +38,7 @@ class GGT_OT_NLA_TRACKS_OT_GGT(Operator):
                     if target_armature.animation_data is not None:
                         if action is not None:
                             track = target_armature.animation_data.nla_tracks.new()
-                            start = action.frame_range[0]
+                            start = int(action.frame_range[0])
                             track.strips.new(action.name, start, action)
                             track.name = action.name
                             if character_export_animation_loops: track.name += "-loop"
