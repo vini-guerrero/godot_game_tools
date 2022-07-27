@@ -9,13 +9,13 @@ from bpy.props import (IntProperty, StringProperty, PointerProperty, CollectionP
 from bpy.types import (Panel, Menu, Operator, PropertyGroup)
 import addon_utils
 
-addon_version = "2.1.0"
+addon_version = "2.1.1"
 
 bl_info = {
     "name": "Godot Game Tools",
     "description": "This Add-On provides features for better export options with Godot Game Engine",
     "author": "Vinicius Guerrero & Contributors",
-    "version": (2, 1, 0),
+    "version": (2, 1, 1),
     "blender": (3, 2, 0),
     "location": "3D View > Tools",
     "warning": "",
