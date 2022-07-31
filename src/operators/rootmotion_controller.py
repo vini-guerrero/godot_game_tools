@@ -334,7 +334,7 @@ class GGT_OT_ADD_ROOTMOTION_TOGGLE_OT_GGT(Operator):
                             for point in channel.keyframe_points[1:]: frames.append(point.co[0])
 
                             for index in frames:
-                                scene.frame_set(index)
+                                scene.frame_set(int(index))
                                 anim_root_bone.location = anim_hip_bone.location
                                 anim_root_bone.keyframe_insert(data_path='location')
                                 anim_hip_bone.keyframe_delete(data_path='location')
